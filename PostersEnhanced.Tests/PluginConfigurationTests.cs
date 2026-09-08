@@ -55,4 +55,17 @@ public class PluginConfigurationTests
         Assert.Equal("data2", config.GetCustomBadge("imax"));
         Assert.Single(config.CustomBadges);
     }
+
+    [Fact]
+    public void AutoCropToPortraitRatio_DefaultsToTrue_AndAffectsConfigHash()
+    {
+        var config = new PluginConfiguration();
+        Assert.True(config.AutoCropToPortraitRatio);
+
+        var hash1 = config.ComputeConfigHash();
+        config.AutoCropToPortraitRatio = false;
+        var hash2 = config.ComputeConfigHash();
+
+        Assert.NotEqual(hash1, hash2);
+    }
 }

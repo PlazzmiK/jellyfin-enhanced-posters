@@ -382,4 +382,142 @@ public class ImageCompositorTests
         Assert.True(File.Exists(artifactPath));
         Assert.True(new FileInfo(artifactPath).Length > 0);
     }
+
+    [Fact]
+    public void CropToPortraitRatio_WiderThan23_CropsSidesEqually()
+    {
+        using var wideBitmap = new SKBitmap(1000, 1400);
+        using var canvas = new SKCanvas(wideBitmap);
+        canvas.Clear(SKColors.Blue);
+
+        var cropped = ImageCompositor.CropToPortraitRatio(wideBitmap);
+        using (cropped)
+        {
+            Assert.Equal(933, cropped.Width);
+            Assert.Equal(1400, cropped.Height);
+            var ratio = (double)cropped.Width / cropped.Height;
+            Assert.InRange(ratio, 0.66, 0.67);
+        }
+    }
+
+    [Fact]
+    public void CropToPortraitRatio_TallerThan23_CropsTopBottomEqually()
+    {
+        using var tallBitmap = new SKBitmap(1000, 1600);
+        using var canvas = new SKCanvas(tallBitmap);
+        canvas.Clear(SKColors.Green);
+
+        var cropped = ImageCompositor.CropToPortraitRatio(tallBitmap);
+        using (cropped)
+        {
+            Assert.Equal(1000, cropped.Width);
+            Assert.Equal(1500, cropped.Height);
+            var ratio = (double)cropped.Width / cropped.Height;
+            Assert.InRange(ratio, 0.66, 0.67);
+        }
+    }
+
+    [Fact]
+    public void CropToPortraitRatio_Already23_ReturnsSameDimensions()
+    {
+        using var standardBitmap = new SKBitmap(1000, 1500);
+        using var canvas = new SKCanvas(standardBitmap);
+        canvas.Clear(SKColors.Red);
+
+        var result = ImageCompositor.CropToPortraitRatio(standardBitmap);
+        using (result)
+        {
+            Assert.Equal(1000, result.Width);
+            Assert.Equal(1500, result.Height);
+        }
+    }
+
+    [Fact]
+    public void Composite_WithAutoCropEnabled_NormalizesWiderPosterTo23()
+    {
+        // 513 x 748 image (from user's 12 Angry Men screenshot)
+        using var sourceBitmap = new SKBitmap(513, 748);
+        using var canvas = new SKCanvas(sourceBitmap);
+        canvas.Clear(SKColors.DarkRed);
+
+        using var sourceStream = new MemoryStream();
+        sourceBitmap.Encode(sourceStream, SKEncodedImageFormat.Jpeg, 95);
+        sourceStream.Position = 0;
+
+        var mockPaths = new Mock<IApplicationPaths>();
+        mockPaths.Setup(p => p.PluginConfigurationsPath).Returns(Path.GetTempPath());
+        var themeManager = new ThemeAssetManager(mockPaths.Object);
+
+        var config = new PluginConfiguration
+        {
+            AutoCropToPortraitRatio = true,
+            CombineBadgesInPill = true,
+            ShowResolutionBadges = true,
+            Show4K = true,
+            MediaBadgesAnchor = AnchorPosition.BottomLeft,
+            MediaBadgesOffsetX = 25,
+            MediaBadgesOffsetY = 25
+        };
+
+        var mediaInfo = new ExtractedMediaInfo(
+            MediaResolution.Uhd4K,
+            VideoHdrType.None,
+            AudioCodecType.None,
+            null);
+
+        using var resultStream = ImageCompositor.Composite(sourceStream, mediaInfo, config, themeManager);
+        var artifactDir = @"C:\Users\Jan\.gemini\antigravity-ide\brain\70da7e80-969c-4c77-8b55-57d5a19b870e";
+        if (Directory.Exists(artifactDir))
+        {
+            var artifactPath = Path.Combine(artifactDir, "autocrop_verification.png");
+            using var fs = File.Create(artifactPath);
+            resultStream.CopyTo(fs);
+            resultStream.Position = 0;
+        }
+
+        using var resultBitmap = SKBitmap.Decode(resultStream);
+
+        Assert.NotNull(resultBitmap);
+        // Target width: 748 * (2 / 3) = 499
+        Assert.Equal(499, resultBitmap.Width);
+        Assert.Equal(748, resultBitmap.Height);
+        var ratio = (double)resultBitmap.Width / resultBitmap.Height;
+        Assert.InRange(ratio, 0.66, 0.67);
+    }
+
+    [Fact]
+    public void Composite_WithAutoCropDisabled_RetainsOriginalDimensions()
+    {
+        using var sourceBitmap = new SKBitmap(513, 748);
+        using var canvas = new SKCanvas(sourceBitmap);
+        canvas.Clear(SKColors.DarkRed);
+
+        using var sourceStream = new MemoryStream();
+        sourceBitmap.Encode(sourceStream, SKEncodedImageFormat.Jpeg, 95);
+        sourceStream.Position = 0;
+
+        var mockPaths = new Mock<IApplicationPaths>();
+        mockPaths.Setup(p => p.PluginConfigurationsPath).Returns(Path.GetTempPath());
+        var themeManager = new ThemeAssetManager(mockPaths.Object);
+
+        var config = new PluginConfiguration
+        {
+            AutoCropToPortraitRatio = false,
+            ShowResolutionBadges = true,
+            Show4K = true
+        };
+
+        var mediaInfo = new ExtractedMediaInfo(
+            MediaResolution.Uhd4K,
+            VideoHdrType.None,
+            AudioCodecType.None,
+            null);
+
+        using var resultStream = ImageCompositor.Composite(sourceStream, mediaInfo, config, themeManager);
+        using var resultBitmap = SKBitmap.Decode(resultStream);
+
+        Assert.NotNull(resultBitmap);
+        Assert.Equal(513, resultBitmap.Width);
+        Assert.Equal(748, resultBitmap.Height);
+    }
 }

@@ -22,6 +22,7 @@ public class PluginConfiguration : BasePluginConfiguration
         Theme = "default";
         Source = PosterSource.LocalFirst;
         SaveOriginalBesideMedia = true;
+        AutoCropToPortraitRatio = true;
 
         // Resolution Badges
         ShowResolutionBadges = true;
@@ -114,6 +115,9 @@ public class PluginConfiguration : BasePluginConfiguration
 
     /// <summary>Gets or sets a value indicating whether to save pristine originals next to media files.</summary>
     public bool SaveOriginalBesideMedia { get; set; }
+
+    /// <summary>Gets or sets a value indicating whether posters are automatically cropped to the standard 2:3 (1:1.5) portrait aspect ratio before badges are added.</summary>
+    public bool AutoCropToPortraitRatio { get; set; }
 
     /// <summary>Gets or sets a value indicating whether resolution badges are enabled.</summary>
     public bool ShowResolutionBadges { get; set; }
@@ -403,6 +407,7 @@ public class PluginConfiguration : BasePluginConfiguration
     {
         var sb = new StringBuilder();
         sb.Append(Theme).Append('|');
+        sb.Append(AutoCropToPortraitRatio).Append('|');
         sb.Append(ShowResolutionBadges).Append('|');
         sb.Append(Show4K).Append('|');
         sb.Append(Show1080p).Append('|');

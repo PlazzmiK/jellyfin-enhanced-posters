@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-09-08
+
+### Added
+- Auto-crop to standard 2:3 portrait aspect ratio: automatically center-crops base posters to Jellyfin's official 2:3 (1:1.5) card ratio before applying overlays, permanently eliminating the side margin clipping caused by Jellyfin card containers on wider source posters.
+- 2:3 Portrait Frame Anchor Widget: redesigned the position anchor picker into an interactive 2:3 portrait poster frame with 9 directional pin buttons, active glow highlights, and synchronized select dropdowns in the dashboard.
+
 ## [1.1.3] - 2026-09-08
 
 ### Fixed
@@ -53,7 +59,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Interactive configuration dashboard with real-time live preview.
 - One-click restore scheduled task to revert all posters to originals.
 
-[Unreleased]: https://github.com/PlazzmiK/jellyfin-enhanced-posters/compare/1.1.1...HEAD
+[Unreleased]: https://github.com/PlazzmiK/jellyfin-enhanced-posters/compare/1.2.0...HEAD
+[1.2.0]: https://github.com/PlazzmiK/jellyfin-enhanced-posters/compare/1.1.3...1.2.0
+[1.1.3]: https://github.com/PlazzmiK/jellyfin-enhanced-posters/compare/1.1.2...1.1.3
+[1.1.2]: https://github.com/PlazzmiK/jellyfin-enhanced-posters/compare/1.1.1...1.1.2
 [1.1.1]: https://github.com/PlazzmiK/jellyfin-enhanced-posters/compare/1.1.0...1.1.1
 [1.1.0]: https://github.com/PlazzmiK/jellyfin-enhanced-posters/compare/1.0.0.1...1.1.0
 [1.0.0.1]: https://github.com/PlazzmiK/jellyfin-enhanced-posters/compare/1.0.0-RC1...1.0.0.1

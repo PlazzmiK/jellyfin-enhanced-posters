@@ -3,86 +3,114 @@
 <head>
     <meta charset="utf-8">
     <title>Enhanced Posters</title>
-    <style>
-        .pe-anchor-widget {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            margin-top: 6px;
-        }
-        .pe-anchor-grid {
-            display: inline-grid;
-            grid-template-columns: repeat(3, 34px);
-            grid-template-rows: repeat(3, 34px);
-            gap: 4px;
-            background: rgba(0, 0, 0, 0.45);
-            padding: 5px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-        }
-        .pe-anchor-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255, 255, 255, 0.07);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 4px;
-            color: #999;
-            cursor: pointer;
-            font-size: 13px;
-            padding: 0;
-            margin: 0;
-            transition: all 0.15s ease-in-out;
-            user-select: none;
-        }
-        .pe-anchor-btn:hover {
-            background: rgba(255, 255, 255, 0.22);
-            color: #fff;
-            border-color: rgba(255, 255, 255, 0.35);
-        }
-        .pe-anchor-btn.active {
-            background: #00a4dc !important;
-            color: #ffffff !important;
-            border-color: #38bdf8 !important;
-            box-shadow: 0 0 8px rgba(0, 164, 220, 0.7);
-            font-weight: bold;
-        }
-        .pe-anchor-desc {
-            font-size: 13px;
-            color: #ccc;
-            font-weight: 500;
-        }
-        .pe-badge-card {
-            background: rgba(0, 0, 0, 0.25);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 8px;
-            padding: 12px 14px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-        }
-        .pe-badge-preview-box {
-            width: 80px;
-            height: 38px;
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px dashed rgba(255, 255, 255, 0.25);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-        .pe-badge-preview-box img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-    </style>
 </head>
 <body>
     <div id="PostersEnhancedConfigPage" data-role="page" class="page type-interior pluginConfigurationPage" data-require="emby-input,emby-button,emby-select,emby-checkbox">
+        <style>
+            #PostersEnhancedConfigPage .pe-anchor-widget {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                margin-top: 8px;
+            }
+            #PostersEnhancedConfigPage .pe-portrait-frame {
+                position: relative;
+                width: 90px;
+                height: 135px;
+                background: linear-gradient(145deg, #182030 0%, #0c121e 100%);
+                border: 2px solid rgba(255, 255, 255, 0.2);
+                border-radius: 8px;
+                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+                display: grid !important;
+                grid-template-columns: repeat(3, 1fr) !important;
+                grid-template-rows: repeat(3, 1fr) !important;
+                gap: 4px;
+                padding: 6px;
+                box-sizing: border-box;
+                overflow: hidden;
+            }
+            #PostersEnhancedConfigPage .pe-portrait-watermark {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-size: 8px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                font-weight: 800;
+                color: rgba(255, 255, 255, 0.08);
+                pointer-events: none;
+                user-select: none;
+            }
+            #PostersEnhancedConfigPage .pe-anchor-btn {
+                display: flex !important;
+                align-items: center;
+                justify-content: center;
+                background: rgba(255, 255, 255, 0.08);
+                border: 1px solid rgba(255, 255, 255, 0.12);
+                border-radius: 4px;
+                color: #8899a6;
+                cursor: pointer;
+                font-size: 11px;
+                padding: 0;
+                margin: 0;
+                transition: all 0.15s ease-in-out;
+                user-select: none;
+                z-index: 2;
+                outline: none;
+            }
+            #PostersEnhancedConfigPage .pe-anchor-btn:hover {
+                background: rgba(255, 255, 255, 0.22);
+                color: #ffffff;
+                border-color: rgba(255, 255, 255, 0.35);
+                transform: scale(1.05);
+            }
+            #PostersEnhancedConfigPage .pe-anchor-btn.active {
+                background: #00a4dc !important;
+                color: #ffffff !important;
+                border-color: #38bdf8 !important;
+                box-shadow: 0 0 10px rgba(0, 164, 220, 0.85);
+                font-weight: bold;
+                transform: scale(1.08);
+            }
+            #PostersEnhancedConfigPage .pe-anchor-badge-desc {
+                display: inline-block;
+                background: rgba(0, 164, 220, 0.15);
+                border: 1px solid rgba(0, 164, 220, 0.4);
+                color: #38bdf8;
+                padding: 3px 10px;
+                border-radius: 4px;
+                font-weight: bold;
+                font-size: 13px;
+            }
+            #PostersEnhancedConfigPage .pe-badge-card {
+                background: rgba(0, 0, 0, 0.25);
+                border: 1px solid rgba(255, 255, 255, 0.12);
+                border-radius: 8px;
+                padding: 12px 14px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 16px;
+            }
+            #PostersEnhancedConfigPage .pe-badge-preview-box {
+                width: 80px;
+                height: 38px;
+                background: rgba(0, 0, 0, 0.6);
+                border: 1px dashed rgba(255, 255, 255, 0.25);
+                border-radius: 6px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                overflow: hidden;
+                flex-shrink: 0;
+            }
+            #PostersEnhancedConfigPage .pe-badge-preview-box img {
+                max-width: 100%;
+                max-height: 100%;
+                object-fit: contain;
+            }
+        </style>
         <div data-role="content">
             <div class="content-primary">
                 <h1>Enhanced Posters</h1>
@@ -162,6 +190,16 @@
                             </label>
                             <div class="fieldDescription checkboxFieldDescription">
                                 Keeps original posters directly with your movie/show folders so your pristine artwork is never lost and survives library migrations.
+                            </div>
+                        </div>
+
+                        <div class="checkboxContainer checkboxContainer-withDescription">
+                            <label>
+                                <input is="emby-checkbox" type="checkbox" id="chkAutoCropToPortraitRatio" />
+                                <span><strong>Auto-crop posters to standard 2:3 portrait ratio (1:1.5)</strong></span>
+                            </label>
+                            <div class="fieldDescription checkboxFieldDescription">
+                                Automatically center-crops base posters to Jellyfin's official 2:3 card aspect ratio before compositing badges. Prevents Jellyfin's card grid from silently cropping the left and right side margins of wider posters.
                             </div>
                         </div>
 
@@ -265,9 +303,10 @@
                             <h3 style="margin-top: 16px;">Media Badges Placement & Anchor</h3>
                             <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start;">
                                 <div>
-                                    <label class="inputLabel">Position Anchor (3x3 Grid)</label>
+                                    <label class="inputLabel">Position Anchor (Portrait Poster Frame)</label>
                                     <div class="pe-anchor-widget">
-                                        <div class="pe-anchor-grid" data-target="selectMediaAnchor">
+                                        <div class="pe-anchor-grid pe-portrait-frame" data-target="selectMediaAnchor">
+                                            <div class="pe-portrait-watermark">POSTER</div>
                                             <button type="button" class="pe-anchor-btn" data-anchor="TopLeft" title="Top-Left">↖</button>
                                             <button type="button" class="pe-anchor-btn" data-anchor="TopCenter" title="Top-Center">↑</button>
                                             <button type="button" class="pe-anchor-btn" data-anchor="TopRight" title="Top-Right">↗</button>
@@ -278,19 +317,26 @@
                                             <button type="button" class="pe-anchor-btn" data-anchor="BottomCenter" title="Bottom-Center">↓</button>
                                             <button type="button" class="pe-anchor-btn" data-anchor="BottomRight" title="Bottom-Right">↘</button>
                                         </div>
-                                        <div class="pe-anchor-desc" id="lblDescMediaAnchor">Bottom-Left</div>
+                                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                                            <div>
+                                                <div style="font-size: 11px; color: #8899a6; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Placement</div>
+                                                <span class="pe-anchor-badge-desc" id="lblDescMediaAnchor">Bottom-Left</span>
+                                            </div>
+                                            <div class="selectContainer" style="margin: 0;">
+                                                <select is="emby-select" id="selectMediaAnchor" class="emby-select" style="font-size: 12px; padding: 4px 8px;">
+                                                    <option value="TopLeft">Top-Left</option>
+                                                    <option value="TopCenter">Top-Center</option>
+                                                    <option value="TopRight">Top-Right</option>
+                                                    <option value="CenterLeft">Center-Left</option>
+                                                    <option value="Center">Center</option>
+                                                    <option value="CenterRight">Center-Right</option>
+                                                    <option value="BottomLeft">Bottom-Left</option>
+                                                    <option value="BottomCenter">Bottom-Center</option>
+                                                    <option value="BottomRight">Bottom-Right</option>
+                                                </select>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <select is="emby-select" id="selectMediaAnchor" style="display: none;">
-                                        <option value="BottomLeft">BottomLeft</option>
-                                        <option value="BottomCenter">BottomCenter</option>
-                                        <option value="BottomRight">BottomRight</option>
-                                        <option value="TopLeft">TopLeft</option>
-                                        <option value="TopCenter">TopCenter</option>
-                                        <option value="TopRight">TopRight</option>
-                                        <option value="CenterLeft">CenterLeft</option>
-                                        <option value="Center">Center</option>
-                                        <option value="CenterRight">CenterRight</option>
-                                    </select>
                                 </div>
 
                                 <div class="selectContainer" style="flex: 1; min-width: 140px;">
@@ -344,9 +390,10 @@
                             <h3 style="margin-top: 16px;">Edition Placement & Anchor</h3>
                             <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start;">
                                 <div>
-                                    <label class="inputLabel">Position Anchor (3x3 Grid)</label>
+                                    <label class="inputLabel">Position Anchor (Portrait Poster Frame)</label>
                                     <div class="pe-anchor-widget">
-                                        <div class="pe-anchor-grid" data-target="selectEditionAnchor">
+                                        <div class="pe-anchor-grid pe-portrait-frame" data-target="selectEditionAnchor">
+                                            <div class="pe-portrait-watermark">POSTER</div>
                                             <button type="button" class="pe-anchor-btn" data-anchor="TopLeft" title="Top-Left">↖</button>
                                             <button type="button" class="pe-anchor-btn" data-anchor="TopCenter" title="Top-Center">↑</button>
                                             <button type="button" class="pe-anchor-btn" data-anchor="TopRight" title="Top-Right">↗</button>
@@ -357,19 +404,26 @@
                                             <button type="button" class="pe-anchor-btn" data-anchor="BottomCenter" title="Bottom-Center">↓</button>
                                             <button type="button" class="pe-anchor-btn" data-anchor="BottomRight" title="Bottom-Right">↘</button>
                                         </div>
-                                        <div class="pe-anchor-desc" id="lblDescEditionAnchor">Bottom-Left</div>
+                                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                                            <div>
+                                                <div style="font-size: 11px; color: #8899a6; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Placement</div>
+                                                <span class="pe-anchor-badge-desc" id="lblDescEditionAnchor">Bottom-Left</span>
+                                            </div>
+                                            <div class="selectContainer" style="margin: 0;">
+                                                <select is="emby-select" id="selectEditionAnchor" class="emby-select" style="font-size: 12px; padding: 4px 8px;">
+                                                    <option value="TopLeft">Top-Left</option>
+                                                    <option value="TopCenter">Top-Center</option>
+                                                    <option value="TopRight">Top-Right</option>
+                                                    <option value="CenterLeft">Center-Left</option>
+                                                    <option value="Center">Center</option>
+                                                    <option value="CenterRight">Center-Right</option>
+                                                    <option value="BottomLeft">Bottom-Left</option>
+                                                    <option value="BottomCenter">Bottom-Center</option>
+                                                    <option value="BottomRight">Bottom-Right</option>
+                                                </select>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <select is="emby-select" id="selectEditionAnchor" style="display: none;">
-                                        <option value="BottomLeft">BottomLeft</option>
-                                        <option value="BottomCenter">BottomCenter</option>
-                                        <option value="BottomRight">BottomRight</option>
-                                        <option value="TopLeft">TopLeft</option>
-                                        <option value="TopCenter">TopCenter</option>
-                                        <option value="TopRight">TopRight</option>
-                                        <option value="CenterLeft">CenterLeft</option>
-                                        <option value="Center">Center</option>
-                                        <option value="CenterRight">CenterRight</option>
-                                    </select>
                                 </div>
 
                                 <div class="inputContainer" style="flex: 1; min-width: 100px;">
@@ -404,9 +458,10 @@
                         <div id="threeDBadgeGroup" style="margin-top: 12px;">
                             <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start;">
                                 <div>
-                                    <label class="inputLabel">Position Anchor (3x3 Grid)</label>
+                                    <label class="inputLabel">Position Anchor (Portrait Poster Frame)</label>
                                     <div class="pe-anchor-widget">
-                                        <div class="pe-anchor-grid" data-target="selectThreeDAnchor">
+                                        <div class="pe-anchor-grid pe-portrait-frame" data-target="selectThreeDAnchor">
+                                            <div class="pe-portrait-watermark">POSTER</div>
                                             <button type="button" class="pe-anchor-btn" data-anchor="TopLeft" title="Top-Left">↖</button>
                                             <button type="button" class="pe-anchor-btn" data-anchor="TopCenter" title="Top-Center">↑</button>
                                             <button type="button" class="pe-anchor-btn" data-anchor="TopRight" title="Top-Right">↗</button>
@@ -417,19 +472,26 @@
                                             <button type="button" class="pe-anchor-btn" data-anchor="BottomCenter" title="Bottom-Center">↓</button>
                                             <button type="button" class="pe-anchor-btn" data-anchor="BottomRight" title="Bottom-Right">↘</button>
                                         </div>
-                                        <div class="pe-anchor-desc" id="lblDescThreeDAnchor">Bottom-Left</div>
+                                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                                            <div>
+                                                <div style="font-size: 11px; color: #8899a6; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Placement</div>
+                                                <span class="pe-anchor-badge-desc" id="lblDescThreeDAnchor">Bottom-Left</span>
+                                            </div>
+                                            <div class="selectContainer" style="margin: 0;">
+                                                <select is="emby-select" id="selectThreeDAnchor" class="emby-select" style="font-size: 12px; padding: 4px 8px;">
+                                                    <option value="TopLeft">Top-Left</option>
+                                                    <option value="TopCenter">Top-Center</option>
+                                                    <option value="TopRight">Top-Right</option>
+                                                    <option value="CenterLeft">Center-Left</option>
+                                                    <option value="Center">Center</option>
+                                                    <option value="CenterRight">Center-Right</option>
+                                                    <option value="BottomLeft">Bottom-Left</option>
+                                                    <option value="BottomCenter">Bottom-Center</option>
+                                                    <option value="BottomRight">Bottom-Right</option>
+                                                </select>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <select is="emby-select" id="selectThreeDAnchor" style="display: none;">
-                                        <option value="BottomLeft">BottomLeft</option>
-                                        <option value="BottomCenter">BottomCenter</option>
-                                        <option value="BottomRight">BottomRight</option>
-                                        <option value="TopLeft">TopLeft</option>
-                                        <option value="TopCenter">TopCenter</option>
-                                        <option value="TopRight">TopRight</option>
-                                        <option value="CenterLeft">CenterLeft</option>
-                                        <option value="Center">Center</option>
-                                        <option value="CenterRight">CenterRight</option>
-                                    </select>
                                 </div>
 
                                 <div class="inputContainer" style="flex: 1; min-width: 100px;">
@@ -461,9 +523,10 @@
                         <div id="ratingBadgeGroup" style="margin-top: 12px;">
                             <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start;">
                                 <div>
-                                    <label class="inputLabel">Position Anchor (3x3 Grid)</label>
+                                    <label class="inputLabel">Position Anchor (Portrait Poster Frame)</label>
                                     <div class="pe-anchor-widget">
-                                        <div class="pe-anchor-grid" data-target="selectRatingAnchor">
+                                        <div class="pe-anchor-grid pe-portrait-frame" data-target="selectRatingAnchor">
+                                            <div class="pe-portrait-watermark">POSTER</div>
                                             <button type="button" class="pe-anchor-btn" data-anchor="TopLeft" title="Top-Left">↖</button>
                                             <button type="button" class="pe-anchor-btn" data-anchor="TopCenter" title="Top-Center">↑</button>
                                             <button type="button" class="pe-anchor-btn" data-anchor="TopRight" title="Top-Right">↗</button>
@@ -474,19 +537,26 @@
                                             <button type="button" class="pe-anchor-btn" data-anchor="BottomCenter" title="Bottom-Center">↓</button>
                                             <button type="button" class="pe-anchor-btn" data-anchor="BottomRight" title="Bottom-Right">↘</button>
                                         </div>
-                                        <div class="pe-anchor-desc" id="lblDescRatingAnchor">Bottom-Right</div>
+                                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                                            <div>
+                                                <div style="font-size: 11px; color: #8899a6; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Placement</div>
+                                                <span class="pe-anchor-badge-desc" id="lblDescRatingAnchor">Bottom-Right</span>
+                                            </div>
+                                            <div class="selectContainer" style="margin: 0;">
+                                                <select is="emby-select" id="selectRatingAnchor" class="emby-select" style="font-size: 12px; padding: 4px 8px;">
+                                                    <option value="TopLeft">Top-Left</option>
+                                                    <option value="TopCenter">Top-Center</option>
+                                                    <option value="TopRight">Top-Right</option>
+                                                    <option value="CenterLeft">Center-Left</option>
+                                                    <option value="Center">Center</option>
+                                                    <option value="CenterRight">Center-Right</option>
+                                                    <option value="BottomLeft">Bottom-Left</option>
+                                                    <option value="BottomCenter">Bottom-Center</option>
+                                                    <option value="BottomRight">Bottom-Right</option>
+                                                </select>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <select is="emby-select" id="selectRatingAnchor" style="display: none;">
-                                        <option value="BottomLeft">BottomLeft</option>
-                                        <option value="BottomCenter">BottomCenter</option>
-                                        <option value="BottomRight">BottomRight</option>
-                                        <option value="TopLeft">TopLeft</option>
-                                        <option value="TopCenter">TopCenter</option>
-                                        <option value="TopRight">TopRight</option>
-                                        <option value="CenterLeft">CenterLeft</option>
-                                        <option value="Center">Center</option>
-                                        <option value="CenterRight">CenterRight</option>
-                                    </select>
                                 </div>
 
                                 <div class="selectContainer" style="flex: 1; min-width: 140px;">
@@ -606,8 +676,18 @@
                         buttons.forEach(function (btn) {
                             if (btn.getAttribute("data-anchor") === val) {
                                 btn.classList.add("active");
+                                btn.style.background = "#00a4dc";
+                                btn.style.color = "#ffffff";
+                                btn.style.borderColor = "#38bdf8";
+                                btn.style.boxShadow = "0 0 10px rgba(0, 164, 220, 0.85)";
+                                btn.style.transform = "scale(1.08)";
                             } else {
                                 btn.classList.remove("active");
+                                btn.style.background = "rgba(255, 255, 255, 0.08)";
+                                btn.style.color = "#8899a6";
+                                btn.style.borderColor = "rgba(255, 255, 255, 0.12)";
+                                btn.style.boxShadow = "none";
+                                btn.style.transform = "scale(1)";
                             }
                         });
                     }
@@ -629,6 +709,11 @@
                                 syncAnchorGridUI(targetSelectId);
                                 updatePreview();
                             });
+                        });
+
+                        select.addEventListener("change", function () {
+                            syncAnchorGridUI(targetSelectId);
+                            updatePreview();
                         });
                     });
                 }
@@ -874,6 +959,7 @@
 
                     ApiClient.getPluginConfiguration(pluginId).then(function (config) {
                         document.getElementById("chkSaveOriginalBesideMedia").checked = getCfg(config, "SaveOriginalBesideMedia", "saveOriginalBesideMedia", true);
+                        document.getElementById("chkAutoCropToPortraitRatio").checked = getCfg(config, "AutoCropToPortraitRatio", "autoCropToPortraitRatio", true);
                         document.getElementById("selectSource").value = getCfg(config, "Source", "source", "LocalFirst");
                         document.getElementById("txtTheme").value = getCfg(config, "Theme", "theme", "default");
 
@@ -1018,6 +1104,7 @@
 
                     ApiClient.getPluginConfiguration(pluginId).then(function (config) {
                         config.SaveOriginalBesideMedia = document.getElementById("chkSaveOriginalBesideMedia").checked;
+                        config.AutoCropToPortraitRatio = document.getElementById("chkAutoCropToPortraitRatio").checked;
                         config.Source = document.getElementById("selectSource").value;
                         config.Theme = document.getElementById("txtTheme").value;
 

@@ -34,37 +34,45 @@ public static class ImageCompositor
         ArgumentNullException.ThrowIfNull(configuration);
         ArgumentNullException.ThrowIfNull(themeManager);
 
-        using var baseBitmap = SKBitmap.Decode(posterStream);
+        var baseBitmap = SKBitmap.Decode(posterStream);
         if (baseBitmap is null)
         {
             throw new InvalidOperationException("Failed to decode poster image stream.");
         }
 
-        var width = baseBitmap.Width;
-        var height = baseBitmap.Height;
+        if (configuration.AutoCropToPortraitRatio)
+        {
+            baseBitmap = CropToPortraitRatio(baseBitmap);
+        }
 
-        using var surface = SKSurface.Create(new SKImageInfo(width, height, SKColorType.Rgba8888, SKAlphaType.Premul));
-        var canvas = surface.Canvas;
+        using (baseBitmap)
+        {
+            var width = baseBitmap.Width;
+            var height = baseBitmap.Height;
 
-        // 1. Draw pristine original poster
-        canvas.DrawBitmap(baseBitmap, 0, 0);
+            using var surface = SKSurface.Create(new SKImageInfo(width, height, SKColorType.Rgba8888, SKAlphaType.Premul));
+            var canvas = surface.Canvas;
 
-        // 2. Draw Badges (Media, Edition, 3D) grouped by AnchorPosition
-        DrawAllBadges(canvas, width, height, mediaInfo, configuration, themeManager);
+            // 1. Draw pristine original poster (guaranteed 2:3 aspect ratio if auto-crop is enabled)
+            canvas.DrawBitmap(baseBitmap, 0, 0);
 
-        // 3. Draw Dynamic Rating Pill
-        DrawRatingBadge(canvas, width, height, mediaInfo, configuration);
+            // 2. Draw Badges (Media, Edition, 3D) grouped by AnchorPosition
+            DrawAllBadges(canvas, width, height, mediaInfo, configuration, themeManager);
 
-        canvas.Flush();
+            // 3. Draw Dynamic Rating Pill
+            DrawRatingBadge(canvas, width, height, mediaInfo, configuration);
 
-        // 4. Encode to high-quality JPEG
-        using var image = surface.Snapshot();
-        using var data = image.Encode(SKEncodedImageFormat.Jpeg, 92);
+            canvas.Flush();
 
-        var outputStream = new MemoryStream();
-        data.SaveTo(outputStream);
-        outputStream.Position = 0;
-        return outputStream;
+            // 4. Encode to high-quality JPEG
+            using var image = surface.Snapshot();
+            using var data = image.Encode(SKEncodedImageFormat.Jpeg, 92);
+
+            var outputStream = new MemoryStream();
+            data.SaveTo(outputStream);
+            outputStream.Position = 0;
+            return outputStream;
+        }
     }
 
     private static void DrawAllBadges(
@@ -427,6 +435,63 @@ public static class ImageCompositor
         };
 
         return (x, y);
+    }
+
+    /// <summary>
+    /// Crops a bitmap to the standard 2:3 (1:1.5) portrait aspect ratio expected by Jellyfin cards, if needed.
+    /// Trims excess width or height symmetrically from the center.
+    /// </summary>
+    /// <param name="source">The source bitmap.</param>
+    /// <returns>A 2:3 aspect ratio bitmap. If cropping occurs, the original bitmap is disposed and the new cropped bitmap is returned.</returns>
+    public static SKBitmap CropToPortraitRatio(SKBitmap source)
+    {
+        ArgumentNullException.ThrowIfNull(source);
+
+        const double targetRatio = 2.0 / 3.0;
+        var currentRatio = (double)source.Width / source.Height;
+
+        // If already within 0.5% of 2:3 aspect ratio, no crop needed
+        if (Math.Abs(currentRatio - targetRatio) < 0.005)
+        {
+            return source;
+        }
+
+        int cropX = 0;
+        int cropY = 0;
+        int targetWidth = source.Width;
+        int targetHeight = source.Height;
+
+        if (currentRatio > targetRatio)
+        {
+            // Wider than 2:3 (e.g. 513x748 or 1000x1400) - crop left and right equally
+            targetWidth = Math.Min(source.Width, Math.Max(1, (int)Math.Round(source.Height * targetRatio)));
+            cropX = Math.Max(0, (source.Width - targetWidth) / 2);
+            if (cropX + targetWidth > source.Width)
+            {
+                targetWidth = source.Width - cropX;
+            }
+        }
+        else
+        {
+            // Taller than 2:3 (e.g. 1000x1600) - crop top and bottom equally
+            targetHeight = Math.Min(source.Height, Math.Max(1, (int)Math.Round(source.Width / targetRatio)));
+            cropY = Math.Max(0, (source.Height - targetHeight) / 2);
+            if (cropY + targetHeight > source.Height)
+            {
+                targetHeight = source.Height - cropY;
+            }
+        }
+
+        var croppedBitmap = new SKBitmap(targetWidth, targetHeight, source.ColorType, source.AlphaType);
+        using var canvas = new SKCanvas(croppedBitmap);
+        var srcRect = new SKRectI(cropX, cropY, cropX + targetWidth, cropY + targetHeight);
+        var dstRect = new SKRect(0, 0, targetWidth, targetHeight);
+        using var paint = new SKPaint { FilterQuality = SKFilterQuality.High };
+        canvas.DrawBitmap(source, srcRect, dstRect, paint);
+        canvas.Flush();
+
+        source.Dispose();
+        return croppedBitmap;
     }
 
     private static List<string> ResolveActiveMediaBadgeKeys(ExtractedMediaInfo info, PluginConfiguration config)
