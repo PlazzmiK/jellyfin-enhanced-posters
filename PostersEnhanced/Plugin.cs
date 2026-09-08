@@ -17,7 +17,7 @@ public class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
     /// <summary>
     /// The plugin display name.
     /// </summary>
-    public const string PluginName = "Posters Enhanced";
+    public const string PluginName = "Enhanced Posters";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Plugin"/> class.

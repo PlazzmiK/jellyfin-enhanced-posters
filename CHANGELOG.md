@@ -42,8 +42,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Interactive configuration dashboard with real-time live preview.
 - One-click restore scheduled task to revert all posters to originals.
 
-[Unreleased]: https://github.com/PlazzmiK/jellyfin-posters-enchanced/compare/1.1.1...HEAD
-[1.1.1]: https://github.com/PlazzmiK/jellyfin-posters-enchanced/compare/1.1.0...1.1.1
-[1.1.0]: https://github.com/PlazzmiK/jellyfin-posters-enchanced/compare/1.0.0.1...1.1.0
-[1.0.0.1]: https://github.com/PlazzmiK/jellyfin-posters-enchanced/compare/1.0.0-RC1...1.0.0.1
-[1.0.0-RC1]: https://github.com/PlazzmiK/jellyfin-posters-enchanced/tree/1.0.0-RC1
+[Unreleased]: https://github.com/PlazzmiK/jellyfin-enhanced-posters/compare/1.1.1...HEAD
+[1.1.1]: https://github.com/PlazzmiK/jellyfin-enhanced-posters/compare/1.1.0...1.1.1
+[1.1.0]: https://github.com/PlazzmiK/jellyfin-enhanced-posters/compare/1.0.0.1...1.1.0
+[1.0.0.1]: https://github.com/PlazzmiK/jellyfin-enhanced-posters/compare/1.0.0-RC1...1.0.0.1
+[1.0.0-RC1]: https://github.com/PlazzmiK/jellyfin-enhanced-posters/tree/1.0.0-RC1
