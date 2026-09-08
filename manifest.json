@@ -10,11 +10,11 @@
         "versions": [
             {
                 "version": "1.0.0.0",
-                "changelog": "### Added\n- Initial release candidate for Posters Enhanced.\n- Non-destructive poster overlays preserving untouched original posters beside media files.\n- High-performance SkiaSharp graphics compositing engine.\n- Media badges for resolution (4K, 1080p, 720p, SD), video range (Dolby Vision, HDR10+, HDR10, HDR, HLG), and audio codecs (Dolby Atmos, DTS:X, TrueHD, DTS-HD MA, FLAC).\n- Dynamic rating pill badge with score-based color tiers (<5 Red, 5-6 Orange, 6-7 Yellow, 7-8 Green, 8+ Blue/Diamond).\n- 9-point grid anchor positioning with fine-tuning offsets.\n- Theme pack support and smart re-render optimization.\n",
+                "changelog": "### Added\n- Initial release candidate for Posters Enhanced.\n- Non-destructive poster overlays preserving untouched original posters beside media files.\n- High-performance SkiaSharp graphics compositing engine.\n- Media badges for resolution (4K, 1080p, 720p, SD), video range (Dolby Vision, HDR10+, HDR10, HDR, HLG), and audio codecs (Dolby Atmos, DTS:X, TrueHD, DTS-HD MA, FLAC).\n- Dynamic rating pill badge with customizable score-based color tiers (<5 Red, 5-6 Orange, 6-7 Yellow, 7-8 Green, 8+ Blue/Diamond).\n- 9-point grid anchor positioning with fine-tuning offsets, scaling, and spacing.\n- Smart re-render optimization with SHA-256 state tracking.\n- Theme pack support for custom PNG/SVG badge assets.\n- Interactive configuration dashboard with real-time live preview.\n- One-click restore scheduled task to revert all posters to originals.\n",
                 "targetAbi": "10.11.10.0",
                 "sourceUrl": "https://github.com/PlazzmiK/jellyfin-posters-enchanced/releases/download/1.0.0-RC1/posters-enhanced_1.0.0.0.zip",
-                "checksum": "",
-                "timestamp": "2026-09-08T14:20:00Z"
+                "checksum": "ab1699d858860fb3336df552c684b0ab",
+                "timestamp": "2026-09-08T12:47:21Z"
             }
         ]
     }
