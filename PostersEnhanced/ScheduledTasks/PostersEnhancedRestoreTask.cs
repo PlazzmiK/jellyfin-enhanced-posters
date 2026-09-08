@@ -90,8 +90,13 @@ public class PostersEnhancedRestoreTask : IScheduledTask, IConfigurableScheduled
             {
                 try
                 {
-                    await _providerManager.SaveImage(item, backupPath, ImageType.Primary, null, cancellationToken).ConfigureAwait(false);
-                    await item.UpdateToRepositoryAsync(ItemUpdateType.ImageUpdate, cancellationToken).ConfigureAwait(false);
+                    var stream = File.OpenRead(backupPath);
+                    await using (stream.ConfigureAwait(false))
+                    {
+                        await _providerManager.SaveImage(item, stream, "image/jpeg", ImageType.Primary, null, cancellationToken).ConfigureAwait(false);
+                        await item.UpdateToRepositoryAsync(ItemUpdateType.ImageUpdate, cancellationToken).ConfigureAwait(false);
+                    }
+
                     restoredCount++;
                 }
                 catch (Exception ex)

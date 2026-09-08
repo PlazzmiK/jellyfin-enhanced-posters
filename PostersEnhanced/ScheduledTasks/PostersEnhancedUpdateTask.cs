@@ -166,35 +166,16 @@ public class PostersEnhancedUpdateTask : IScheduledTask, IConfigurableScheduledT
 
             await using (pristineStream.ConfigureAwait(false))
             {
-                var tempFile = Path.Combine(Path.GetTempPath(), $"posters-enhanced-{item.Id:N}.jpg");
-                try
-                {
-                    using (var compositedStream = ImageCompositor.Composite(pristineStream, mediaInfo, configuration, _themeManager))
-                    {
-                        var fileStream = File.Create(tempFile);
-                        await using (fileStream.ConfigureAwait(false))
-                        {
-                            await compositedStream.CopyToAsync(fileStream, cancellationToken).ConfigureAwait(false);
-                        }
-                    }
+                using var compositedStream = ImageCompositor.Composite(pristineStream, mediaInfo, configuration, _themeManager);
+                await _providerManager.SaveImage(
+                    item,
+                    compositedStream,
+                    "image/jpeg",
+                    ImageType.Primary,
+                    null,
+                    cancellationToken).ConfigureAwait(false);
 
-                    await _providerManager.SaveImage(item, tempFile, ImageType.Primary, null, cancellationToken).ConfigureAwait(false);
-                    await item.UpdateToRepositoryAsync(ItemUpdateType.ImageUpdate, cancellationToken).ConfigureAwait(false);
-                }
-                finally
-                {
-                    if (File.Exists(tempFile))
-                    {
-                        try
-                        {
-                            File.Delete(tempFile);
-                        }
-                        catch
-                        {
-                            // Ignore cleanup error
-                        }
-                    }
-                }
+                await item.UpdateToRepositoryAsync(ItemUpdateType.ImageUpdate, cancellationToken).ConfigureAwait(false);
             }
 
             _stampTracker.RecordRender(item, mediaInfo, configuration, backupPath);
