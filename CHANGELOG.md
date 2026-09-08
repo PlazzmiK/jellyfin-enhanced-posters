@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0.1] - 2026-09-08
+
+### Fixed
+- Fixed `System.InvalidOperationException: An invalid request URI was provided` during poster overlay generation by passing composited image stream with MIME type directly to `ProviderManager.SaveImage`.
+- Updated release pipeline to support 4-part version tags.
+
 ## [1.0.0-RC1] - 2026-09-08
 
 ### Added
@@ -21,5 +27,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Interactive configuration dashboard with real-time live preview.
 - One-click restore scheduled task to revert all posters to originals.
 
-[Unreleased]: https://github.com/PlazzmiK/jellyfin-posters-enchanced/compare/1.0.0-RC1...HEAD
+[Unreleased]: https://github.com/PlazzmiK/jellyfin-posters-enchanced/compare/1.0.0.1...HEAD
+[1.0.0.1]: https://github.com/PlazzmiK/jellyfin-posters-enchanced/compare/1.0.0-RC1...1.0.0.1
 [1.0.0-RC1]: https://github.com/PlazzmiK/jellyfin-posters-enchanced/tree/1.0.0-RC1

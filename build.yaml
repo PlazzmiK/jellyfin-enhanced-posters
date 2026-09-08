@@ -1,7 +1,7 @@
 ---
 name: "Posters Enhanced"
 guid: "e2a4f610-705b-4c59-bfcb-96d54238e88e"
-version: "1.0.0.0"
+version: "1.0.0.1"
 targetAbi: "10.11.10.0"
 framework: "net9.0"
 overview: "Non-destructive poster overlays with media badges and dynamic ratings for Jellyfin."
@@ -13,14 +13,6 @@ imageUrl: "https://raw.githubusercontent.com/PlazzmiK/jellyfin-posters-enchanced
 artifacts:
   - "PostersEnhanced.dll"
 changelog: |
-  ### Added
-  - Initial release candidate for Posters Enhanced.
-  - Non-destructive poster overlays preserving untouched original posters beside media files.
-  - High-performance SkiaSharp graphics compositing engine.
-  - Media badges for resolution (4K, 1080p, 720p, SD), video range (Dolby Vision, HDR10+, HDR10, HDR, HLG), and audio codecs (Dolby Atmos, DTS:X, TrueHD, DTS-HD MA, FLAC).
-  - Dynamic rating pill badge with customizable score-based color tiers (<5 Red, 5-6 Orange, 6-7 Yellow, 7-8 Green, 8+ Blue/Diamond).
-  - 9-point grid anchor positioning with fine-tuning offsets, scaling, and spacing.
-  - Smart re-render optimization with SHA-256 state tracking.
-  - Theme pack support for custom PNG/SVG badge assets.
-  - Interactive configuration dashboard with real-time live preview.
-  - One-click restore scheduled task to revert all posters to originals.
+  ### Fixed
+  - Fixed `System.InvalidOperationException: An invalid request URI was provided` during poster overlay generation by passing composited image stream with MIME type directly to `ProviderManager.SaveImage`.
+  - Updated release pipeline to support 4-part version tags.
