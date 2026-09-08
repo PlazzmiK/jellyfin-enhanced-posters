@@ -9,6 +9,14 @@
         "imageUrl": "https://raw.githubusercontent.com/PlazzmiK/jellyfin-enhanced-posters/master/Assets/Catalog.png",
         "versions": [
             {
+                "version": "1.1.2.0",
+                "changelog": "### Fixed\n- Badges sitting flush against side borders: fixed settings bindings for badge horizontal offsets in Jellyfin dashboard, added automatic fallback to vertical offset when side offset is unspecified/zero, and added proportional resolution scaling.\n- Combined pill background: removed duplicate dark solid background box behind HDR10, Dolby Vision, and text badges so badges render cleanly and directly inside the unified translucent pill.\n",
+                "targetAbi": "10.11.10.0",
+                "sourceUrl": "https://github.com/PlazzmiK/jellyfin-enhanced-posters/releases/download/1.1.2/enhanced-posters_1.1.2.0.zip",
+                "checksum": "cf8056e20786cc735a33f6447f642a13",
+                "timestamp": "2026-09-08T16:13:37Z"
+            },
+            {
                 "version": "1.1.1.0",
                 "changelog": "### Added\n- Automatic detection of refreshed/updated artwork: when posters are refreshed via metadata scans or manually updated in Jellyfin, the pristine backup is automatically updated with the new artwork before re-applying overlays.\n",
                 "targetAbi": "10.11.10.0",
