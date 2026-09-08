@@ -9,6 +9,14 @@
         "imageUrl": "https://raw.githubusercontent.com/PlazzmiK/jellyfin-posters-enchanced/master/Assets/Catalog.png",
         "versions": [
             {
+                "version": "1.1.1.0",
+                "changelog": "### Added\n- Automatic detection of refreshed/updated artwork: when posters are refreshed via metadata scans or manually updated in Jellyfin, the pristine backup is automatically updated with the new artwork before re-applying overlays.\n",
+                "targetAbi": "10.11.10.0",
+                "sourceUrl": "https://github.com/PlazzmiK/jellyfin-posters-enchanced/releases/download/1.1.1/posters-enhanced_1.1.1.0.zip",
+                "checksum": "e1634615ca40f92ea89d45a14ac628ef",
+                "timestamp": "2026-09-08T14:55:24Z"
+            },
+            {
                 "version": "1.1.0.0",
                 "changelog": "### Added\n- Edition badge detection from filename `{edition-...}` tags (IMAX, Extended, Director's Cut, Theatrical, Unrated, Special Edition, Remastered).\n- 3D version badge with 3D glasses icon detected from `{edition-3D}`, `[3D]`, and video stream properties.\n- Unified translucent pill container to group co-located badges seamlessly with configurable opacity, corner radius, and padding.\n- Interactive 3x3 graphical position anchor pickers for all badge types.\n- In-dashboard custom badge asset manager to upload custom PNG/WebP/SVG badge files directly.\n- Refined score badge background colors and snug fitting to match media badge dimensions.\n",
                 "targetAbi": "10.11.10.0",
