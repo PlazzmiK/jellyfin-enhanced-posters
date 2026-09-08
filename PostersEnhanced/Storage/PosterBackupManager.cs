@@ -123,6 +123,63 @@ public class PosterBackupManager
     }
 
     /// <summary>
+    /// Overwrites the pristine backup with the item's current primary image (used when an external metadata refresh occurs).
+    /// </summary>
+    /// <param name="item">The library item.</param>
+    /// <param name="config">The plugin configuration.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>True if successfully updated, false otherwise.</returns>
+    public async Task<bool> UpdateBackupFromCurrentPrimaryAsync(
+        BaseItem item,
+        PluginConfiguration config,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(item);
+        ArgumentNullException.ThrowIfNull(config);
+
+        var primaryPath = item.GetImagePath(ImageType.Primary);
+        if (string.IsNullOrEmpty(primaryPath) || !File.Exists(primaryPath))
+        {
+            return false;
+        }
+
+        byte[] bytes;
+        try
+        {
+            bytes = await File.ReadAllBytesAsync(primaryPath, cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to read newly refreshed primary image at {PrimaryPath} for {ItemName}", primaryPath, item.Name);
+            return false;
+        }
+
+        if (bytes.Length == 0)
+        {
+            return false;
+        }
+
+        var backupPath = GetBackupFilePath(item, config);
+        try
+        {
+            var directory = Path.GetDirectoryName(backupPath);
+            if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            await File.WriteAllBytesAsync(backupPath, bytes, cancellationToken).ConfigureAwait(false);
+            _logger.LogInformation("Updated pristine poster backup for {ItemName} with newly refreshed artwork at {BackupPath}", item.Name, backupPath);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to write updated backup at {BackupPath} for {ItemName}", backupPath, item.Name);
+            return false;
+        }
+    }
+
+    /// <summary>
     /// Determines the target backup file path for an item.
     /// </summary>
     /// <param name="item">The library item.</param>

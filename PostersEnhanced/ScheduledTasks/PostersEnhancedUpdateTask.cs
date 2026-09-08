@@ -149,10 +149,18 @@ public class PostersEnhancedUpdateTask : IScheduledTask, IConfigurableScheduledT
     {
         var mediaInfo = MediaInfoExtractor.Extract(item);
         var backupPath = _backupManager.GetBackupFilePath(item, configuration);
+        var currentPrimaryPath = item.GetImagePath(ImageType.Primary);
 
-        // Check if item needs to be re-rendered (skipped if settings, media, and source poster are unchanged)
-        if (!_stampTracker.NeedsReRender(item, mediaInfo, configuration, backupPath))
+        // Check if the primary image was modified externally (e.g. metadata refresh or image replacement in Jellyfin)
+        var isExternallyModified = _stampTracker.IsPrimaryImageExternallyModified(item.Id, currentPrimaryPath, backupPath);
+        if (isExternallyModified)
         {
+            _logger.LogInformation("Detected newly refreshed poster for {ItemName}. Updating pristine backup...", item.Name);
+            await _backupManager.UpdateBackupFromCurrentPrimaryAsync(item, configuration, cancellationToken).ConfigureAwait(false);
+        }
+        else if (!_stampTracker.NeedsReRender(item, mediaInfo, configuration, backupPath))
+        {
+            // Settings, media, and source poster are unchanged
             return ResultSkipped;
         }
 
@@ -178,6 +186,8 @@ public class PostersEnhancedUpdateTask : IScheduledTask, IConfigurableScheduledT
                 await item.UpdateToRepositoryAsync(ItemUpdateType.ImageUpdate, cancellationToken).ConfigureAwait(false);
             }
 
+            var updatedPrimaryPath = item.GetImagePath(ImageType.Primary) ?? currentPrimaryPath;
+            _stampTracker.RecordOutputImage(item.Id, updatedPrimaryPath);
             _stampTracker.RecordRender(item, mediaInfo, configuration, backupPath);
             return ResultUpdated;
         }

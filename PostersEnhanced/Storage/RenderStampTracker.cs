@@ -13,13 +13,16 @@ using PostersEnhanced.Metadata;
 namespace PostersEnhanced.Storage;
 
 /// <summary>
-/// Tracks render stamps to ensure posters are only re-rendered when settings or media change.
+/// Tracks render stamps and output image attributes to ensure posters are re-rendered when
+/// settings change or when underlying artwork is refreshed externally.
 /// </summary>
 public class RenderStampTracker
 {
     private readonly string _stampFilePath;
+    private readonly string _outputStampsFilePath;
     private readonly ILogger<RenderStampTracker> _logger;
     private readonly ConcurrentDictionary<string, string> _stamps = new(StringComparer.Ordinal);
+    private readonly ConcurrentDictionary<string, OutputImageStamp> _outputStamps = new(StringComparer.Ordinal);
     private readonly object _saveLock = new();
 
     /// <summary>
@@ -32,6 +35,7 @@ public class RenderStampTracker
         _logger = logger;
         var dir = Path.Combine(applicationPaths.PluginConfigurationsPath, "PostersEnhanced");
         _stampFilePath = Path.Combine(dir, "render_stamps.json");
+        _outputStampsFilePath = Path.Combine(dir, "output_stamps.json");
 
         LoadStamps();
     }
@@ -66,6 +70,84 @@ public class RenderStampTracker
     }
 
     /// <summary>
+    /// Checks whether the item's primary poster image was modified externally (e.g. by a metadata refresh
+    /// or user image upload in Jellyfin), indicating that new base artwork should replace the pristine backup.
+    /// </summary>
+    /// <param name="itemId">The item identifier.</param>
+    /// <param name="currentPrimaryPath">The current local path to the primary image.</param>
+    /// <param name="backupPath">The path to the existing pristine backup file, if any.</param>
+    /// <returns>True if the primary image was externally updated, false otherwise.</returns>
+    public bool IsPrimaryImageExternallyModified(
+        Guid itemId,
+        string? currentPrimaryPath,
+        string? backupPath)
+    {
+        if (string.IsNullOrEmpty(currentPrimaryPath) || !File.Exists(currentPrimaryPath))
+        {
+            return false;
+        }
+
+        var itemIdKey = itemId.ToString("N");
+        var currentInfo = new FileInfo(currentPrimaryPath);
+
+        if (_outputStamps.TryGetValue(itemIdKey, out var entry))
+        {
+            var diffTicks = Math.Abs(currentInfo.LastWriteTimeUtc.Ticks - entry.LastWriteTimeTicks);
+            if (diffTicks > TimeSpan.FromSeconds(2).Ticks || currentInfo.Length != entry.FileLength)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        // Fallback for items with existing backups but no recorded output stamp:
+        // If current primary image was written after the backup (+ 1 min tolerance for initial creation),
+        // it was updated externally by metadata refresh.
+        if (!string.IsNullOrEmpty(backupPath) && File.Exists(backupPath))
+        {
+            var backupInfo = new FileInfo(backupPath);
+            if (currentInfo.LastWriteTimeUtc > backupInfo.LastWriteTimeUtc.AddMinutes(1))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Records the output attributes of a newly composited primary image.
+    /// </summary>
+    /// <param name="itemId">The item identifier.</param>
+    /// <param name="primaryImagePath">The local path to the generated primary image.</param>
+    public void RecordOutputImage(Guid itemId, string? primaryImagePath)
+    {
+        if (string.IsNullOrEmpty(primaryImagePath) || !File.Exists(primaryImagePath))
+        {
+            return;
+        }
+
+        var fileInfo = new FileInfo(primaryImagePath);
+        var itemIdKey = itemId.ToString("N");
+        _outputStamps[itemIdKey] = new OutputImageStamp
+        {
+            FilePath = primaryImagePath,
+            LastWriteTimeTicks = fileInfo.LastWriteTimeUtc.Ticks,
+            FileLength = fileInfo.Length
+        };
+    }
+
+    /// <summary>
+    /// Clears the recorded output image stamp for an item.
+    /// </summary>
+    /// <param name="itemId">The item identifier.</param>
+    public void ClearOutputImage(Guid itemId)
+    {
+        _outputStamps.TryRemove(itemId.ToString("N"), out _);
+    }
+
+    /// <summary>
     /// Records that an item has been successfully rendered with the current stamp.
     /// </summary>
     /// <param name="item">The library item.</param>
@@ -84,7 +166,16 @@ public class RenderStampTracker
     }
 
     /// <summary>
-    /// Persists recorded stamps to disk.
+    /// Clears the recorded render stamp for an item.
+    /// </summary>
+    /// <param name="itemId">The item identifier.</param>
+    public void ClearRender(Guid itemId)
+    {
+        _stamps.TryRemove(itemId.ToString("N"), out _);
+    }
+
+    /// <summary>
+    /// Persists recorded stamps and output image tracking to disk.
     /// </summary>
     public void Save()
     {
@@ -98,8 +189,11 @@ public class RenderStampTracker
                     Directory.CreateDirectory(dir);
                 }
 
-                var json = JsonSerializer.Serialize(_stamps);
-                File.WriteAllText(_stampFilePath, json);
+                var jsonStamps = JsonSerializer.Serialize(_stamps);
+                File.WriteAllText(_stampFilePath, jsonStamps);
+
+                var jsonOutputs = JsonSerializer.Serialize(_outputStamps);
+                File.WriteAllText(_outputStampsFilePath, jsonOutputs);
             }
             catch (Exception ex)
             {
@@ -121,6 +215,19 @@ public class RenderStampTracker
                     foreach (var pair in loaded)
                     {
                         _stamps[pair.Key] = pair.Value;
+                    }
+                }
+            }
+
+            if (File.Exists(_outputStampsFilePath))
+            {
+                var jsonOutputs = File.ReadAllText(_outputStampsFilePath);
+                var loadedOutputs = JsonSerializer.Deserialize<ConcurrentDictionary<string, OutputImageStamp>>(jsonOutputs);
+                if (loadedOutputs is not null)
+                {
+                    foreach (var pair in loadedOutputs)
+                    {
+                        _outputStamps[pair.Key] = pair.Value;
                     }
                 }
             }

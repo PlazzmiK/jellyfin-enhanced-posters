@@ -23,6 +23,7 @@ public class PostersEnhancedRestoreTask : IScheduledTask, IConfigurableScheduled
     private readonly ILibraryManager _libraryManager;
     private readonly IProviderManager _providerManager;
     private readonly PosterBackupManager _backupManager;
+    private readonly RenderStampTracker _stampTracker;
     private readonly ILogger<PostersEnhancedRestoreTask> _logger;
 
     /// <summary>
@@ -31,16 +32,19 @@ public class PostersEnhancedRestoreTask : IScheduledTask, IConfigurableScheduled
     /// <param name="libraryManager">The library manager.</param>
     /// <param name="providerManager">The provider manager.</param>
     /// <param name="backupManager">The poster backup manager.</param>
+    /// <param name="stampTracker">The render stamp tracker.</param>
     /// <param name="logger">The logger.</param>
     public PostersEnhancedRestoreTask(
         ILibraryManager libraryManager,
         IProviderManager providerManager,
         PosterBackupManager backupManager,
+        RenderStampTracker stampTracker,
         ILogger<PostersEnhancedRestoreTask> logger)
     {
         _libraryManager = libraryManager;
         _providerManager = providerManager;
         _backupManager = backupManager;
+        _stampTracker = stampTracker;
         _logger = logger;
     }
 
@@ -97,6 +101,8 @@ public class PostersEnhancedRestoreTask : IScheduledTask, IConfigurableScheduled
                         await item.UpdateToRepositoryAsync(ItemUpdateType.ImageUpdate, cancellationToken).ConfigureAwait(false);
                     }
 
+                    _stampTracker.ClearOutputImage(item.Id);
+                    _stampTracker.ClearRender(item.Id);
                     restoredCount++;
                 }
                 catch (Exception ex)
@@ -111,6 +117,8 @@ public class PostersEnhancedRestoreTask : IScheduledTask, IConfigurableScheduled
 
             progress.Report((i + 1) * 100D / items.Count);
         }
+
+        _stampTracker.Save();
 
         _logger.LogInformation("Restore complete: {RestoredCount} restored, {SkippedCount} skipped (no backup found)", restoredCount, skippedCount);
     }

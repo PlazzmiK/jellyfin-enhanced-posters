@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-09-08
+
+### Added
+- Automatic detection of refreshed/updated artwork: when posters are refreshed via metadata scans or manually updated in Jellyfin, the pristine backup is automatically updated with the new artwork before re-applying overlays.
+
 ## [1.1.0] - 2026-09-08
 
 ### Added
@@ -37,7 +42,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Interactive configuration dashboard with real-time live preview.
 - One-click restore scheduled task to revert all posters to originals.
 
-[Unreleased]: https://github.com/PlazzmiK/jellyfin-posters-enchanced/compare/1.1.0...HEAD
+[Unreleased]: https://github.com/PlazzmiK/jellyfin-posters-enchanced/compare/1.1.1...HEAD
+[1.1.1]: https://github.com/PlazzmiK/jellyfin-posters-enchanced/compare/1.1.0...1.1.1
 [1.1.0]: https://github.com/PlazzmiK/jellyfin-posters-enchanced/compare/1.0.0.1...1.1.0
 [1.0.0.1]: https://github.com/PlazzmiK/jellyfin-posters-enchanced/compare/1.0.0-RC1...1.0.0.1
 [1.0.0-RC1]: https://github.com/PlazzmiK/jellyfin-posters-enchanced/tree/1.0.0-RC1

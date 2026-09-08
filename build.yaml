@@ -1,7 +1,7 @@
 ---
 name: "Posters Enhanced"
 guid: "e2a4f610-705b-4c59-bfcb-96d54238e88e"
-version: "1.1.0.0"
+version: "1.1.1.0"
 targetAbi: "10.11.10.0"
 framework: "net9.0"
 overview: "Non-destructive poster overlays with media badges and dynamic ratings for Jellyfin."
@@ -14,9 +14,4 @@ artifacts:
   - "PostersEnhanced.dll"
 changelog: |
   ### Added
-  - Edition badge detection from filename `{edition-...}` tags (IMAX, Extended, Director's Cut, Theatrical, Unrated, Special Edition, Remastered).
-  - 3D version badge with 3D glasses icon detected from `{edition-3D}`, `[3D]`, and video stream properties.
-  - Unified translucent pill container to group co-located badges seamlessly with configurable opacity, corner radius, and padding.
-  - Interactive 3x3 graphical position anchor pickers for all badge types.
-  - In-dashboard custom badge asset manager to upload custom PNG/WebP/SVG badge files directly.
-  - Refined score badge background colors and snug fitting to match media badge dimensions.
+  - Automatic detection of refreshed/updated artwork: when posters are refreshed via metadata scans or manually updated in Jellyfin, the pristine backup is automatically updated with the new artwork before re-applying overlays.
