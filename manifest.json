@@ -1,28 +1,20 @@
 [
     {
-        "guid": "862b7dbc-9485-41f2-a9d9-fc9ca66a6a51",
-        "name": "Better Posters",
-        "description": "Better Posters is a Jellyfin image fetcher for Movies and Shows that pulls configurable primary posters from btttr.cc.\n",
-        "overview": "Fetch configurable Better Posters images from btttr.cc",
-        "owner": "Neureka",
+        "guid": "e2a4f610-705b-4c59-bfcb-96d54238e88e",
+        "name": "Posters Enhanced",
+        "description": "Posters Enhanced enriches movie and show posters with media badges (4K, Dolby Vision, HDR, audio codecs) and customizable rating pills, preserving untouched original posters locally.\n",
+        "overview": "Non-destructive poster overlays with media badges and dynamic ratings for Jellyfin.",
+        "owner": "PlazzmiK",
         "category": "MoviesAndShows",
-        "imageUrl": "https://raw.githubusercontent.com/neurekadev/better-posters/master/Assets/Catalog.png",
+        "imageUrl": "https://raw.githubusercontent.com/PlazzmiK/jellyfin-posters-enchanced/master/Assets/Catalog.png",
         "versions": [
             {
-                "version": "1.0.5.0",
-                "changelog": "### Changed\n- Move Better Posters updates to the official GitHub project; replace the old Jellyfin update source and reinstall the plugin to keep receiving releases.\n",
+                "version": "1.0.0.0",
+                "changelog": "### Added\n- Initial release candidate for Posters Enhanced.\n- Non-destructive poster overlays preserving untouched original posters beside media files.\n- High-performance SkiaSharp graphics compositing engine.\n- Media badges for resolution (4K, 1080p, 720p, SD), video range (Dolby Vision, HDR10+, HDR10, HDR, HLG), and audio codecs (Dolby Atmos, DTS:X, TrueHD, DTS-HD MA, FLAC).\n- Dynamic rating pill badge with score-based color tiers (<5 Red, 5-6 Orange, 6-7 Yellow, 7-8 Green, 8+ Blue/Diamond).\n- 9-point grid anchor positioning with fine-tuning offsets.\n- Theme pack support and smart re-render optimization.\n",
                 "targetAbi": "10.11.10.0",
-                "sourceUrl": "https://github.com/neurekadev/better-posters/releases/download/1.0.5/better-posters_1.0.5.0.zip",
-                "checksum": "1bbf411cf396154cb5ded2365014fac5",
-                "timestamp": "2026-08-26T04:32:50Z"
-            },
-            {
-                "version": "1.0.4.0",
-                "changelog": "### Changed\n- Moved the plugin repository to a new home. Reinstall Better Posters with the updated repository URL to keep receiving updates.\n",
-                "targetAbi": "10.11.10.0",
-                "sourceUrl": "https://code.neureka.dev/jellyfin/plugins/better-posters/-/releases/1.0.4/downloads/better-posters_1.0.4.0.zip",
-                "checksum": "5b5aa525deac0a744ffd583ba09d1e0b",
-                "timestamp": "2026-07-10T18:57:53Z"
+                "sourceUrl": "https://github.com/PlazzmiK/jellyfin-posters-enchanced/releases/download/1.0.0-RC1/posters-enhanced_1.0.0.0.zip",
+                "checksum": "",
+                "timestamp": "2026-09-08T14:20:00Z"
             }
         ]
     }

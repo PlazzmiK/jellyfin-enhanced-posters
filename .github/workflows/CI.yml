@@ -107,10 +107,11 @@ jobs:
           set -euo pipefail
 
           mkdir -p artifacts
+          plugin_version="$(sed -nE 's/^version: *"([^"]+)"/\1/p' build.yaml)"
           python -m jprm plugin build . \
             --output artifacts \
             --dotnet-configuration Release \
-            --version "$VERSION.0" \
+            --version "$plugin_version" \
             --dotnet-framework net9.0
 
           mapfile -t packages < <(find artifacts -maxdepth 1 -type f -name '*.zip')
@@ -215,7 +216,7 @@ jobs:
 
           latest_version="$(
             git tag --list |
-              awk '/^[0-9]+\.[0-9]+\.[0-9]+$/ { print }' |
+              awk '/^[0-9]+\.[0-9]+\.[0-9]+/ { print }' |
               sort --version-sort |
               tail --lines 1
           )"
