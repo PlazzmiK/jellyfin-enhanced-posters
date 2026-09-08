@@ -245,6 +245,7 @@ public class RenderStampTracker
         string? sourceFilePath)
     {
         var sb = new StringBuilder();
+        sb.Append(typeof(Plugin).Assembly.GetName().Version?.ToString() ?? "1.0.0.0").Append('|');
         sb.Append(config.ComputeConfigHash()).Append('|');
         sb.Append((int)mediaInfo.Resolution).Append('|');
         sb.Append((int)mediaInfo.HdrType).Append('|');

@@ -1,7 +1,7 @@
 ---
 name: "Enhanced Posters"
 guid: "e2a4f610-705b-4c59-bfcb-96d54238e88e"
-version: "1.1.2.0"
+version: "1.1.3.0"
 targetAbi: "10.11.10.0"
 framework: "net9.0"
 overview: "Non-destructive poster overlays with media badges and dynamic ratings for Jellyfin."
@@ -14,5 +14,4 @@ artifacts:
   - "PostersEnhanced.dll"
 changelog: |
   ### Fixed
-  - Badges sitting flush against side borders: fixed settings bindings for badge horizontal offsets in Jellyfin dashboard, added automatic fallback to vertical offset when side offset is unspecified/zero, and added proportional resolution scaling.
-  - Combined pill background: removed duplicate dark solid background box behind HDR10, Dolby Vision, and text badges so badges render cleanly and directly inside the unified translucent pill.
+  - Automatic cache invalidation on plugin update: included assembly version in render stamps so upgrading the plugin automatically forces scheduled tasks to re-render posters with latest engine fixes.

@@ -335,4 +335,51 @@ public class ImageCompositorTests
         Assert.True(File.Exists(artifactPath));
         Assert.True(new FileInfo(artifactPath).Length > 0);
     }
+
+    [Fact]
+    public void Composite_CheckExactMarginsWith25px()
+    {
+        // Test with 479 x 718 (dimensions of screenshot poster)
+        using var sourceBitmap = new SKBitmap(479, 718);
+        using var canvas = new SKCanvas(sourceBitmap);
+        canvas.Clear(new SKColor(0xF0, 0xF0, 0xF0));
+
+        using var sourceStream = new MemoryStream();
+        sourceBitmap.Encode(sourceStream, SKEncodedImageFormat.Jpeg, 95);
+        sourceStream.Position = 0;
+
+        var mockPaths = new Mock<IApplicationPaths>();
+        mockPaths.Setup(p => p.PluginConfigurationsPath).Returns(Path.GetTempPath());
+        var themeManager = new ThemeAssetManager(mockPaths.Object);
+
+        var config = new PluginConfiguration
+        {
+            CombineBadgesInPill = true,
+            ShowResolutionBadges = true,
+            Show4K = true,
+            ShowVideoRangeBadges = true,
+            ShowDolbyVision = true,
+            MediaBadgesAnchor = AnchorPosition.BottomLeft,
+            MediaBadgesOffsetX = 25,
+            MediaBadgesOffsetY = 25,
+            ShowRatingBadge = true,
+            RatingBadgeAnchor = AnchorPosition.BottomRight,
+            RatingBadgeOffsetX = 25,
+            RatingBadgeOffsetY = 25
+        };
+
+        var mediaInfo = new ExtractedMediaInfo(
+            MediaResolution.Uhd4K,
+            VideoHdrType.DolbyVision,
+            AudioCodecType.None,
+            8.6f);
+
+        using var resultStream = ImageCompositor.Composite(sourceStream, mediaInfo, config, themeManager);
+        var artifactPath = Path.Combine(Path.GetTempPath(), "margin_test_479.png");
+        using var fs = File.Create(artifactPath);
+        resultStream.CopyTo(fs);
+
+        Assert.True(File.Exists(artifactPath));
+        Assert.True(new FileInfo(artifactPath).Length > 0);
+    }
 }

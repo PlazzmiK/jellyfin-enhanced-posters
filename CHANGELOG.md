@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.3] - 2026-09-08
+
+### Fixed
+- Automatic cache invalidation on plugin update: included assembly version in render stamps so upgrading the plugin automatically forces scheduled tasks to re-render posters with latest engine fixes.
+
 ## [1.1.2] - 2026-09-08
 
 ### Fixed
