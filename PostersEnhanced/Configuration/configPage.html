@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Posters Enhanced</title>
+</head>
+<body>
+    <div id="PostersEnhancedConfigPage" data-role="page" class="page type-interior pluginConfigurationPage" data-require="emby-input,emby-button,emby-select,emby-checkbox">
+        <div data-role="content">
+            <div class="content-primary">
+                <h1>Posters Enhanced</h1>
+                <p class="fieldDescription">
+                    Non-destructively overlay media badges (4K, Dolby Vision, HDR, audio) and dynamic score-tiered rating pills on movie and show posters.
+                </p>
+
+                <!-- Live Visual Preview -->
+                <div style="display: flex; gap: 24px; margin-bottom: 24px; flex-wrap: wrap;">
+                    <div style="flex: 0 0 240px;">
+                        <div style="font-weight: bold; margin-bottom: 8px;">Live Preview</div>
+                        <div id="previewContainer" style="position: relative; width: 220px; height: 330px; border-radius: 8px; overflow: hidden; background: linear-gradient(135deg, #2b0000 0%, #1a0b1e 50%, #0d0d1a 100%); box-shadow: 0 8px 24px rgba(0,0,0,0.5); border: 1px solid #333;">
+                            <div style="position: absolute; top: 35%; left: 10%; right: 10%; text-align: center; color: rgba(255,255,255,0.85); font-family: sans-serif; font-size: 16px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 2px 8px rgba(0,0,0,0.8);">
+                                Poster<br><span style="font-size: 12px; color: rgba(255,255,255,0.6); letter-spacing: 1px;">Sample Artwork</span>
+                            </div>
+
+                            <!-- Preview Media Badges -->
+                            <div id="previewMediaBadges" style="position: absolute; display: flex; align-items: center; gap: 6px; z-index: 10;">
+                                <span id="preview4k" style="color: #fff; font-weight: bold; font-size: 13px; font-family: Arial, sans-serif; text-shadow: 0 2px 4px #000;">4K</span>
+                                <span id="previewDv" style="background: rgba(0,0,0,0.8); border-radius: 4px; padding: 2px 5px; font-family: Arial, sans-serif; font-size: 11px; font-weight: bold; display: inline-flex; align-items: center; gap: 3px;">
+                                    <span style="color: #38bdf8;">DO</span><span style="color: #0284c7;">DV</span>
+                                </span>
+                            </div>
+
+                            <!-- Preview Rating Pill -->
+                            <div id="previewRatingPill" style="position: absolute; background: #f5c518; color: #000; font-family: Arial, sans-serif; font-size: 12px; font-weight: bold; padding: 3px 8px; border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.6); z-index: 10;">
+                                6.3
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="flex: 1; min-width: 280px;">
+                        <div class="selectContainer">
+                            <label class="selectLabel" for="selectPreset">Configuration Presets</label>
+                            <select is="emby-select" id="selectPreset" class="emby-select-withcolor emby-select">
+                                <option value="default">Default (4K + Dolby Vision + Dynamic Rating)</option>
+                                <option value="minimal">Minimal (Rating Pill Only)</option>
+                                <option value="full">Full Badges (Resolution + HDR + Audio + Rating)</option>
+                            </select>
+                        </div>
+                        <p class="fieldDescription">Quickly apply recommended presets or customize each option below.</p>
+                    </div>
+                </div>
+
+                <form id="PostersEnhancedConfigForm">
+                    <!-- SECTION 1: STORAGE & SOURCES -->
+                    <div class="verticalSection">
+                        <h2>1. Poster Sources & Backup Storage</h2>
+                        <div class="checkboxContainer checkboxContainer-withDescription">
+                            <label>
+                                <input is="emby-checkbox" type="checkbox" id="chkSaveOriginalBesideMedia" />
+                                <span>Save untouched backup beside media files (poster-original.jpg)</span>
+                            </label>
+                            <div class="fieldDescription checkboxFieldDescription">
+                                Keeps original posters directly with your movie/show folders so your pristine artwork is never lost and survives library migrations.
+                            </div>
+                        </div>
+
+                        <div class="selectContainer">
+                            <label class="selectLabel" for="selectSource">Poster Source</label>
+                            <select is="emby-select" id="selectSource" class="emby-select-withcolor emby-select">
+                                <option value="LocalFirst">Local First (Use existing library poster, fallback to clean remote)</option>
+                                <option value="LocalOnly">Local Only (Never download remote posters)</option>
+                                <option value="BtttrCcClean">btttr.cc Clean (Fetch textless clean poster via IMDb ID)</option>
+                            </select>
+                            <div class="fieldDescription">Starting poster source before overlays are composited.</div>
+                        </div>
+
+                        <div class="inputContainer">
+                            <label class="inputLabel" for="txtTheme">Theme Pack</label>
+                            <input is="emby-input" type="text" id="txtTheme" />
+                            <div class="fieldDescription">Theme subfolder in /PostersEnhanced/themes/ (default: default). Drop custom PNG badges into badges/ to override defaults.</div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 2: MEDIA BADGES (RESOLUTION, HDR, AUDIO) -->
+                    <div class="verticalSection">
+                        <h2>2. Media Info Badges</h2>
+                        <div class="checkboxContainer">
+                            <label>
+                                <input is="emby-checkbox" type="checkbox" id="chkShowMediaBadges" />
+                                <span><strong>Enable Media Info Badges</strong></span>
+                            </label>
+                        </div>
+
+                        <div id="mediaBadgesGroup" style="margin-top: 12px;">
+                            <h3>Resolution Badges</h3>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <label><input is="emby-checkbox" type="checkbox" id="chkShow4K" /> <span>4K Ultra HD</span></label>
+                                <label><input is="emby-checkbox" type="checkbox" id="chkShow1080p" /> <span>1080p FHD</span></label>
+                                <label><input is="emby-checkbox" type="checkbox" id="chkShow720p" /> <span>720p HD</span></label>
+                                <label><input is="emby-checkbox" type="checkbox" id="chkShowSD" /> <span>SD</span></label>
+                            </div>
+
+                            <h3 style="margin-top: 16px;">Video Range / HDR Badges</h3>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <label><input is="emby-checkbox" type="checkbox" id="chkShowDolbyVision" /> <span>Dolby Vision (DV)</span></label>
+                                <label><input is="emby-checkbox" type="checkbox" id="chkShowHdr10Plus" /> <span>HDR10+</span></label>
+                                <label><input is="emby-checkbox" type="checkbox" id="chkShowHdr10" /> <span>HDR10</span></label>
+                                <label><input is="emby-checkbox" type="checkbox" id="chkShowHdr" /> <span>HDR</span></label>
+                                <label><input is="emby-checkbox" type="checkbox" id="chkShowHlg" /> <span>HLG</span></label>
+                            </div>
+
+                            <h3 style="margin-top: 16px;">Audio Codec Badges</h3>
+                            <div class="checkboxContainer" style="margin-bottom: 8px;">
+                                <label><input is="emby-checkbox" type="checkbox" id="chkShowAudioBadges" /> <span>Enable Audio Badges</span></label>
+                            </div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <label><input is="emby-checkbox" type="checkbox" id="chkShowDolbyAtmos" /> <span>Dolby Atmos</span></label>
+                                <label><input is="emby-checkbox" type="checkbox" id="chkShowDtsX" /> <span>DTS:X</span></label>
+                                <label><input is="emby-checkbox" type="checkbox" id="chkShowTrueHd" /> <span>TrueHD</span></label>
+                                <label><input is="emby-checkbox" type="checkbox" id="chkShowDtsHdMa" /> <span>DTS-HD MA</span></label>
+                            </div>
+
+                            <h3 style="margin-top: 16px;">Media Badges Placement & Layout</h3>
+                            <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                                <div class="selectContainer" style="flex: 1; min-width: 180px;">
+                                    <label class="selectLabel" for="selectMediaAnchor">Anchor Position</label>
+                                    <select is="emby-select" id="selectMediaAnchor" class="emby-select">
+                                        <option value="BottomLeft">Bottom-Left (BL)</option>
+                                        <option value="BottomCenter">Bottom-Center (BC)</option>
+                                        <option value="BottomRight">Bottom-Right (BR)</option>
+                                        <option value="TopLeft">Top-Left (TL)</option>
+                                        <option value="TopCenter">Top-Center (TC)</option>
+                                        <option value="TopRight">Top-Right (TR)</option>
+                                        <option value="CenterLeft">Center-Left (CL)</option>
+                                        <option value="Center">Center (C)</option>
+                                        <option value="CenterRight">Center-Right (CR)</option>
+                                    </select>
+                                </div>
+                                <div class="selectContainer" style="flex: 1; min-width: 180px;">
+                                    <label class="selectLabel" for="selectMediaDirection">Direction</label>
+                                    <select is="emby-select" id="selectMediaDirection" class="emby-select">
+                                        <option value="Horizontal">Horizontal</option>
+                                        <option value="Vertical">Vertical</option>
+                                    </select>
+                                </div>
+                                <div class="inputContainer" style="flex: 1; min-width: 120px;">
+                                    <label class="inputLabel" for="txtMediaOffsetX">Offset X (px)</label>
+                                    <input is="emby-input" type="number" id="txtMediaOffsetX" min="0" max="200" />
+                                </div>
+                                <div class="inputContainer" style="flex: 1; min-width: 120px;">
+                                    <label class="inputLabel" for="txtMediaOffsetY">Offset Y (px)</label>
+                                    <input is="emby-input" type="number" id="txtMediaOffsetY" min="0" max="200" />
+                                </div>
+                                <div class="inputContainer" style="flex: 1; min-width: 120px;">
+                                    <label class="inputLabel" for="txtMediaScale">Scale (% height)</label>
+                                    <input is="emby-input" type="number" id="txtMediaScale" step="0.5" min="2" max="15" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 3: RATING BADGE & COLOR TIERS -->
+                    <div class="verticalSection">
+                        <h2>3. Rating Pill Badge</h2>
+                        <div class="checkboxContainer">
+                            <label>
+                                <input is="emby-checkbox" type="checkbox" id="chkShowRatingBadge" />
+                                <span><strong>Enable Rating Badge</strong></span>
+                            </label>
+                        </div>
+
+                        <div id="ratingBadgeGroup" style="margin-top: 12px;">
+                            <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                                <div class="selectContainer" style="flex: 1; min-width: 180px;">
+                                    <label class="selectLabel" for="selectRatingAnchor">Anchor Position</label>
+                                    <select is="emby-select" id="selectRatingAnchor" class="emby-select">
+                                        <option value="BottomRight">Bottom-Right (BR)</option>
+                                        <option value="BottomLeft">Bottom-Left (BL)</option>
+                                        <option value="BottomCenter">Bottom-Center (BC)</option>
+                                        <option value="TopRight">Top-Right (TR)</option>
+                                        <option value="TopLeft">Top-Left (TL)</option>
+                                        <option value="TopCenter">Top-Center (TC)</option>
+                                    </select>
+                                </div>
+                                <div class="selectContainer" style="flex: 1; min-width: 180px;">
+                                    <label class="selectLabel" for="selectRatingColorMode">Coloring Mode</label>
+                                    <select is="emby-select" id="selectRatingColorMode" class="emby-select">
+                                        <option value="DynamicTiers">Dynamic Score Tiers</option>
+                                        <option value="FixedColor">Fixed Color</option>
+                                    </select>
+                                </div>
+                                <div class="inputContainer" style="flex: 1; min-width: 120px;">
+                                    <label class="inputLabel" for="txtRatingOffsetX">Offset X (px)</label>
+                                    <input is="emby-input" type="number" id="txtRatingOffsetX" min="0" max="200" />
+                                </div>
+                                <div class="inputContainer" style="flex: 1; min-width: 120px;">
+                                    <label class="inputLabel" for="txtRatingOffsetY">Offset Y (px)</label>
+                                    <input is="emby-input" type="number" id="txtRatingOffsetY" min="0" max="200" />
+                                </div>
+                            </div>
+
+                            <h3 style="margin-top: 16px;">Dynamic Score Color Tiers</h3>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px;">
+                                <div>
+                                    <label class="inputLabel" for="colTierRed">&lt; 5.0 (Red)</label>
+                                    <input type="color" id="colTierRed" style="width: 100%; height: 38px; border-radius: 4px; cursor: pointer;" />
+                                </div>
+                                <div>
+                                    <label class="inputLabel" for="colTierOrange">5.0 – 5.9 (Orange)</label>
+                                    <input type="color" id="colTierOrange" style="width: 100%; height: 38px; border-radius: 4px; cursor: pointer;" />
+                                </div>
+                                <div>
+                                    <label class="inputLabel" for="colTierYellow">6.0 – 6.9 (Yellow)</label>
+                                    <input type="color" id="colTierYellow" style="width: 100%; height: 38px; border-radius: 4px; cursor: pointer;" />
+                                </div>
+                                <div>
+                                    <label class="inputLabel" for="colTierGreen">7.0 – 7.9 (Green)</label>
+                                    <input type="color" id="colTierGreen" style="width: 100%; height: 38px; border-radius: 4px; cursor: pointer;" />
+                                </div>
+                                <div>
+                                    <label class="inputLabel" for="colTierBlue">&ge; 8.0 (Blue / Diamond)</label>
+                                    <input type="color" id="colTierBlue" style="width: 100%; height: 38px; border-radius: 4px; cursor: pointer;" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 24px;">
+                        <button is="emby-button" type="submit" class="raised button-submit block emby-button">
+                            <span>Save Configuration</span>
+                        </button>
+                    </div>
+                </form>
+
+                <div class="verticalSection" style="margin-top: 32px; padding-top: 16px; border-top: 1px solid #444;">
+                    <h2>Scheduled Tasks</h2>
+                    <p>To apply or update posters across your library, run <strong>Update Enhanced Posters</strong> under <strong>Dashboard &rarr; Scheduled Tasks</strong>. Posters will only be re-rendered when settings or media information change.</p>
+                    <p>To revert your posters back to pristine copies, run the <strong>Restore Original Posters</strong> scheduled task.</p>
+                </div>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+            (function () {
+                var pluginId = "e2a4f610-705b-4c59-bfcb-96d54238e88e";
+
+                function updatePreview() {
+                    var mediaBadges = document.getElementById("previewMediaBadges");
+                    var preview4k = document.getElementById("preview4k");
+                    var previewDv = document.getElementById("previewDv");
+                    var ratingPill = document.getElementById("previewRatingPill");
+
+                    var showMedia = document.getElementById("chkShowMediaBadges").checked;
+                    var showRating = document.getElementById("chkShowRatingBadge").checked;
+
+                    mediaBadges.style.display = showMedia ? "flex" : "none";
+                    preview4k.style.display = document.getElementById("chkShow4K").checked ? "inline" : "none";
+                    previewDv.style.display = document.getElementById("chkShowDolbyVision").checked ? "inline-flex" : "none";
+                    ratingPill.style.display = showRating ? "block" : "none";
+
+                    // Update rating color tier preview (for sample 6.3)
+                    var colorMode = document.getElementById("selectRatingColorMode").value;
+                    if (colorMode === "DynamicTiers") {
+                        ratingPill.style.background = document.getElementById("colTierYellow").value;
+                    }
+
+                    // Placement for Media Badges
+                    var mediaAnchor = document.getElementById("selectMediaAnchor").value;
+                    var mediaOffX = parseInt(document.getElementById("txtMediaOffsetX").value || 20, 10) * 0.35 + "px";
+                    var mediaOffY = parseInt(document.getElementById("txtMediaOffsetY").value || 20, 10) * 0.35 + "px";
+
+                    mediaBadges.style.top = ""; mediaBadges.style.bottom = "";
+                    mediaBadges.style.left = ""; mediaBadges.style.right = "";
+
+                    if (mediaAnchor.indexOf("Bottom") !== -1) mediaBadges.style.bottom = mediaOffY;
+                    else if (mediaAnchor.indexOf("Top") !== -1) mediaBadges.style.top = mediaOffY;
+                    else mediaBadges.style.top = "45%";
+
+                    if (mediaAnchor.indexOf("Left") !== -1) mediaBadges.style.left = mediaOffX;
+                    else if (mediaAnchor.indexOf("Right") !== -1) mediaBadges.style.right = mediaOffX;
+                    else mediaBadges.style.left = "30%";
+
+                    // Placement for Rating Pill
+                    var ratingAnchor = document.getElementById("selectRatingAnchor").value;
+                    var ratingOffX = parseInt(document.getElementById("txtRatingOffsetX").value || 20, 10) * 0.35 + "px";
+                    var ratingOffY = parseInt(document.getElementById("txtRatingOffsetY").value || 20, 10) * 0.35 + "px";
+
+                    ratingPill.style.top = ""; ratingPill.style.bottom = "";
+                    ratingPill.style.left = ""; ratingPill.style.right = "";
+
+                    if (ratingAnchor.indexOf("Bottom") !== -1) ratingPill.style.bottom = ratingOffY;
+                    else if (ratingAnchor.indexOf("Top") !== -1) ratingPill.style.top = ratingOffY;
+                    else ratingPill.style.top = "45%";
+
+                    if (ratingAnchor.indexOf("Right") !== -1) ratingPill.style.right = ratingOffX;
+                    else if (ratingAnchor.indexOf("Left") !== -1) ratingPill.style.left = ratingOffX;
+                    else ratingPill.style.left = "40%";
+                }
+
+                document.getElementById("PostersEnhancedConfigPage").addEventListener("pageshow", function () {
+                    Dashboard.showLoadingMsg();
+                    ApiClient.getPluginConfiguration(pluginId).then(function (config) {
+                        document.getElementById("chkSaveOriginalBesideMedia").checked = config.SaveOriginalBesideMedia !== false;
+                        document.getElementById("selectSource").value = config.Source || "LocalFirst";
+                        document.getElementById("txtTheme").value = config.Theme || "default";
+
+                        document.getElementById("chkShowMediaBadges").checked = config.ShowResolutionBadges || config.ShowVideoRangeBadges;
+                        document.getElementById("chkShow4K").checked = config.Show4K !== false;
+                        document.getElementById("chkShow1080p").checked = config.Show1080p === true;
+                        document.getElementById("chkShow720p").checked = config.Show720p !== false;
+                        document.getElementById("chkShowSD").checked = config.ShowSD === true;
+
+                        document.getElementById("chkShowDolbyVision").checked = config.ShowDolbyVision !== false;
+                        document.getElementById("chkShowHdr10Plus").checked = config.ShowHdr10Plus !== false;
+                        document.getElementById("chkShowHdr10").checked = config.ShowHdr10 !== false;
+                        document.getElementById("chkShowHdr").checked = config.ShowHdr !== false;
+                        document.getElementById("chkShowHlg").checked = config.ShowHlg === true;
+
+                        document.getElementById("chkShowAudioBadges").checked = config.ShowAudioBadges === true;
+                        document.getElementById("chkShowDolbyAtmos").checked = config.ShowDolbyAtmos !== false;
+                        document.getElementById("chkShowDtsX").checked = config.ShowDtsX !== false;
+                        document.getElementById("chkShowTrueHd").checked = config.ShowTrueHd === true;
+                        document.getElementById("chkShowDtsHdMa").checked = config.ShowDtsHdMa === true;
+
+                        document.getElementById("selectMediaAnchor").value = config.MediaBadgesAnchor || "BottomLeft";
+                        document.getElementById("selectMediaDirection").value = config.MediaBadgesDirection || "Horizontal";
+                        document.getElementById("txtMediaOffsetX").value = config.MediaBadgesOffsetX || 24;
+                        document.getElementById("txtMediaOffsetY").value = config.MediaBadgesOffsetY || 24;
+                        document.getElementById("txtMediaScale").value = config.MediaBadgesScalePercent || 4.5;
+
+                        document.getElementById("chkShowRatingBadge").checked = config.ShowRatingBadge !== false;
+                        document.getElementById("selectRatingAnchor").value = config.RatingBadgeAnchor || "BottomRight";
+                        document.getElementById("selectRatingColorMode").value = config.RatingColorMode || "DynamicTiers";
+                        document.getElementById("txtRatingOffsetX").value = config.RatingBadgeOffsetX || 24;
+                        document.getElementById("txtRatingOffsetY").value = config.RatingBadgeOffsetY || 24;
+
+                        document.getElementById("colTierRed").value = config.RatingTierRedColor || "#E53935";
+                        document.getElementById("colTierOrange").value = config.RatingTierOrangeColor || "#FB8C00";
+                        document.getElementById("colTierYellow").value = config.RatingTierYellowColor || "#F5C518";
+                        document.getElementById("colTierGreen").value = config.RatingTierGreenColor || "#43A047";
+                        document.getElementById("colTierBlue").value = config.RatingTierBlueColor || "#00BCD4";
+
+                        updatePreview();
+                        Dashboard.hideLoadingMsg();
+                    });
+                });
+
+                // Attach change listeners for live preview
+                document.getElementById("PostersEnhancedConfigPage").addEventListener("input", updatePreview);
+                document.getElementById("PostersEnhancedConfigPage").addEventListener("change", updatePreview);
+
+                document.getElementById("selectPreset").addEventListener("change", function () {
+                    var val = this.value;
+                    if (val === "default") {
+                        document.getElementById("chkShowMediaBadges").checked = true;
+                        document.getElementById("chkShow4K").checked = true;
+                        document.getElementById("chkShow1080p").checked = false;
+                        document.getElementById("chkShow720p").checked = true;
+                        document.getElementById("chkShowDolbyVision").checked = true;
+                        document.getElementById("chkShowAudioBadges").checked = false;
+                        document.getElementById("chkShowRatingBadge").checked = true;
+                    } else if (val === "minimal") {
+                        document.getElementById("chkShowMediaBadges").checked = false;
+                        document.getElementById("chkShowRatingBadge").checked = true;
+                    } else if (val === "full") {
+                        document.getElementById("chkShowMediaBadges").checked = true;
+                        document.getElementById("chkShow4K").checked = true;
+                        document.getElementById("chkShow1080p").checked = true;
+                        document.getElementById("chkShow720p").checked = true;
+                        document.getElementById("chkShowDolbyVision").checked = true;
+                        document.getElementById("chkShowAudioBadges").checked = true;
+                        document.getElementById("chkShowDolbyAtmos").checked = true;
+                        document.getElementById("chkShowRatingBadge").checked = true;
+                    }
+                    updatePreview();
+                });
+
+                document.getElementById("PostersEnhancedConfigForm").addEventListener("submit", function (e) {
+                    e.preventDefault();
+                    Dashboard.showLoadingMsg();
+
+                    ApiClient.getPluginConfiguration(pluginId).then(function (config) {
+                        config.SaveOriginalBesideMedia = document.getElementById("chkSaveOriginalBesideMedia").checked;
+                        config.Source = document.getElementById("selectSource").value;
+                        config.Theme = document.getElementById("txtTheme").value;
+
+                        var mediaEnabled = document.getElementById("chkShowMediaBadges").checked;
+                        config.ShowResolutionBadges = mediaEnabled;
+                        config.ShowVideoRangeBadges = mediaEnabled;
+                        config.Show4K = document.getElementById("chkShow4K").checked;
+                        config.Show1080p = document.getElementById("chkShow1080p").checked;
+                        config.Show720p = document.getElementById("chkShow720p").checked;
+                        config.ShowSD = document.getElementById("chkShowSD").checked;
+
+                        config.ShowDolbyVision = document.getElementById("chkShowDolbyVision").checked;
+                        config.ShowHdr10Plus = document.getElementById("chkShowHdr10Plus").checked;
+                        config.ShowHdr10 = document.getElementById("chkShowHdr10").checked;
+                        config.ShowHdr = document.getElementById("chkShowHdr").checked;
+                        config.ShowHlg = document.getElementById("chkShowHlg").checked;
+
+                        config.ShowAudioBadges = document.getElementById("chkShowAudioBadges").checked;
+                        config.ShowDolbyAtmos = document.getElementById("chkShowDolbyAtmos").checked;
+                        config.ShowDtsX = document.getElementById("chkShowDtsX").checked;
+                        config.ShowTrueHd = document.getElementById("chkShowTrueHd").checked;
+                        config.ShowDtsHdMa = document.getElementById("chkShowDtsHdMa").checked;
+
+                        config.MediaBadgesAnchor = document.getElementById("selectMediaAnchor").value;
+                        config.MediaBadgesDirection = document.getElementById("selectMediaDirection").value;
+                        config.MediaBadgesOffsetX = parseInt(document.getElementById("txtMediaOffsetX").value || 24, 10);
+                        config.MediaBadgesOffsetY = parseInt(document.getElementById("txtMediaOffsetY").value || 24, 10);
+                        config.MediaBadgesScalePercent = parseFloat(document.getElementById("txtMediaScale").value || 4.5);
+
+                        config.ShowRatingBadge = document.getElementById("chkShowRatingBadge").checked;
+                        config.RatingBadgeAnchor = document.getElementById("selectRatingAnchor").value;
+                        config.RatingColorMode = document.getElementById("selectRatingColorMode").value;
+                        config.RatingBadgeOffsetX = parseInt(document.getElementById("txtRatingOffsetX").value || 24, 10);
+                        config.RatingBadgeOffsetY = parseInt(document.getElementById("txtRatingOffsetY").value || 24, 10);
+
+                        config.RatingTierRedColor = document.getElementById("colTierRed").value;
+                        config.RatingTierOrangeColor = document.getElementById("colTierOrange").value;
+                        config.RatingTierYellowColor = document.getElementById("colTierYellow").value;
+                        config.RatingTierGreenColor = document.getElementById("colTierGreen").value;
+                        config.RatingTierBlueColor = document.getElementById("colTierBlue").value;
+
+                        ApiClient.updatePluginConfiguration(pluginId, config).then(function (result) {
+                            Dashboard.processPluginConfigurationUpdateResult(result);
+                        });
+                    });
+                    return false;
+                });
+            })();
+        </script>
+    </div>
+</body>
+</html>
