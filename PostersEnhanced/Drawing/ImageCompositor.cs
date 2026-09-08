@@ -49,8 +49,8 @@ public static class ImageCompositor
         // 1. Draw pristine original poster
         canvas.DrawBitmap(baseBitmap, 0, 0);
 
-        // 2. Draw Media Badges (Resolution, Video Range, Audio)
-        DrawMediaBadges(canvas, width, height, mediaInfo, configuration, themeManager);
+        // 2. Draw Badges (Media, Edition, 3D) grouped by AnchorPosition
+        DrawAllBadges(canvas, width, height, mediaInfo, configuration, themeManager);
 
         // 3. Draw Dynamic Rating Pill
         DrawRatingBadge(canvas, width, height, mediaInfo, configuration);
@@ -67,7 +67,7 @@ public static class ImageCompositor
         return outputStream;
     }
 
-    private static void DrawMediaBadges(
+    private static void DrawAllBadges(
         SKCanvas canvas,
         int posterWidth,
         int posterHeight,
@@ -75,96 +75,227 @@ public static class ImageCompositor
         PluginConfiguration config,
         ThemeAssetManager themeManager)
     {
-        var badgeKeys = ResolveActiveBadgeKeys(mediaInfo, config);
-        if (badgeKeys.Count == 0)
+        // Group badges by their target anchor position
+        var anchorGroups = new Dictionary<AnchorPosition, (int OffsetX, int OffsetY, float ScalePercent, List<string> Keys)>();
+
+        void AddBadgeKey(AnchorPosition anchor, int offsetX, int offsetY, float scalePercent, string key)
         {
-            return;
+            if (!anchorGroups.TryGetValue(anchor, out var group))
+            {
+                group = (offsetX, offsetY, scalePercent, new List<string>());
+                anchorGroups[anchor] = group;
+            }
+
+            if (!group.Keys.Contains(key))
+            {
+                group.Keys.Add(key);
+            }
         }
 
-        var badgeHeight = Math.Max(20f, posterHeight * (config.MediaBadgesScalePercent / 100f));
-        var loadedBadges = new List<SKBitmap>();
-
-        try
+        // 1. Media Badges (Resolution, Video Range, Audio)
+        var mediaKeys = ResolveActiveMediaBadgeKeys(mediaInfo, config);
+        foreach (var key in mediaKeys)
         {
-            foreach (var key in badgeKeys)
+            AddBadgeKey(config.MediaBadgesAnchor, config.MediaBadgesOffsetX, config.MediaBadgesOffsetY, config.MediaBadgesScalePercent, key);
+        }
+
+        // 2. 3D Badge
+        if (config.Show3DBadge && mediaInfo.Is3D)
+        {
+            AddBadgeKey(config.ThreeDBadgeAnchor, config.ThreeDOffsetX, config.ThreeDOffsetY, config.ThreeDScalePercent, "3d");
+        }
+
+        // 3. Edition Badges
+        var editionKey = ResolveActiveEditionBadgeKey(mediaInfo, config);
+        if (!string.IsNullOrEmpty(editionKey))
+        {
+            AddBadgeKey(config.EditionBadgesAnchor, config.EditionBadgesOffsetX, config.EditionBadgesOffsetY, config.EditionBadgesScalePercent, editionKey);
+        }
+
+        // 4. Render each anchor group
+        foreach (var (anchor, (offsetX, offsetY, scalePercent, keys)) in anchorGroups)
+        {
+            if (keys.Count == 0)
             {
-                var bmp = themeManager.GetBadge(config.Theme, key, badgeHeight);
-                if (bmp is not null)
-                {
-                    loadedBadges.Add(bmp);
-                }
+                continue;
             }
 
-            if (loadedBadges.Count == 0)
-            {
-                return;
-            }
+            var totalHeight = Math.Max(24f, posterHeight * (scalePercent / 100f));
+            var badgeHeight = config.CombineBadgesInPill ? Math.Max(16f, totalHeight - (config.PillPaddingY * 2f)) : totalHeight;
 
-            // Calculate bounding box for badges group
-            var spacing = config.MediaBadgesSpacing;
-            float totalWidth;
-            float totalHeight;
-
-            if (config.MediaBadgesDirection == BadgeLayoutDirection.Horizontal)
+            var loadedBadges = new List<SKBitmap>();
+            try
             {
-                totalWidth = 0;
-                totalHeight = badgeHeight;
-                for (var i = 0; i < loadedBadges.Count; i++)
+                foreach (var key in keys)
                 {
-                    totalWidth += loadedBadges[i].Width;
-                    if (i < loadedBadges.Count - 1)
+                    var customData = config.GetCustomBadge(key);
+                    var bmp = themeManager.GetBadge(config.Theme, key, badgeHeight, customData);
+                    if (bmp is not null)
                     {
-                        totalWidth += spacing;
+                        loadedBadges.Add(bmp);
                     }
                 }
-            }
-            else
-            {
-                totalWidth = 0;
-                totalHeight = 0;
-                for (var i = 0; i < loadedBadges.Count; i++)
+
+                if (loadedBadges.Count == 0)
                 {
-                    totalWidth = Math.Max(totalWidth, loadedBadges[i].Width);
-                    totalHeight += loadedBadges[i].Height;
-                    if (i < loadedBadges.Count - 1)
-                    {
-                        totalHeight += spacing;
-                    }
+                    continue;
                 }
-            }
 
-            var (originX, originY) = CalculateAnchorCoordinates(
-                config.MediaBadgesAnchor,
-                posterWidth,
-                posterHeight,
-                totalWidth,
-                totalHeight,
-                config.MediaBadgesOffsetX,
-                config.MediaBadgesOffsetY);
-
-            // Draw each badge
-            var currentX = originX;
-            var currentY = originY;
-
-            foreach (var badge in loadedBadges)
-            {
-                canvas.DrawBitmap(badge, currentX, currentY);
-
-                if (config.MediaBadgesDirection == BadgeLayoutDirection.Horizontal)
+                if (config.CombineBadgesInPill)
                 {
-                    currentX += badge.Width + spacing;
+                    RenderCombinedPill(canvas, posterWidth, posterHeight, anchor, offsetX, offsetY, totalHeight, loadedBadges, config);
                 }
                 else
                 {
-                    currentY += badge.Height + spacing;
+                    RenderSeparateBadges(canvas, posterWidth, posterHeight, anchor, offsetX, offsetY, badgeHeight, loadedBadges, config);
+                }
+            }
+            finally
+            {
+                foreach (var b in loadedBadges)
+                {
+                    b.Dispose();
                 }
             }
         }
-        finally
+    }
+
+    private static void RenderCombinedPill(
+        SKCanvas canvas,
+        int posterWidth,
+        int posterHeight,
+        AnchorPosition anchor,
+        int offsetX,
+        int offsetY,
+        float containerHeight,
+        List<SKBitmap> badges,
+        PluginConfiguration config)
+    {
+        var itemSpacing = config.PillItemSpacing;
+        float totalContentWidth = 0;
+        for (var i = 0; i < badges.Count; i++)
         {
-            foreach (var b in loadedBadges)
+            totalContentWidth += badges[i].Width;
+            if (i < badges.Count - 1)
             {
-                b.Dispose();
+                totalContentWidth += itemSpacing;
+            }
+        }
+
+        var pillWidth = totalContentWidth + (config.PillPaddingX * 2f);
+        var pillHeight = containerHeight;
+
+        var (originX, originY) = CalculateAnchorCoordinates(
+            anchor,
+            posterWidth,
+            posterHeight,
+            pillWidth,
+            pillHeight,
+            offsetX,
+            offsetY);
+
+        var pillRect = new SKRect(originX, originY, originX + pillWidth, originY + pillHeight);
+        var cornerRadius = config.PillCornerRadius;
+        var roundRect = new SKRoundRect(pillRect, cornerRadius);
+
+        // Parse pill background color and opacity
+        var baseColor = SKColor.TryParse(config.PillBackgroundColor, out var parsed) ? parsed : SKColors.Black;
+        var alpha = (byte)Math.Clamp((int)(config.PillBackgroundOpacity * 255f), 0, 255);
+        var pillBgColor = new SKColor(baseColor.Red, baseColor.Green, baseColor.Blue, alpha);
+
+        // Drop shadow for contrast
+        using var shadowPaint = new SKPaint
+        {
+            Color = new SKColor(0x00, 0x00, 0x00, 0x77),
+            IsAntialias = true
+        };
+        var shadowRect = new SKRoundRect(new SKRect(originX + 1f, originY + 2f, originX + pillWidth + 1f, originY + pillHeight + 2f), cornerRadius);
+        canvas.DrawRoundRect(shadowRect, shadowPaint);
+
+        // Draw translucent pill body
+        using var bgPaint = new SKPaint
+        {
+            Color = pillBgColor,
+            IsAntialias = true
+        };
+        canvas.DrawRoundRect(roundRect, bgPaint);
+
+        // Draw each badge centered vertically inside the container pill
+        var curX = originX + config.PillPaddingX;
+        foreach (var badge in badges)
+        {
+            var curY = originY + ((pillHeight - badge.Height) / 2f);
+            canvas.DrawBitmap(badge, curX, curY);
+            curX += badge.Width + itemSpacing;
+        }
+    }
+
+    private static void RenderSeparateBadges(
+        SKCanvas canvas,
+        int posterWidth,
+        int posterHeight,
+        AnchorPosition anchor,
+        int offsetX,
+        int offsetY,
+        float badgeHeight,
+        List<SKBitmap> badges,
+        PluginConfiguration config)
+    {
+        var spacing = config.MediaBadgesSpacing;
+        float totalWidth;
+        float totalHeight;
+
+        if (config.MediaBadgesDirection == BadgeLayoutDirection.Horizontal)
+        {
+            totalWidth = 0;
+            totalHeight = badgeHeight;
+            for (var i = 0; i < badges.Count; i++)
+            {
+                totalWidth += badges[i].Width;
+                if (i < badges.Count - 1)
+                {
+                    totalWidth += spacing;
+                }
+            }
+        }
+        else
+        {
+            totalWidth = 0;
+            totalHeight = 0;
+            for (var i = 0; i < badges.Count; i++)
+            {
+                totalWidth = Math.Max(totalWidth, badges[i].Width);
+                totalHeight += badges[i].Height;
+                if (i < badges.Count - 1)
+                {
+                    totalHeight += spacing;
+                }
+            }
+        }
+
+        var (originX, originY) = CalculateAnchorCoordinates(
+            anchor,
+            posterWidth,
+            posterHeight,
+            totalWidth,
+            totalHeight,
+            offsetX,
+            offsetY);
+
+        var currentX = originX;
+        var currentY = originY;
+
+        foreach (var badge in badges)
+        {
+            canvas.DrawBitmap(badge, currentX, currentY);
+
+            if (config.MediaBadgesDirection == BadgeLayoutDirection.Horizontal)
+            {
+                currentX += badge.Width + spacing;
+            }
+            else
+            {
+                currentY += badge.Height + spacing;
             }
         }
     }
@@ -185,7 +316,7 @@ public static class ImageCompositor
         var scoreText = score.ToString("0.0", CultureInfo.InvariantCulture);
 
         var pillHeight = Math.Max(24f, posterHeight * (config.RatingBadgeScalePercent / 100f));
-        var fontSize = pillHeight * 0.68f;
+        var fontSize = pillHeight * 0.70f;
 
         using var textPaint = new SKPaint
         {
@@ -196,7 +327,7 @@ public static class ImageCompositor
         };
 
         var textWidth = textPaint.MeasureText(scoreText);
-        var paddingX = pillHeight * (config.RatingPaddingX / 24f);
+        var paddingX = config.RatingPaddingX;
         var pillWidth = textWidth + (paddingX * 2f);
 
         var (originX, originY) = CalculateAnchorCoordinates(
@@ -209,7 +340,7 @@ public static class ImageCompositor
             config.RatingBadgeOffsetY);
 
         var pillRect = new SKRect(originX, originY, originX + pillWidth, originY + pillHeight);
-        var cornerRadius = pillHeight * (config.RatingCornerRadius / 24f);
+        var cornerRadius = config.RatingCornerRadius;
         var roundRect = new SKRoundRect(pillRect, cornerRadius);
 
         // Resolve background color (score-based tiers or fixed)
@@ -222,21 +353,23 @@ public static class ImageCompositor
             IsAntialias = true
         };
 
-        // Draw shadow for contrast
+        // Draw soft drop shadow for contrast
         using var shadowPaint = new SKPaint
         {
             Color = new SKColor(0x00, 0x00, 0x00, 0x66),
             IsAntialias = true
         };
-        var shadowRect = new SKRoundRect(new SKRect(originX + 1, originY + 2, originX + pillWidth + 1, originY + pillHeight + 2), cornerRadius);
+        var shadowRect = new SKRoundRect(new SKRect(originX + 1f, originY + 2f, originX + pillWidth + 1f, originY + pillHeight + 2f), cornerRadius);
         canvas.DrawRoundRect(shadowRect, shadowPaint);
 
         // Draw pill body
         canvas.DrawRoundRect(roundRect, bgPaint);
 
-        // Center text within pill
-        var textX = originX + paddingX;
-        var textY = originY + (pillHeight * 0.74f);
+        // Center text horizontally and vertically within pill
+        SKRect textBounds = default;
+        textPaint.MeasureText(scoreText, ref textBounds);
+        var textX = originX + ((pillWidth - textWidth) / 2f);
+        var textY = originY + ((pillHeight - textBounds.Height) / 2f) - textBounds.Top;
         canvas.DrawText(scoreText, textX, textY, textPaint);
     }
 
@@ -279,7 +412,7 @@ public static class ImageCompositor
         return (x, y);
     }
 
-    private static List<string> ResolveActiveBadgeKeys(ExtractedMediaInfo info, PluginConfiguration config)
+    private static List<string> ResolveActiveMediaBadgeKeys(ExtractedMediaInfo info, PluginConfiguration config)
     {
         var keys = new List<string>();
 
@@ -355,5 +488,27 @@ public static class ImageCompositor
         }
 
         return keys;
+    }
+
+    private static string? ResolveActiveEditionBadgeKey(ExtractedMediaInfo info, PluginConfiguration config)
+    {
+        if (!config.ShowEditionBadges || info.Edition == EditionType.None)
+        {
+            return null;
+        }
+
+        return info.Edition switch
+        {
+            EditionType.Imax when config.ShowImax => "imax",
+            EditionType.Extended when config.ShowExtended => "extended",
+            EditionType.DirectorsCut when config.ShowDirectorsCut => "directorscut",
+            EditionType.Theatrical when config.ShowTheatrical => "theatrical",
+            EditionType.Unrated when config.ShowUnrated => "unrated",
+            EditionType.SpecialEdition when config.ShowSpecialEdition => "specialedition",
+            EditionType.Remastered when config.ShowRemastered => "remastered",
+            EditionType.FinalCut => "finalcut",
+            EditionType.Custom => string.IsNullOrEmpty(info.CustomEditionName) ? null : info.CustomEditionName.ToLowerInvariant(),
+            _ => null
+        };
     }
 }

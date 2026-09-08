@@ -3,6 +3,83 @@
 <head>
     <meta charset="utf-8">
     <title>Posters Enhanced</title>
+    <style>
+        .pe-anchor-widget {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-top: 6px;
+        }
+        .pe-anchor-grid {
+            display: inline-grid;
+            grid-template-columns: repeat(3, 34px);
+            grid-template-rows: repeat(3, 34px);
+            gap: 4px;
+            background: rgba(0, 0, 0, 0.45);
+            padding: 5px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .pe-anchor-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 4px;
+            color: #999;
+            cursor: pointer;
+            font-size: 13px;
+            padding: 0;
+            margin: 0;
+            transition: all 0.15s ease-in-out;
+            user-select: none;
+        }
+        .pe-anchor-btn:hover {
+            background: rgba(255, 255, 255, 0.22);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.35);
+        }
+        .pe-anchor-btn.active {
+            background: #00a4dc !important;
+            color: #ffffff !important;
+            border-color: #38bdf8 !important;
+            box-shadow: 0 0 8px rgba(0, 164, 220, 0.7);
+            font-weight: bold;
+        }
+        .pe-anchor-desc {
+            font-size: 13px;
+            color: #ccc;
+            font-weight: 500;
+        }
+        .pe-badge-card {
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 8px;
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+        .pe-badge-preview-box {
+            width: 80px;
+            height: 38px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px dashed rgba(255, 255, 255, 0.25);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .pe-badge-preview-box img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+    </style>
 </head>
 <body>
     <div id="PostersEnhancedConfigPage" data-role="page" class="page type-interior pluginConfigurationPage" data-require="emby-input,emby-button,emby-select,emby-checkbox">
@@ -10,28 +87,52 @@
             <div class="content-primary">
                 <h1>Posters Enhanced</h1>
                 <p class="fieldDescription">
-                    Non-destructively overlay media badges (4K, Dolby Vision, HDR, audio) and dynamic score-tiered rating pills on movie and show posters.
+                    Non-destructively overlay media badges (4K, Dolby Vision, HDR, Audio), Edition badges (IMAX, Extended), 3D badges, and dynamic score-tiered rating pills on movie and show posters.
                 </p>
 
                 <!-- Live Visual Preview -->
                 <div style="display: flex; gap: 24px; margin-bottom: 24px; flex-wrap: wrap;">
                     <div style="flex: 0 0 240px;">
-                        <div style="font-weight: bold; margin-bottom: 8px;">Live Preview</div>
-                        <div id="previewContainer" style="position: relative; width: 220px; height: 330px; border-radius: 8px; overflow: hidden; background: linear-gradient(135deg, #2b0000 0%, #1a0b1e 50%, #0d0d1a 100%); box-shadow: 0 8px 24px rgba(0,0,0,0.5); border: 1px solid #333;">
+                        <div style="font-weight: bold; margin-bottom: 8px;">Live Poster Preview</div>
+                        <div id="previewContainer" style="position: relative; width: 220px; height: 330px; border-radius: 8px; overflow: hidden; background: linear-gradient(135deg, #200005 0%, #150824 50%, #0a0e1c 100%); box-shadow: 0 8px 24px rgba(0,0,0,0.6); border: 1px solid #333;">
                             <div style="position: absolute; top: 35%; left: 10%; right: 10%; text-align: center; color: rgba(255,255,255,0.85); font-family: sans-serif; font-size: 16px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 2px 8px rgba(0,0,0,0.8);">
                                 Poster<br><span style="font-size: 12px; color: rgba(255,255,255,0.6); letter-spacing: 1px;">Sample Artwork</span>
                             </div>
 
-                            <!-- Preview Media Badges -->
-                            <div id="previewMediaBadges" style="position: absolute; display: flex; align-items: center; gap: 6px; z-index: 10;">
-                                <span id="preview4k" style="color: #fff; font-weight: bold; font-size: 13px; font-family: Arial, sans-serif; text-shadow: 0 2px 4px #000;">4K</span>
-                                <span id="previewDv" style="background: rgba(0,0,0,0.8); border-radius: 4px; padding: 2px 5px; font-family: Arial, sans-serif; font-size: 11px; font-weight: bold; display: inline-flex; align-items: center; gap: 3px;">
+                            <!-- Preview Media Anchor Group (contains badges co-located at media anchor) -->
+                            <div id="previewMediaPill" style="position: absolute; display: flex; align-items: center; gap: 6px; z-index: 10; transition: all 0.2s ease;">
+                                <span id="preview4k" style="color: #fff; font-weight: 900; font-size: 12px; font-family: Arial, sans-serif; letter-spacing: 0.5px; text-shadow: 0 2px 4px #000;">4K</span>
+                                <span id="previewDv" style="background: rgba(0,0,0,0.8); border-radius: 4px; padding: 2px 5px; font-family: Arial, sans-serif; font-size: 10px; font-weight: bold; display: inline-flex; align-items: center; gap: 3px;">
                                     <span style="color: #38bdf8;">DO</span><span style="color: #0284c7;">DV</span>
                                 </span>
+                                <span id="previewHdr" style="background: linear-gradient(90deg, #ff007a, #7928ca, #0070f3); color: #fff; font-family: Arial, sans-serif; font-size: 10px; font-weight: 900; padding: 2px 5px; border-radius: 4px; display: none;">HDR</span>
+                                <span id="previewAtmos" style="color: #fff; font-family: Arial, sans-serif; font-size: 9px; font-weight: bold; letter-spacing: 0.5px; display: none;">ATMOS</span>
+                                <span id="preview3D" style="display: none; align-items: center;">
+                                    <svg width="22" height="12" viewBox="0 0 40 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M4 2H36C37.5 2 39 3.5 39 5V14C39 16 37 18 34 18H28C26 18 24 16 23 14L21 11C20.5 10 19.5 10 19 11L17 14C16 16 14 18 12 18H6C3 18 1 16 1 14V5C1 3.5 2.5 2 4 2Z" fill="#1e293b" stroke="#ffffff" stroke-width="2"/>
+                                        <rect x="5" y="5" width="11" height="9" rx="2" fill="#ef4444" opacity="0.85"/>
+                                        <rect x="24" y="5" width="11" height="9" rx="2" fill="#06b6d4" opacity="0.85"/>
+                                    </svg>
+                                </span>
+                                <span id="previewImax" style="background: #000; color: #38bdf8; font-family: Arial, sans-serif; font-size: 10px; font-weight: 900; letter-spacing: 1px; padding: 2px 6px; border-radius: 3px; border: 1px solid #0284c7; display: none;">IMAX</span>
+                            </div>
+
+                            <!-- Preview Dedicated 3D Badge (if separate anchor) -->
+                            <div id="previewSeparate3D" style="position: absolute; display: none; z-index: 10;">
+                                <svg width="26" height="15" viewBox="0 0 40 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4 2H36C37.5 2 39 3.5 39 5V14C39 16 37 18 34 18H28C26 18 24 16 23 14L21 11C20.5 10 19.5 10 19 11L17 14C16 16 14 18 12 18H6C3 18 1 16 1 14V5C1 3.5 2.5 2 4 2Z" fill="#1e293b" stroke="#ffffff" stroke-width="2"/>
+                                    <rect x="5" y="5" width="11" height="9" rx="2" fill="#ef4444" opacity="0.85"/>
+                                    <rect x="24" y="5" width="11" height="9" rx="2" fill="#06b6d4" opacity="0.85"/>
+                                </svg>
+                            </div>
+
+                            <!-- Preview Dedicated Edition Badge (if separate anchor) -->
+                            <div id="previewSeparateEdition" style="position: absolute; display: none; z-index: 10; background: #000; color: #38bdf8; font-family: Arial, sans-serif; font-size: 10px; font-weight: 900; letter-spacing: 1px; padding: 2px 6px; border-radius: 3px; border: 1px solid #0284c7;">
+                                IMAX
                             </div>
 
                             <!-- Preview Rating Pill -->
-                            <div id="previewRatingPill" style="position: absolute; background: #f5c518; color: #000; font-family: Arial, sans-serif; font-size: 12px; font-weight: bold; padding: 3px 8px; border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.6); z-index: 10;">
+                            <div id="previewRatingPill" style="position: absolute; background: #F5C518; color: #000; font-family: Arial, sans-serif; font-size: 12px; font-weight: 800; padding: 2px 7px; border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.6); z-index: 10; line-height: 1.2;">
                                 6.3
                             </div>
                         </div>
@@ -41,9 +142,9 @@
                         <div class="selectContainer">
                             <label class="selectLabel" for="selectPreset">Configuration Presets</label>
                             <select is="emby-select" id="selectPreset" class="emby-select-withcolor emby-select">
-                                <option value="default">Default (4K + Dolby Vision + Dynamic Rating)</option>
+                                <option value="default">Default (4K + Dolby Vision + IMAX/3D + Dynamic Rating)</option>
                                 <option value="minimal">Minimal (Rating Pill Only)</option>
-                                <option value="full">Full Badges (Resolution + HDR + Audio + Rating)</option>
+                                <option value="full">Full Badges (Resolution + HDR + Audio + Edition + 3D + Rating)</option>
                             </select>
                         </div>
                         <p class="fieldDescription">Quickly apply recommended presets or customize each option below.</p>
@@ -77,13 +178,54 @@
                         <div class="inputContainer">
                             <label class="inputLabel" for="txtTheme">Theme Pack</label>
                             <input is="emby-input" type="text" id="txtTheme" />
-                            <div class="fieldDescription">Theme subfolder in /PostersEnhanced/themes/ (default: default). Drop custom PNG badges into badges/ to override defaults.</div>
+                            <div class="fieldDescription">Theme subfolder in /PostersEnhanced/themes/ (default: default). Drop custom PNG badges into badges/ or use section 6 below.</div>
                         </div>
                     </div>
 
-                    <!-- SECTION 2: MEDIA BADGES (RESOLUTION, HDR, AUDIO) -->
+                    <!-- SECTION 2: COMBINED PILL CONTAINER -->
                     <div class="verticalSection">
-                        <h2>2. Media Info Badges</h2>
+                        <h2>2. Unified Pill Container (Co-located Badges)</h2>
+                        <div class="checkboxContainer checkboxContainer-withDescription">
+                            <label>
+                                <input is="emby-checkbox" type="checkbox" id="chkCombineBadgesInPill" />
+                                <span><strong>Group co-located badges in a single dark translucent pill</strong></span>
+                            </label>
+                            <div class="fieldDescription checkboxFieldDescription">
+                                When enabled, all badges sharing the same corner/anchor (e.g. 4K, Dolby Vision, 3D, IMAX) are combined seamlessly into a single stylish pill container with configurable transparency and roundness.
+                            </div>
+                        </div>
+
+                        <div id="pillConfigGroup" style="display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px;">
+                            <div style="flex: 1; min-width: 140px;">
+                                <label class="inputLabel" for="colPillBackground">Pill Background Color</label>
+                                <input type="color" id="colPillBackground" style="width: 100%; height: 38px; border-radius: 4px; cursor: pointer;" />
+                            </div>
+                            <div style="flex: 1; min-width: 180px;">
+                                <label class="inputLabel" for="rngPillOpacity">Opacity: <span id="lblPillOpacity">78%</span></label>
+                                <input type="range" id="rngPillOpacity" min="0" max="1" step="0.02" value="0.78" style="width: 100%; margin-top: 10px;" />
+                            </div>
+                            <div class="inputContainer" style="flex: 1; min-width: 120px;">
+                                <label class="inputLabel" for="txtPillCornerRadius">Corner Radius (px)</label>
+                                <input is="emby-input" type="number" id="txtPillCornerRadius" min="0" max="40" step="1" />
+                            </div>
+                            <div class="inputContainer" style="flex: 1; min-width: 110px;">
+                                <label class="inputLabel" for="txtPillPaddingX">Padding X (px)</label>
+                                <input is="emby-input" type="number" id="txtPillPaddingX" min="0" max="40" step="1" />
+                            </div>
+                            <div class="inputContainer" style="flex: 1; min-width: 110px;">
+                                <label class="inputLabel" for="txtPillPaddingY">Padding Y (px)</label>
+                                <input is="emby-input" type="number" id="txtPillPaddingY" min="0" max="40" step="1" />
+                            </div>
+                            <div class="inputContainer" style="flex: 1; min-width: 110px;">
+                                <label class="inputLabel" for="txtPillItemSpacing">Item Spacing (px)</label>
+                                <input is="emby-input" type="number" id="txtPillItemSpacing" min="0" max="40" step="1" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 3: MEDIA BADGES (RESOLUTION, HDR, AUDIO) -->
+                    <div class="verticalSection">
+                        <h2>3. Media Info Badges (Resolution, HDR, Audio)</h2>
                         <div class="checkboxContainer">
                             <label>
                                 <input is="emby-checkbox" type="checkbox" id="chkShowMediaBadges" />
@@ -120,38 +262,53 @@
                                 <label><input is="emby-checkbox" type="checkbox" id="chkShowDtsHdMa" /> <span>DTS-HD MA</span></label>
                             </div>
 
-                            <h3 style="margin-top: 16px;">Media Badges Placement & Layout</h3>
-                            <div style="display: flex; gap: 16px; flex-wrap: wrap;">
-                                <div class="selectContainer" style="flex: 1; min-width: 180px;">
-                                    <label class="selectLabel" for="selectMediaAnchor">Anchor Position</label>
-                                    <select is="emby-select" id="selectMediaAnchor" class="emby-select">
-                                        <option value="BottomLeft">Bottom-Left (BL)</option>
-                                        <option value="BottomCenter">Bottom-Center (BC)</option>
-                                        <option value="BottomRight">Bottom-Right (BR)</option>
-                                        <option value="TopLeft">Top-Left (TL)</option>
-                                        <option value="TopCenter">Top-Center (TC)</option>
-                                        <option value="TopRight">Top-Right (TR)</option>
-                                        <option value="CenterLeft">Center-Left (CL)</option>
-                                        <option value="Center">Center (C)</option>
-                                        <option value="CenterRight">Center-Right (CR)</option>
+                            <h3 style="margin-top: 16px;">Media Badges Placement & Anchor</h3>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start;">
+                                <div>
+                                    <label class="inputLabel">Position Anchor (3x3 Grid)</label>
+                                    <div class="pe-anchor-widget">
+                                        <div class="pe-anchor-grid" data-target="selectMediaAnchor">
+                                            <button type="button" class="pe-anchor-btn" data-anchor="TopLeft" title="Top-Left">↖</button>
+                                            <button type="button" class="pe-anchor-btn" data-anchor="TopCenter" title="Top-Center">↑</button>
+                                            <button type="button" class="pe-anchor-btn" data-anchor="TopRight" title="Top-Right">↗</button>
+                                            <button type="button" class="pe-anchor-btn" data-anchor="CenterLeft" title="Center-Left">←</button>
+                                            <button type="button" class="pe-anchor-btn" data-anchor="Center" title="Center">■</button>
+                                            <button type="button" class="pe-anchor-btn" data-anchor="CenterRight" title="Center-Right">→</button>
+                                            <button type="button" class="pe-anchor-btn" data-anchor="BottomLeft" title="Bottom-Left">↙</button>
+                                            <button type="button" class="pe-anchor-btn" data-anchor="BottomCenter" title="Bottom-Center">↓</button>
+                                            <button type="button" class="pe-anchor-btn" data-anchor="BottomRight" title="Bottom-Right">↘</button>
+                                        </div>
+                                        <div class="pe-anchor-desc" id="lblDescMediaAnchor">Bottom-Left</div>
+                                    </div>
+                                    <select is="emby-select" id="selectMediaAnchor" style="display: none;">
+                                        <option value="BottomLeft">BottomLeft</option>
+                                        <option value="BottomCenter">BottomCenter</option>
+                                        <option value="BottomRight">BottomRight</option>
+                                        <option value="TopLeft">TopLeft</option>
+                                        <option value="TopCenter">TopCenter</option>
+                                        <option value="TopRight">TopRight</option>
+                                        <option value="CenterLeft">CenterLeft</option>
+                                        <option value="Center">Center</option>
+                                        <option value="CenterRight">CenterRight</option>
                                     </select>
                                 </div>
-                                <div class="selectContainer" style="flex: 1; min-width: 180px;">
+
+                                <div class="selectContainer" style="flex: 1; min-width: 140px;">
                                     <label class="selectLabel" for="selectMediaDirection">Direction</label>
                                     <select is="emby-select" id="selectMediaDirection" class="emby-select">
                                         <option value="Horizontal">Horizontal</option>
                                         <option value="Vertical">Vertical</option>
                                     </select>
                                 </div>
-                                <div class="inputContainer" style="flex: 1; min-width: 120px;">
+                                <div class="inputContainer" style="flex: 1; min-width: 100px;">
                                     <label class="inputLabel" for="txtMediaOffsetX">Offset X (px)</label>
                                     <input is="emby-input" type="number" id="txtMediaOffsetX" min="0" max="200" />
                                 </div>
-                                <div class="inputContainer" style="flex: 1; min-width: 120px;">
+                                <div class="inputContainer" style="flex: 1; min-width: 100px;">
                                     <label class="inputLabel" for="txtMediaOffsetY">Offset Y (px)</label>
                                     <input is="emby-input" type="number" id="txtMediaOffsetY" min="0" max="200" />
                                 </div>
-                                <div class="inputContainer" style="flex: 1; min-width: 120px;">
+                                <div class="inputContainer" style="flex: 1; min-width: 100px;">
                                     <label class="inputLabel" for="txtMediaScale">Scale (% height)</label>
                                     <input is="emby-input" type="number" id="txtMediaScale" step="0.5" min="2" max="15" />
                                 </div>
@@ -159,9 +316,141 @@
                         </div>
                     </div>
 
-                    <!-- SECTION 3: RATING BADGE & COLOR TIERS -->
+                    <!-- SECTION 4: EDITION BADGES -->
                     <div class="verticalSection">
-                        <h2>3. Rating Pill Badge</h2>
+                        <h2>4. Edition Badges (IMAX, Extended, Director's Cut, etc.)</h2>
+                        <div class="checkboxContainer checkboxContainer-withDescription">
+                            <label>
+                                <input is="emby-checkbox" type="checkbox" id="chkShowEditionBadges" />
+                                <span><strong>Enable Edition Badges</strong></span>
+                            </label>
+                            <div class="fieldDescription checkboxFieldDescription">
+                                Automatically detected from filenames containing tags like <code>{edition-Imax}</code>, <code>{edition-Extended}</code>, or keywords in filename/title.
+                            </div>
+                        </div>
+
+                        <div id="editionBadgesGroup" style="margin-top: 12px;">
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <label><input is="emby-checkbox" type="checkbox" id="chkShowImax" /> <span>IMAX</span></label>
+                                <label><input is="emby-checkbox" type="checkbox" id="chkShowExtended" /> <span>Extended Cut</span></label>
+                                <label><input is="emby-checkbox" type="checkbox" id="chkShowDirectorsCut" /> <span>Director's Cut</span></label>
+                                <label><input is="emby-checkbox" type="checkbox" id="chkShowTheatrical" /> <span>Theatrical</span></label>
+                                <label><input is="emby-checkbox" type="checkbox" id="chkShowUnrated" /> <span>Unrated</span></label>
+                                <label><input is="emby-checkbox" type="checkbox" id="chkShowSpecialEdition" /> <span>Special Edition</span></label>
+                                <label><input is="emby-checkbox" type="checkbox" id="chkShowRemastered" /> <span>Remastered</span></label>
+                                <label><input is="emby-checkbox" type="checkbox" id="chkShowCustomEdition" /> <span>Custom Tag (e.g. {edition-FanEdit})</span></label>
+                            </div>
+
+                            <h3 style="margin-top: 16px;">Edition Placement & Anchor</h3>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start;">
+                                <div>
+                                    <label class="inputLabel">Position Anchor (3x3 Grid)</label>
+                                    <div class="pe-anchor-widget">
+                                        <div class="pe-anchor-grid" data-target="selectEditionAnchor">
+                                            <button type="button" class="pe-anchor-btn" data-anchor="TopLeft" title="Top-Left">↖</button>
+                                            <button type="button" class="pe-anchor-btn" data-anchor="TopCenter" title="Top-Center">↑</button>
+                                            <button type="button" class="pe-anchor-btn" data-anchor="TopRight" title="Top-Right">↗</button>
+                                            <button type="button" class="pe-anchor-btn" data-anchor="CenterLeft" title="Center-Left">←</button>
+                                            <button type="button" class="pe-anchor-btn" data-anchor="Center" title="Center">■</button>
+                                            <button type="button" class="pe-anchor-btn" data-anchor="CenterRight" title="Center-Right">→</button>
+                                            <button type="button" class="pe-anchor-btn" data-anchor="BottomLeft" title="Bottom-Left">↙</button>
+                                            <button type="button" class="pe-anchor-btn" data-anchor="BottomCenter" title="Bottom-Center">↓</button>
+                                            <button type="button" class="pe-anchor-btn" data-anchor="BottomRight" title="Bottom-Right">↘</button>
+                                        </div>
+                                        <div class="pe-anchor-desc" id="lblDescEditionAnchor">Bottom-Left</div>
+                                    </div>
+                                    <select is="emby-select" id="selectEditionAnchor" style="display: none;">
+                                        <option value="BottomLeft">BottomLeft</option>
+                                        <option value="BottomCenter">BottomCenter</option>
+                                        <option value="BottomRight">BottomRight</option>
+                                        <option value="TopLeft">TopLeft</option>
+                                        <option value="TopCenter">TopCenter</option>
+                                        <option value="TopRight">TopRight</option>
+                                        <option value="CenterLeft">CenterLeft</option>
+                                        <option value="Center">Center</option>
+                                        <option value="CenterRight">CenterRight</option>
+                                    </select>
+                                </div>
+
+                                <div class="inputContainer" style="flex: 1; min-width: 100px;">
+                                    <label class="inputLabel" for="txtEditionOffsetX">Offset X (px)</label>
+                                    <input is="emby-input" type="number" id="txtEditionOffsetX" min="0" max="200" />
+                                </div>
+                                <div class="inputContainer" style="flex: 1; min-width: 100px;">
+                                    <label class="inputLabel" for="txtEditionOffsetY">Offset Y (px)</label>
+                                    <input is="emby-input" type="number" id="txtEditionOffsetY" min="0" max="200" />
+                                </div>
+                                <div class="inputContainer" style="flex: 1; min-width: 100px;">
+                                    <label class="inputLabel" for="txtEditionScale">Scale (% height)</label>
+                                    <input is="emby-input" type="number" id="txtEditionScale" step="0.5" min="2" max="15" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 5: 3D BADGE -->
+                    <div class="verticalSection">
+                        <h2>5. 3D Version Badge (Glasses Icon)</h2>
+                        <div class="checkboxContainer checkboxContainer-withDescription">
+                            <label>
+                                <input is="emby-checkbox" type="checkbox" id="chkShow3DBadge" />
+                                <span><strong>Enable 3D Version Badge</strong></span>
+                            </label>
+                            <div class="fieldDescription checkboxFieldDescription">
+                                Displays a 3D glasses badge for 3D movies (detected via <code>{edition-3D}</code>, <code>[3D]</code>, or 3D video stream properties).
+                            </div>
+                        </div>
+
+                        <div id="threeDBadgeGroup" style="margin-top: 12px;">
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start;">
+                                <div>
+                                    <label class="inputLabel">Position Anchor (3x3 Grid)</label>
+                                    <div class="pe-anchor-widget">
+                                        <div class="pe-anchor-grid" data-target="selectThreeDAnchor">
+                                            <button type="button" class="pe-anchor-btn" data-anchor="TopLeft" title="Top-Left">↖</button>
+                                            <button type="button" class="pe-anchor-btn" data-anchor="TopCenter" title="Top-Center">↑</button>
+                                            <button type="button" class="pe-anchor-btn" data-anchor="TopRight" title="Top-Right">↗</button>
+                                            <button type="button" class="pe-anchor-btn" data-anchor="CenterLeft" title="Center-Left">←</button>
+                                            <button type="button" class="pe-anchor-btn" data-anchor="Center" title="Center">■</button>
+                                            <button type="button" class="pe-anchor-btn" data-anchor="CenterRight" title="Center-Right">→</button>
+                                            <button type="button" class="pe-anchor-btn" data-anchor="BottomLeft" title="Bottom-Left">↙</button>
+                                            <button type="button" class="pe-anchor-btn" data-anchor="BottomCenter" title="Bottom-Center">↓</button>
+                                            <button type="button" class="pe-anchor-btn" data-anchor="BottomRight" title="Bottom-Right">↘</button>
+                                        </div>
+                                        <div class="pe-anchor-desc" id="lblDescThreeDAnchor">Bottom-Left</div>
+                                    </div>
+                                    <select is="emby-select" id="selectThreeDAnchor" style="display: none;">
+                                        <option value="BottomLeft">BottomLeft</option>
+                                        <option value="BottomCenter">BottomCenter</option>
+                                        <option value="BottomRight">BottomRight</option>
+                                        <option value="TopLeft">TopLeft</option>
+                                        <option value="TopCenter">TopCenter</option>
+                                        <option value="TopRight">TopRight</option>
+                                        <option value="CenterLeft">CenterLeft</option>
+                                        <option value="Center">Center</option>
+                                        <option value="CenterRight">CenterRight</option>
+                                    </select>
+                                </div>
+
+                                <div class="inputContainer" style="flex: 1; min-width: 100px;">
+                                    <label class="inputLabel" for="txtThreeDOffsetX">Offset X (px)</label>
+                                    <input is="emby-input" type="number" id="txtThreeDOffsetX" min="0" max="200" />
+                                </div>
+                                <div class="inputContainer" style="flex: 1; min-width: 100px;">
+                                    <label class="inputLabel" for="txtThreeDOffsetY">Offset Y (px)</label>
+                                    <input is="emby-input" type="number" id="txtThreeDOffsetY" min="0" max="200" />
+                                </div>
+                                <div class="inputContainer" style="flex: 1; min-width: 100px;">
+                                    <label class="inputLabel" for="txtThreeDScale">Scale (% height)</label>
+                                    <input is="emby-input" type="number" id="txtThreeDScale" step="0.5" min="2" max="15" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 6: RATING BADGE & COLOR TIERS -->
+                    <div class="verticalSection">
+                        <h2>6. Rating Pill Badge</h2>
                         <div class="checkboxContainer">
                             <label>
                                 <input is="emby-checkbox" type="checkbox" id="chkShowRatingBadge" />
@@ -170,32 +459,54 @@
                         </div>
 
                         <div id="ratingBadgeGroup" style="margin-top: 12px;">
-                            <div style="display: flex; gap: 16px; flex-wrap: wrap;">
-                                <div class="selectContainer" style="flex: 1; min-width: 180px;">
-                                    <label class="selectLabel" for="selectRatingAnchor">Anchor Position</label>
-                                    <select is="emby-select" id="selectRatingAnchor" class="emby-select">
-                                        <option value="BottomRight">Bottom-Right (BR)</option>
-                                        <option value="BottomLeft">Bottom-Left (BL)</option>
-                                        <option value="BottomCenter">Bottom-Center (BC)</option>
-                                        <option value="TopRight">Top-Right (TR)</option>
-                                        <option value="TopLeft">Top-Left (TL)</option>
-                                        <option value="TopCenter">Top-Center (TC)</option>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start;">
+                                <div>
+                                    <label class="inputLabel">Position Anchor (3x3 Grid)</label>
+                                    <div class="pe-anchor-widget">
+                                        <div class="pe-anchor-grid" data-target="selectRatingAnchor">
+                                            <button type="button" class="pe-anchor-btn" data-anchor="TopLeft" title="Top-Left">↖</button>
+                                            <button type="button" class="pe-anchor-btn" data-anchor="TopCenter" title="Top-Center">↑</button>
+                                            <button type="button" class="pe-anchor-btn" data-anchor="TopRight" title="Top-Right">↗</button>
+                                            <button type="button" class="pe-anchor-btn" data-anchor="CenterLeft" title="Center-Left">←</button>
+                                            <button type="button" class="pe-anchor-btn" data-anchor="Center" title="Center">■</button>
+                                            <button type="button" class="pe-anchor-btn" data-anchor="CenterRight" title="Center-Right">→</button>
+                                            <button type="button" class="pe-anchor-btn" data-anchor="BottomLeft" title="Bottom-Left">↙</button>
+                                            <button type="button" class="pe-anchor-btn" data-anchor="BottomCenter" title="Bottom-Center">↓</button>
+                                            <button type="button" class="pe-anchor-btn" data-anchor="BottomRight" title="Bottom-Right">↘</button>
+                                        </div>
+                                        <div class="pe-anchor-desc" id="lblDescRatingAnchor">Bottom-Right</div>
+                                    </div>
+                                    <select is="emby-select" id="selectRatingAnchor" style="display: none;">
+                                        <option value="BottomLeft">BottomLeft</option>
+                                        <option value="BottomCenter">BottomCenter</option>
+                                        <option value="BottomRight">BottomRight</option>
+                                        <option value="TopLeft">TopLeft</option>
+                                        <option value="TopCenter">TopCenter</option>
+                                        <option value="TopRight">TopRight</option>
+                                        <option value="CenterLeft">CenterLeft</option>
+                                        <option value="Center">Center</option>
+                                        <option value="CenterRight">CenterRight</option>
                                     </select>
                                 </div>
-                                <div class="selectContainer" style="flex: 1; min-width: 180px;">
+
+                                <div class="selectContainer" style="flex: 1; min-width: 140px;">
                                     <label class="selectLabel" for="selectRatingColorMode">Coloring Mode</label>
                                     <select is="emby-select" id="selectRatingColorMode" class="emby-select">
                                         <option value="DynamicTiers">Dynamic Score Tiers</option>
                                         <option value="FixedColor">Fixed Color</option>
                                     </select>
                                 </div>
-                                <div class="inputContainer" style="flex: 1; min-width: 120px;">
+                                <div class="inputContainer" style="flex: 1; min-width: 100px;">
                                     <label class="inputLabel" for="txtRatingOffsetX">Offset X (px)</label>
                                     <input is="emby-input" type="number" id="txtRatingOffsetX" min="0" max="200" />
                                 </div>
-                                <div class="inputContainer" style="flex: 1; min-width: 120px;">
+                                <div class="inputContainer" style="flex: 1; min-width: 100px;">
                                     <label class="inputLabel" for="txtRatingOffsetY">Offset Y (px)</label>
                                     <input is="emby-input" type="number" id="txtRatingOffsetY" min="0" max="200" />
+                                </div>
+                                <div class="inputContainer" style="flex: 1; min-width: 100px;">
+                                    <label class="inputLabel" for="txtRatingCornerRadius">Corner Radius</label>
+                                    <input is="emby-input" type="number" id="txtRatingCornerRadius" min="0" max="30" step="1" />
                                 </div>
                             </div>
 
@@ -218,10 +529,21 @@
                                     <input type="color" id="colTierGreen" style="width: 100%; height: 38px; border-radius: 4px; cursor: pointer;" />
                                 </div>
                                 <div>
-                                    <label class="inputLabel" for="colTierBlue">&ge; 8.0 (Blue / Diamond)</label>
+                                    <label class="inputLabel" for="colTierBlue">&ge; 8.0 (Blue / Top)</label>
                                     <input type="color" id="colTierBlue" style="width: 100%; height: 38px; border-radius: 4px; cursor: pointer;" />
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 7: CUSTOM BADGE ASSET MANAGER -->
+                    <div class="verticalSection">
+                        <h2>7. Custom Badge Image Overrides (Upload PNG/WebP/SVG)</h2>
+                        <p class="fieldDescription">
+                            Upload your own custom PNG, WebP, or SVG images directly to replace default badge designs. Uploaded images are stored securely in configuration.
+                        </p>
+                        <div id="badgeManagerGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-top: 14px;">
+                            <!-- Items injected dynamically via JS -->
                         </div>
                     </div>
 
@@ -244,66 +566,317 @@
             (function () {
                 var pluginId = "e2a4f610-705b-4c59-bfcb-96d54238e88e";
 
+                // Map of custom badge uploads: { [badgeKey]: base64DataUri }
+                var customBadgesData = {};
+
+                var badgeCatalog = [
+                    { key: "4k", label: "4K Ultra HD", defaultText: "4K" },
+                    { key: "dv", label: "Dolby Vision", defaultText: "DO DV" },
+                    { key: "hdr", label: "HDR (Vibrant)", defaultText: "HDR" },
+                    { key: "hdr10", label: "HDR10", defaultText: "HDR10" },
+                    { key: "hdr10plus", label: "HDR10+", defaultText: "HDR10+" },
+                    { key: "3d", label: "3D Glasses", defaultText: "3D" },
+                    { key: "imax", label: "IMAX", defaultText: "IMAX" },
+                    { key: "extended", label: "Extended Cut", defaultText: "EXT" },
+                    { key: "directorscut", label: "Director's Cut", defaultText: "DC" },
+                    { key: "atmos", label: "Dolby Atmos", defaultText: "ATMOS" },
+                    { key: "dtsx", label: "DTS:X", defaultText: "DTS:X" }
+                ];
+
+                function hexToRgba(hex, alpha) {
+                    hex = (hex || "#000000").replace("#", "");
+                    if (hex.length === 3) hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+                    var r = parseInt(hex.substring(0, 2), 16) || 0;
+                    var g = parseInt(hex.substring(2, 4), 16) || 0;
+                    var b = parseInt(hex.substring(4, 6), 16) || 0;
+                    return "rgba(" + r + "," + g + "," + b + "," + alpha + ")";
+                }
+
+                function formatAnchorName(val) {
+                    return val.replace(/([A-Z])/g, " $1").trim().replace("Bottom ", "Bottom-").replace("Top ", "Top-").replace("Center ", "Center-");
+                }
+
+                function syncAnchorGridUI(selectId) {
+                    var select = document.getElementById(selectId);
+                    if (!select) return;
+                    var val = select.value;
+                    var grid = document.querySelector('.pe-anchor-grid[data-target="' + selectId + '"]');
+                    if (grid) {
+                        var buttons = grid.querySelectorAll(".pe-anchor-btn");
+                        buttons.forEach(function (btn) {
+                            if (btn.getAttribute("data-anchor") === val) {
+                                btn.classList.add("active");
+                            } else {
+                                btn.classList.remove("active");
+                            }
+                        });
+                    }
+                    var label = document.getElementById("lblDesc" + selectId.replace("select", ""));
+                    if (label) label.textContent = formatAnchorName(val);
+                }
+
+                function setupAnchorGrids() {
+                    document.querySelectorAll(".pe-anchor-grid").forEach(function (grid) {
+                        var targetSelectId = grid.getAttribute("data-target");
+                        var select = document.getElementById(targetSelectId);
+                        if (!select) return;
+
+                        grid.querySelectorAll(".pe-anchor-btn").forEach(function (btn) {
+                            btn.addEventListener("click", function (e) {
+                                e.preventDefault();
+                                var anchorVal = btn.getAttribute("data-anchor");
+                                select.value = anchorVal;
+                                syncAnchorGridUI(targetSelectId);
+                                updatePreview();
+                            });
+                        });
+                    });
+                }
+
+                function renderBadgeManager() {
+                    var container = document.getElementById("badgeManagerGrid");
+                    container.innerHTML = "";
+
+                    badgeCatalog.forEach(function (item) {
+                        var card = document.createElement("div");
+                        card.className = "pe-badge-card";
+
+                        var infoDiv = document.createElement("div");
+                        infoDiv.style.flex = "1";
+                        var title = document.createElement("div");
+                        title.style.fontWeight = "bold";
+                        title.style.fontSize = "13px";
+                        title.textContent = item.label;
+                        var code = document.createElement("div");
+                        code.style.fontSize = "11px";
+                        code.style.color = "#888";
+                        code.textContent = "Key: " + item.key;
+                        infoDiv.appendChild(title);
+                        infoDiv.appendChild(code);
+
+                        var rightDiv = document.createElement("div");
+                        rightDiv.style.display = "flex";
+                        rightDiv.style.alignItems = "center";
+                        rightDiv.style.gap = "8px";
+
+                        var previewBox = document.createElement("div");
+                        previewBox.className = "pe-badge-preview-box";
+                        previewBox.id = "badgePreview_" + item.key;
+
+                        var customData = customBadgesData[item.key];
+                        if (customData) {
+                            var img = document.createElement("img");
+                            img.src = customData;
+                            previewBox.appendChild(img);
+                        } else {
+                            var span = document.createElement("span");
+                            span.style.fontSize = "10px";
+                            span.style.color = "#aaa";
+                            span.style.fontWeight = "bold";
+                            span.textContent = item.defaultText;
+                            previewBox.appendChild(span);
+                        }
+
+                        var uploadBtn = document.createElement("label");
+                        uploadBtn.setAttribute("is", "emby-button");
+                        uploadBtn.className = "raised emby-button";
+                        uploadBtn.style.cursor = "pointer";
+                        uploadBtn.style.padding = "4px 10px";
+                        uploadBtn.style.fontSize = "12px";
+                        uploadBtn.style.margin = "0";
+                        uploadBtn.innerHTML = "<span>Upload</span>";
+
+                        var fileInput = document.createElement("input");
+                        fileInput.type = "file";
+                        fileInput.accept = "image/png,image/webp,image/svg+xml";
+                        fileInput.style.display = "none";
+
+                        fileInput.addEventListener("change", function (e) {
+                            var file = e.target.files && e.target.files[0];
+                            if (!file) return;
+                            var reader = new FileReader();
+                            reader.onload = function (evt) {
+                                var base64 = evt.target.result;
+                                customBadgesData[item.key] = base64;
+                                renderBadgeManager();
+                                updatePreview();
+                            };
+                            reader.readAsDataURL(file);
+                        });
+
+                        uploadBtn.appendChild(fileInput);
+                        rightDiv.appendChild(previewBox);
+                        rightDiv.appendChild(uploadBtn);
+
+                        if (customData) {
+                            var resetBtn = document.createElement("button");
+                            resetBtn.type = "button";
+                            resetBtn.setAttribute("is", "emby-button");
+                            resetBtn.className = "emby-button";
+                            resetBtn.style.padding = "4px 8px";
+                            resetBtn.style.fontSize = "11px";
+                            resetBtn.style.color = "#ef4444";
+                            resetBtn.textContent = "✕ Reset";
+                            resetBtn.addEventListener("click", function () {
+                                delete customBadgesData[item.key];
+                                renderBadgeManager();
+                                updatePreview();
+                            });
+                            rightDiv.appendChild(resetBtn);
+                        }
+
+                        card.appendChild(infoDiv);
+                        card.appendChild(rightDiv);
+                        container.appendChild(card);
+                    });
+                }
+
                 function updatePreview() {
-                    var mediaBadges = document.getElementById("previewMediaBadges");
+                    var mediaPill = document.getElementById("previewMediaPill");
                     var preview4k = document.getElementById("preview4k");
                     var previewDv = document.getElementById("previewDv");
+                    var previewHdr = document.getElementById("previewHdr");
+                    var previewAtmos = document.getElementById("previewAtmos");
+                    var preview3D = document.getElementById("preview3D");
+                    var previewImax = document.getElementById("previewImax");
+
+                    var separate3D = document.getElementById("previewSeparate3D");
+                    var separateEdition = document.getElementById("previewSeparateEdition");
                     var ratingPill = document.getElementById("previewRatingPill");
 
                     var showMedia = document.getElementById("chkShowMediaBadges").checked;
                     var showRating = document.getElementById("chkShowRatingBadge").checked;
+                    var show3D = document.getElementById("chkShow3DBadge").checked;
+                    var showEdition = document.getElementById("chkShowEditionBadges").checked;
+                    var showImax = document.getElementById("chkShowImax").checked;
 
-                    mediaBadges.style.display = showMedia ? "flex" : "none";
+                    var combinePill = document.getElementById("chkCombineBadgesInPill").checked;
+                    var pillBg = document.getElementById("colPillBackground").value || "#000000";
+                    var pillOpacity = parseFloat(document.getElementById("rngPillOpacity").value || 0.78);
+                    document.getElementById("lblPillOpacity").textContent = Math.round(pillOpacity * 100) + "%";
+
+                    var pillRadius = parseInt(document.getElementById("txtPillCornerRadius").value || 8, 10) + "px";
+                    var pillPadX = parseInt(document.getElementById("txtPillPaddingX").value || 10, 10) + "px";
+                    var pillPadY = parseInt(document.getElementById("txtPillPaddingY").value || 4, 10) + "px";
+                    var pillGap = parseInt(document.getElementById("txtPillItemSpacing").value || 8, 10) + "px";
+
+                    var mediaAnchor = document.getElementById("selectMediaAnchor").value;
+                    var threeDAnchor = document.getElementById("selectThreeDAnchor").value;
+                    var editionAnchor = document.getElementById("selectEditionAnchor").value;
+                    var ratingAnchor = document.getElementById("selectRatingAnchor").value;
+
+                    // Container styling
+                    if (combinePill) {
+                        mediaPill.style.background = hexToRgba(pillBg, pillOpacity);
+                        mediaPill.style.borderRadius = pillRadius;
+                        mediaPill.style.padding = pillPadY + " " + pillPadX;
+                        mediaPill.style.gap = pillGap;
+                        mediaPill.style.boxShadow = "0 3px 10px rgba(0,0,0,0.55)";
+                        mediaPill.style.backdropFilter = "blur(3px)";
+                    } else {
+                        mediaPill.style.background = "transparent";
+                        mediaPill.style.borderRadius = "0";
+                        mediaPill.style.padding = "0";
+                        mediaPill.style.gap = pillGap;
+                        mediaPill.style.boxShadow = "none";
+                        mediaPill.style.backdropFilter = "none";
+                    }
+
+                    // Badge toggles inside media anchor pill
+                    mediaPill.style.display = showMedia ? "flex" : "none";
                     preview4k.style.display = document.getElementById("chkShow4K").checked ? "inline" : "none";
                     previewDv.style.display = document.getElementById("chkShowDolbyVision").checked ? "inline-flex" : "none";
-                    ratingPill.style.display = showRating ? "block" : "none";
+                    previewHdr.style.display = document.getElementById("chkShowHdr").checked && !document.getElementById("chkShowDolbyVision").checked ? "inline-block" : "none";
+                    previewAtmos.style.display = (document.getElementById("chkShowAudioBadges").checked && document.getElementById("chkShowDolbyAtmos").checked) ? "inline-block" : "none";
 
-                    // Update rating color tier preview (for sample 6.3)
+                    // 3D badge co-location check
+                    if (show3D && threeDAnchor === mediaAnchor) {
+                        preview3D.style.display = "inline-flex";
+                        separate3D.style.display = "none";
+                    } else if (show3D) {
+                        preview3D.style.display = "none";
+                        separate3D.style.display = "block";
+                    } else {
+                        preview3D.style.display = "none";
+                        separate3D.style.display = "none";
+                    }
+
+                    // Edition badge co-location check
+                    if (showEdition && showImax && editionAnchor === mediaAnchor) {
+                        previewImax.style.display = "inline-block";
+                        separateEdition.style.display = "none";
+                    } else if (showEdition && showImax) {
+                        previewImax.style.display = "none";
+                        separateEdition.style.display = "block";
+                    } else {
+                        previewImax.style.display = "none";
+                        separateEdition.style.display = "none";
+                    }
+
+                    // Rating badge preview
+                    ratingPill.style.display = showRating ? "block" : "none";
+                    var ratingRadius = parseInt(document.getElementById("txtRatingCornerRadius").value || 6, 10) + "px";
+                    ratingPill.style.borderRadius = ratingRadius;
+
                     var colorMode = document.getElementById("selectRatingColorMode").value;
                     if (colorMode === "DynamicTiers") {
                         ratingPill.style.background = document.getElementById("colTierYellow").value;
                     }
 
-                    // Placement for Media Badges
-                    var mediaAnchor = document.getElementById("selectMediaAnchor").value;
-                    var mediaOffX = parseInt(document.getElementById("txtMediaOffsetX").value || 20, 10) * 0.35 + "px";
-                    var mediaOffY = parseInt(document.getElementById("txtMediaOffsetY").value || 20, 10) * 0.35 + "px";
+                    // Position media pill
+                    var mediaOffX = parseInt(document.getElementById("txtMediaOffsetX").value || 24, 10) * 0.35 + "px";
+                    var mediaOffY = parseInt(document.getElementById("txtMediaOffsetY").value || 24, 10) * 0.35 + "px";
+                    applyPosition(mediaPill, mediaAnchor, mediaOffX, mediaOffY);
 
-                    mediaBadges.style.top = ""; mediaBadges.style.bottom = "";
-                    mediaBadges.style.left = ""; mediaBadges.style.right = "";
+                    // Position separate 3D
+                    var threeDOffX = parseInt(document.getElementById("txtThreeDOffsetX").value || 24, 10) * 0.35 + "px";
+                    var threeDOffY = parseInt(document.getElementById("txtThreeDOffsetY").value || 24, 10) * 0.35 + "px";
+                    applyPosition(separate3D, threeDAnchor, threeDOffX, threeDOffY);
 
-                    if (mediaAnchor.indexOf("Bottom") !== -1) mediaBadges.style.bottom = mediaOffY;
-                    else if (mediaAnchor.indexOf("Top") !== -1) mediaBadges.style.top = mediaOffY;
-                    else mediaBadges.style.top = "45%";
+                    // Position separate Edition
+                    var editionOffX = parseInt(document.getElementById("txtEditionOffsetX").value || 24, 10) * 0.35 + "px";
+                    var editionOffY = parseInt(document.getElementById("txtEditionOffsetY").value || 24, 10) * 0.35 + "px";
+                    applyPosition(separateEdition, editionAnchor, editionOffX, editionOffY);
 
-                    if (mediaAnchor.indexOf("Left") !== -1) mediaBadges.style.left = mediaOffX;
-                    else if (mediaAnchor.indexOf("Right") !== -1) mediaBadges.style.right = mediaOffX;
-                    else mediaBadges.style.left = "30%";
+                    // Position rating pill
+                    var ratingOffX = parseInt(document.getElementById("txtRatingOffsetX").value || 24, 10) * 0.35 + "px";
+                    var ratingOffY = parseInt(document.getElementById("txtRatingOffsetY").value || 24, 10) * 0.35 + "px";
+                    applyPosition(ratingPill, ratingAnchor, ratingOffX, ratingOffY);
+                }
 
-                    // Placement for Rating Pill
-                    var ratingAnchor = document.getElementById("selectRatingAnchor").value;
-                    var ratingOffX = parseInt(document.getElementById("txtRatingOffsetX").value || 20, 10) * 0.35 + "px";
-                    var ratingOffY = parseInt(document.getElementById("txtRatingOffsetY").value || 20, 10) * 0.35 + "px";
+                function applyPosition(elem, anchor, offX, offY) {
+                    if (!elem) return;
+                    elem.style.top = ""; elem.style.bottom = "";
+                    elem.style.left = ""; elem.style.right = "";
 
-                    ratingPill.style.top = ""; ratingPill.style.bottom = "";
-                    ratingPill.style.left = ""; ratingPill.style.right = "";
+                    if (anchor.indexOf("Bottom") !== -1) elem.style.bottom = offY;
+                    else if (anchor.indexOf("Top") !== -1) elem.style.top = offY;
+                    else elem.style.top = "45%";
 
-                    if (ratingAnchor.indexOf("Bottom") !== -1) ratingPill.style.bottom = ratingOffY;
-                    else if (ratingAnchor.indexOf("Top") !== -1) ratingPill.style.top = ratingOffY;
-                    else ratingPill.style.top = "45%";
-
-                    if (ratingAnchor.indexOf("Right") !== -1) ratingPill.style.right = ratingOffX;
-                    else if (ratingAnchor.indexOf("Left") !== -1) ratingPill.style.left = ratingOffX;
-                    else ratingPill.style.left = "40%";
+                    if (anchor.indexOf("Left") !== -1) elem.style.left = offX;
+                    else if (anchor.indexOf("Right") !== -1) elem.style.right = offX;
+                    else elem.style.left = "35%";
                 }
 
                 document.getElementById("PostersEnhancedConfigPage").addEventListener("pageshow", function () {
                     Dashboard.showLoadingMsg();
+                    setupAnchorGrids();
+
                     ApiClient.getPluginConfiguration(pluginId).then(function (config) {
                         document.getElementById("chkSaveOriginalBesideMedia").checked = config.SaveOriginalBesideMedia !== false;
                         document.getElementById("selectSource").value = config.Source || "LocalFirst";
                         document.getElementById("txtTheme").value = config.Theme || "default";
 
+                        // Combined Pill
+                        document.getElementById("chkCombineBadgesInPill").checked = config.CombineBadgesInPill !== false;
+                        document.getElementById("colPillBackground").value = config.PillBackgroundColor || "#000000";
+                        document.getElementById("rngPillOpacity").value = config.PillBackgroundOpacity !== undefined ? config.PillBackgroundOpacity : 0.78;
+                        document.getElementById("txtPillCornerRadius").value = config.PillCornerRadius !== undefined ? config.PillCornerRadius : 8;
+                        document.getElementById("txtPillPaddingX").value = config.PillPaddingX !== undefined ? config.PillPaddingX : 10;
+                        document.getElementById("txtPillPaddingY").value = config.PillPaddingY !== undefined ? config.PillPaddingY : 4;
+                        document.getElementById("txtPillItemSpacing").value = config.PillItemSpacing !== undefined ? config.PillItemSpacing : 8;
+
+                        // Media Badges
                         document.getElementById("chkShowMediaBadges").checked = config.ShowResolutionBadges || config.ShowVideoRangeBadges;
                         document.getElementById("chkShow4K").checked = config.Show4K !== false;
                         document.getElementById("chkShow1080p").checked = config.Show1080p === true;
@@ -328,17 +901,59 @@
                         document.getElementById("txtMediaOffsetY").value = config.MediaBadgesOffsetY || 24;
                         document.getElementById("txtMediaScale").value = config.MediaBadgesScalePercent || 4.5;
 
+                        // Edition Badges
+                        document.getElementById("chkShowEditionBadges").checked = config.ShowEditionBadges !== false;
+                        document.getElementById("chkShowImax").checked = config.ShowImax !== false;
+                        document.getElementById("chkShowExtended").checked = config.ShowExtended !== false;
+                        document.getElementById("chkShowDirectorsCut").checked = config.ShowDirectorsCut !== false;
+                        document.getElementById("chkShowTheatrical").checked = config.ShowTheatrical === true;
+                        document.getElementById("chkShowUnrated").checked = config.ShowUnrated !== false;
+                        document.getElementById("chkShowSpecialEdition").checked = config.ShowSpecialEdition !== false;
+                        document.getElementById("chkShowRemastered").checked = config.ShowRemastered !== false;
+                        document.getElementById("chkShowCustomEdition").checked = config.ShowCustomEdition !== false;
+
+                        document.getElementById("selectEditionAnchor").value = config.EditionBadgesAnchor || "BottomLeft";
+                        document.getElementById("txtEditionOffsetX").value = config.EditionOffsetX || 24;
+                        document.getElementById("txtEditionOffsetY").value = config.EditionOffsetY || 24;
+                        document.getElementById("txtEditionScale").value = config.EditionScalePercent || 4.5;
+
+                        // 3D Badge
+                        document.getElementById("chkShow3DBadge").checked = config.Show3DBadge !== false;
+                        document.getElementById("selectThreeDAnchor").value = config.ThreeDBadgeAnchor || "BottomLeft";
+                        document.getElementById("txtThreeDOffsetX").value = config.ThreeDOffsetX || 24;
+                        document.getElementById("txtThreeDOffsetY").value = config.ThreeDOffsetY || 24;
+                        document.getElementById("txtThreeDScale").value = config.ThreeDScalePercent || 4.5;
+
+                        // Rating Badge
                         document.getElementById("chkShowRatingBadge").checked = config.ShowRatingBadge !== false;
                         document.getElementById("selectRatingAnchor").value = config.RatingBadgeAnchor || "BottomRight";
                         document.getElementById("selectRatingColorMode").value = config.RatingColorMode || "DynamicTiers";
                         document.getElementById("txtRatingOffsetX").value = config.RatingBadgeOffsetX || 24;
                         document.getElementById("txtRatingOffsetY").value = config.RatingBadgeOffsetY || 24;
+                        document.getElementById("txtRatingCornerRadius").value = config.RatingCornerRadius || 6;
 
-                        document.getElementById("colTierRed").value = config.RatingTierRedColor || "#E53935";
-                        document.getElementById("colTierOrange").value = config.RatingTierOrangeColor || "#FB8C00";
+                        document.getElementById("colTierRed").value = config.RatingTierRedColor || "#E23133";
+                        document.getElementById("colTierOrange").value = config.RatingTierOrangeColor || "#EF7C2A";
                         document.getElementById("colTierYellow").value = config.RatingTierYellowColor || "#F5C518";
-                        document.getElementById("colTierGreen").value = config.RatingTierGreenColor || "#43A047";
-                        document.getElementById("colTierBlue").value = config.RatingTierBlueColor || "#00BCD4";
+                        document.getElementById("colTierGreen").value = config.RatingTierGreenColor || "#5CB85C";
+                        document.getElementById("colTierBlue").value = config.RatingTierBlueColor || "#5BC4F0";
+
+                        // Sync Anchor 3x3 grids
+                        syncAnchorGridUI("selectMediaAnchor");
+                        syncAnchorGridUI("selectEditionAnchor");
+                        syncAnchorGridUI("selectThreeDAnchor");
+                        syncAnchorGridUI("selectRatingAnchor");
+
+                        // Load Custom Badges Map
+                        customBadgesData = {};
+                        if (config.CustomBadges && config.CustomBadges.length > 0) {
+                            config.CustomBadges.forEach(function (b) {
+                                var k = b.BadgeKey || b.badgeKey;
+                                var d = b.Base64Data || b.base64Data;
+                                if (k && d) customBadgesData[k] = d;
+                            });
+                        }
+                        renderBadgeManager();
 
                         updatePreview();
                         Dashboard.hideLoadingMsg();
@@ -358,9 +973,15 @@
                         document.getElementById("chkShow720p").checked = true;
                         document.getElementById("chkShowDolbyVision").checked = true;
                         document.getElementById("chkShowAudioBadges").checked = false;
+                        document.getElementById("chkShowEditionBadges").checked = true;
+                        document.getElementById("chkShowImax").checked = true;
+                        document.getElementById("chkShow3DBadge").checked = true;
+                        document.getElementById("chkCombineBadgesInPill").checked = true;
                         document.getElementById("chkShowRatingBadge").checked = true;
                     } else if (val === "minimal") {
                         document.getElementById("chkShowMediaBadges").checked = false;
+                        document.getElementById("chkShowEditionBadges").checked = false;
+                        document.getElementById("chkShow3DBadge").checked = false;
                         document.getElementById("chkShowRatingBadge").checked = true;
                     } else if (val === "full") {
                         document.getElementById("chkShowMediaBadges").checked = true;
@@ -370,6 +991,10 @@
                         document.getElementById("chkShowDolbyVision").checked = true;
                         document.getElementById("chkShowAudioBadges").checked = true;
                         document.getElementById("chkShowDolbyAtmos").checked = true;
+                        document.getElementById("chkShowEditionBadges").checked = true;
+                        document.getElementById("chkShowImax").checked = true;
+                        document.getElementById("chkShow3DBadge").checked = true;
+                        document.getElementById("chkCombineBadgesInPill").checked = true;
                         document.getElementById("chkShowRatingBadge").checked = true;
                     }
                     updatePreview();
@@ -384,6 +1009,16 @@
                         config.Source = document.getElementById("selectSource").value;
                         config.Theme = document.getElementById("txtTheme").value;
 
+                        // Combined Pill
+                        config.CombineBadgesInPill = document.getElementById("chkCombineBadgesInPill").checked;
+                        config.PillBackgroundColor = document.getElementById("colPillBackground").value;
+                        config.PillBackgroundOpacity = parseFloat(document.getElementById("rngPillOpacity").value || 0.78);
+                        config.PillCornerRadius = parseFloat(document.getElementById("txtPillCornerRadius").value || 8);
+                        config.PillPaddingX = parseFloat(document.getElementById("txtPillPaddingX").value || 10);
+                        config.PillPaddingY = parseFloat(document.getElementById("txtPillPaddingY").value || 4);
+                        config.PillItemSpacing = parseFloat(document.getElementById("txtPillItemSpacing").value || 8);
+
+                        // Media
                         var mediaEnabled = document.getElementById("chkShowMediaBadges").checked;
                         config.ShowResolutionBadges = mediaEnabled;
                         config.ShowVideoRangeBadges = mediaEnabled;
@@ -410,17 +1045,52 @@
                         config.MediaBadgesOffsetY = parseInt(document.getElementById("txtMediaOffsetY").value || 24, 10);
                         config.MediaBadgesScalePercent = parseFloat(document.getElementById("txtMediaScale").value || 4.5);
 
+                        // Edition
+                        config.ShowEditionBadges = document.getElementById("chkShowEditionBadges").checked;
+                        config.ShowImax = document.getElementById("chkShowImax").checked;
+                        config.ShowExtended = document.getElementById("chkShowExtended").checked;
+                        config.ShowDirectorsCut = document.getElementById("chkShowDirectorsCut").checked;
+                        config.ShowTheatrical = document.getElementById("chkShowTheatrical").checked;
+                        config.ShowUnrated = document.getElementById("chkShowUnrated").checked;
+                        config.ShowSpecialEdition = document.getElementById("chkShowSpecialEdition").checked;
+                        config.ShowRemastered = document.getElementById("chkShowRemastered").checked;
+                        config.ShowCustomEdition = document.getElementById("chkShowCustomEdition").checked;
+
+                        config.EditionBadgesAnchor = document.getElementById("selectEditionAnchor").value;
+                        config.EditionOffsetX = parseInt(document.getElementById("txtEditionOffsetX").value || 24, 10);
+                        config.EditionOffsetY = parseInt(document.getElementById("txtEditionOffsetY").value || 24, 10);
+                        config.EditionScalePercent = parseFloat(document.getElementById("txtEditionScale").value || 4.5);
+
+                        // 3D
+                        config.Show3DBadge = document.getElementById("chkShow3DBadge").checked;
+                        config.ThreeDBadgeAnchor = document.getElementById("selectThreeDAnchor").value;
+                        config.ThreeDOffsetX = parseInt(document.getElementById("txtThreeDOffsetX").value || 24, 10);
+                        config.ThreeDOffsetY = parseInt(document.getElementById("txtThreeDOffsetY").value || 24, 10);
+                        config.ThreeDScalePercent = parseFloat(document.getElementById("txtThreeDScale").value || 4.5);
+
+                        // Rating
                         config.ShowRatingBadge = document.getElementById("chkShowRatingBadge").checked;
                         config.RatingBadgeAnchor = document.getElementById("selectRatingAnchor").value;
                         config.RatingColorMode = document.getElementById("selectRatingColorMode").value;
                         config.RatingBadgeOffsetX = parseInt(document.getElementById("txtRatingOffsetX").value || 24, 10);
                         config.RatingBadgeOffsetY = parseInt(document.getElementById("txtRatingOffsetY").value || 24, 10);
+                        config.RatingCornerRadius = parseFloat(document.getElementById("txtRatingCornerRadius").value || 6);
 
                         config.RatingTierRedColor = document.getElementById("colTierRed").value;
                         config.RatingTierOrangeColor = document.getElementById("colTierOrange").value;
                         config.RatingTierYellowColor = document.getElementById("colTierYellow").value;
                         config.RatingTierGreenColor = document.getElementById("colTierGreen").value;
                         config.RatingTierBlueColor = document.getElementById("colTierBlue").value;
+
+                        // Custom Badges
+                        config.CustomBadges = [];
+                        Object.keys(customBadgesData).forEach(function (k) {
+                            config.CustomBadges.push({
+                                BadgeKey: k,
+                                Base64Data: customBadgesData[k],
+                                Format: "png"
+                            });
+                        });
 
                         ApiClient.updatePluginConfiguration(pluginId, config).then(function (result) {
                             Dashboard.processPluginConfigurationUpdateResult(result);

@@ -68,4 +68,36 @@ public class MediaInfoExtractorTests
         var actual = MediaInfoExtractor.DetectAudioCodec(stream);
         Assert.Equal(expected, actual);
     }
+
+    [Theory]
+    [InlineData("Movie Name (2023) {tmdb-123456} {edition-Imax} [BLURAY-2160P].mkv", EditionType.Imax, null)]
+    [InlineData("Avatar {edition-Extended Cut}.mkv", EditionType.Extended, null)]
+    [InlineData("Blade Runner [edition-Director's Cut].mkv", EditionType.DirectorsCut, null)]
+    [InlineData("Aliens {edition-Theatrical}.mkv", EditionType.Theatrical, null)]
+    [InlineData("Deadpool [edition-Unrated].mkv", EditionType.Unrated, null)]
+    [InlineData("Star Wars {edition-Special Edition}.mkv", EditionType.SpecialEdition, null)]
+    [InlineData("Terminator 2 [edition-Remastered].mkv", EditionType.Remastered, null)]
+    [InlineData("Dune (1984) {edition-Spicediver Cut}.mkv", EditionType.Custom, "SPICEDIVER CUT")]
+    [InlineData("Interstellar.IMAX.2160p.mkv", EditionType.Imax, null)]
+    [InlineData("Lord of the Rings Extended.mkv", EditionType.Extended, null)]
+    [InlineData("Standard Movie (2022).mkv", EditionType.None, null)]
+    public void ParseEdition_ReturnsExpectedEdition(string path, EditionType expectedType, string? expectedCustom)
+    {
+        var (edition, custom) = MediaInfoExtractor.ParseEdition(path, string.Empty);
+        Assert.Equal(expectedType, edition);
+        Assert.Equal(expectedCustom, custom);
+    }
+
+    [Theory]
+    [InlineData("Avatar (2009) {edition-3D}.mkv", true)]
+    [InlineData("Gravity (2013) [3D].mkv", true)]
+    [InlineData("Dredd.3D.2012.1080p.mkv", true)]
+    [InlineData("Tron.Legacy.3D-SBS.mkv", true)]
+    [InlineData("Hugo (2011) Half-SBS.mkv", true)]
+    [InlineData("Inception (2010) 1080p.mkv", false)]
+    public void Is3DPathOrTitle_ReturnsExpected(string path, bool expected3D)
+    {
+        var actual = MediaInfoExtractor.Is3DPathOrTitle(path);
+        Assert.Equal(expected3D, actual);
+    }
 }

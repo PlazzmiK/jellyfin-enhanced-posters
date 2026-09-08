@@ -157,3 +157,39 @@ public enum AudioCodecType
     /// <summary>Advanced Audio Coding.</summary>
     Aac
 }
+
+/// <summary>
+/// Detected movie/show edition or cut type.
+/// </summary>
+public enum EditionType
+{
+    /// <summary>Standard / unspecified edition.</summary>
+    None,
+
+    /// <summary>IMAX or IMAX Enhanced edition.</summary>
+    Imax,
+
+    /// <summary>Extended edition or cut.</summary>
+    Extended,
+
+    /// <summary>Director's Cut.</summary>
+    DirectorsCut,
+
+    /// <summary>Theatrical version.</summary>
+    Theatrical,
+
+    /// <summary>Unrated cut.</summary>
+    Unrated,
+
+    /// <summary>Special edition.</summary>
+    SpecialEdition,
+
+    /// <summary>Remastered edition.</summary>
+    Remastered,
+
+    /// <summary>Final Cut.</summary>
+    FinalCut,
+
+    /// <summary>Custom or other edition parsed from tags.</summary>
+    Custom
+}

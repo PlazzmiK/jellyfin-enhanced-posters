@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Entities.TV;
 using MediaBrowser.Model.Entities;
@@ -8,7 +9,7 @@ using PostersEnhanced.Models;
 namespace PostersEnhanced.Metadata;
 
 /// <summary>
-/// Extracts media information (resolution, video range, audio codec, rating) from Jellyfin items.
+/// Extracts media information (resolution, video range, audio codec, rating, edition, 3D) from Jellyfin items.
 /// </summary>
 public static class MediaInfoExtractor
 {
@@ -43,8 +44,10 @@ public static class MediaInfoExtractor
         }
 
         var rating = ExtractRating(item);
+        var (edition, customEditionName) = DetectEdition(item);
+        var is3D = Detect3D(item);
 
-        return new ExtractedMediaInfo(resolution, hdrType, audioCodec, rating);
+        return new ExtractedMediaInfo(resolution, hdrType, audioCodec, rating, edition, customEditionName, is3D);
     }
 
     /// <summary>
@@ -192,5 +195,167 @@ public static class MediaInfoExtractor
         }
 
         return null;
+    }
+
+    /// <summary>
+    /// Detects edition information from item metadata, path, or title.
+    /// Supports tags like {edition-Imax}, [edition-Extended], or standard keywords.
+    /// </summary>
+    /// <param name="item">The library item.</param>
+    /// <returns>A tuple containing the detected edition type and optional custom edition name.</returns>
+    public static (EditionType Edition, string? CustomName) DetectEdition(BaseItem item)
+    {
+        ArgumentNullException.ThrowIfNull(item);
+
+        var path = item.Path ?? string.Empty;
+        var name = item.Name ?? string.Empty;
+        var originalTitle = item.OriginalTitle ?? string.Empty;
+
+        return ParseEdition(path, name, originalTitle);
+    }
+
+    /// <summary>
+    /// Parses edition type from path and title strings.
+    /// </summary>
+    /// <param name="path">The file or folder path.</param>
+    /// <param name="name">The item name.</param>
+    /// <param name="originalTitle">The original title.</param>
+    /// <returns>A tuple containing the detected edition type and optional custom edition name.</returns>
+    public static (EditionType Edition, string? CustomName) ParseEdition(string path, string name, string originalTitle = "")
+    {
+        var combined = $"{path} {name} {originalTitle}";
+        if (string.IsNullOrWhiteSpace(combined))
+        {
+            return (EditionType.None, null);
+        }
+
+        // 1. Check for {edition-...} or [edition-...] tags (Jellyfin / Plex standard)
+        var match = Regex.Match(combined, @"[\{\[]edition-(?<edition>[^\}\]]+)[\}\]]", RegexOptions.IgnoreCase);
+        if (match.Success)
+        {
+            var rawEdition = match.Groups["edition"].Value.Trim();
+            var normalized = NormalizeEdition(rawEdition);
+            if (normalized != EditionType.None)
+            {
+                return (normalized, null);
+            }
+
+            return (EditionType.Custom, rawEdition.ToUpperInvariant());
+        }
+
+        // 2. Keyword matching on combined path and title
+        return (NormalizeEdition(combined), null);
+    }
+
+    /// <summary>
+    /// Normalizes edition name or keyword to standard EditionType enum.
+    /// </summary>
+    /// <param name="text">The raw text or keywords to analyze.</param>
+    /// <returns>The normalized EditionType.</returns>
+    public static EditionType NormalizeEdition(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return EditionType.None;
+        }
+
+        var upper = text.ToUpperInvariant();
+
+        if (Regex.IsMatch(upper, @"\bIMAX(\s+ENHANCED)?\b"))
+        {
+            return EditionType.Imax;
+        }
+
+        if (Regex.IsMatch(upper, @"\bDIRECTOR'?S?(\s+CUT)?\b") || Regex.IsMatch(upper, @"\bD\.?C\.?\b"))
+        {
+            return EditionType.DirectorsCut;
+        }
+
+        if (Regex.IsMatch(upper, @"\bEXTENDED(\s+(CUT|EDITION))?\b"))
+        {
+            return EditionType.Extended;
+        }
+
+        if (Regex.IsMatch(upper, @"\bTHEATRICAL(\s+(CUT|EDITION))?\b"))
+        {
+            return EditionType.Theatrical;
+        }
+
+        if (Regex.IsMatch(upper, @"\bUNRATED(\s+(CUT|EDITION))?\b"))
+        {
+            return EditionType.Unrated;
+        }
+
+        if (Regex.IsMatch(upper, @"\bSPECIAL\s+EDITION\b"))
+        {
+            return EditionType.SpecialEdition;
+        }
+
+        if (Regex.IsMatch(upper, @"\bREMASTER(ED)?(\s+EDITION)?\b"))
+        {
+            return EditionType.Remastered;
+        }
+
+        if (Regex.IsMatch(upper, @"\bFINAL\s+CUT\b"))
+        {
+            return EditionType.FinalCut;
+        }
+
+        return EditionType.None;
+    }
+
+    /// <summary>
+    /// Detects if media is 3D format from video stream properties or filename tags ({edition-3D}, [3D], etc.).
+    /// </summary>
+    /// <param name="item">The library item.</param>
+    /// <returns>True if 3D is detected; otherwise false.</returns>
+    public static bool Detect3D(BaseItem item)
+    {
+        ArgumentNullException.ThrowIfNull(item);
+
+        if (item is Video video && video.Video3DFormat.HasValue)
+        {
+            return true;
+        }
+
+        var mediaStreams = item.GetMediaStreams();
+        if (mediaStreams is not null)
+        {
+            foreach (var stream in mediaStreams)
+            {
+                if (stream.Type == MediaStreamType.Video)
+                {
+                    var comment = stream.Comment ?? string.Empty;
+                    var title = stream.Title ?? string.Empty;
+                    if (Is3DPathOrTitle($"{comment} {title}"))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        var path = item.Path ?? string.Empty;
+        var name = item.Name ?? string.Empty;
+        var combined = $"{path} {name}";
+
+        return Is3DPathOrTitle(combined);
+    }
+
+    /// <summary>
+    /// Determines whether a path or title contains 3D identifiers.
+    /// </summary>
+    /// <param name="text">The string to check.</param>
+    /// <returns>True if 3D indicators are found; otherwise false.</returns>
+    public static bool Is3DPathOrTitle(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return false;
+        }
+
+        return Regex.IsMatch(text, @"[\{\[]edition-3D[\}\]]", RegexOptions.IgnoreCase) ||
+               Regex.IsMatch(text, @"[\. _\-\[\(]3D[\. _\-\]\)]", RegexOptions.IgnoreCase) ||
+               Regex.IsMatch(text, @"\b(3D-SBS|3D-TAB|3D-OU|3D-MVC|HSBS|HTAB|Half-SBS|Half-OU)\b", RegexOptions.IgnoreCase);
     }
 }

@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
@@ -60,18 +62,48 @@ public class PluginConfiguration : BasePluginConfiguration
         RatingBadgeScalePercent = 4.5f;
         RatingColorMode = RatingColorMode.DynamicTiers;
 
-        // Rating Tiers
-        RatingTierRedColor = "#E53935";
-        RatingTierOrangeColor = "#FB8C00";
+        // Rating Tiers (Matched to audience score colors)
+        RatingTierRedColor = "#E23133";
+        RatingTierOrangeColor = "#EF7C2A";
         RatingTierYellowColor = "#F5C518";
-        RatingTierGreenColor = "#43A047";
-        RatingTierBlueColor = "#00BCD4";
+        RatingTierGreenColor = "#5CB85C";
+        RatingTierBlueColor = "#5BC4F0";
         RatingFixedColor = "#F5C518";
         RatingTextColor = "#000000";
 
-        RatingCornerRadius = 8f;
-        RatingPaddingX = 12f;
-        RatingPaddingY = 6f;
+        RatingCornerRadius = 6f;
+        RatingPaddingX = 8f;
+        RatingPaddingY = 4f;
+
+        // Edition Badges
+        ShowEditionBadges = true;
+        ShowImax = true;
+        ShowExtended = true;
+        ShowDirectorsCut = true;
+        ShowTheatrical = true;
+        ShowUnrated = true;
+        ShowSpecialEdition = true;
+        ShowRemastered = true;
+        EditionBadgesAnchor = AnchorPosition.TopRight;
+        EditionBadgesOffsetX = 24;
+        EditionBadgesOffsetY = 24;
+        EditionBadgesScalePercent = 4.5f;
+
+        // 3D Badge
+        Show3DBadge = true;
+        ThreeDBadgeAnchor = AnchorPosition.TopLeft;
+        ThreeDOffsetX = 24;
+        ThreeDOffsetY = 24;
+        ThreeDScalePercent = 4.5f;
+
+        // Combined Dark Transparent Pill Styling
+        CombineBadgesInPill = true;
+        PillBackgroundColor = "#000000";
+        PillBackgroundOpacity = 0.78f;
+        PillCornerRadius = 8f;
+        PillPaddingX = 10f;
+        PillPaddingY = 4f;
+        PillItemSpacing = 8f;
     }
 
     /// <summary>Gets or sets the theme name.</summary>
@@ -200,6 +232,134 @@ public class PluginConfiguration : BasePluginConfiguration
     /// <summary>Gets or sets the vertical padding for the rating pill.</summary>
     public float RatingPaddingY { get; set; }
 
+    /// <summary>Gets or sets a value indicating whether edition badges are enabled.</summary>
+    public bool ShowEditionBadges { get; set; }
+
+    /// <summary>Gets or sets a value indicating whether IMAX badges are enabled.</summary>
+    public bool ShowImax { get; set; }
+
+    /// <summary>Gets or sets a value indicating whether Extended cut badges are enabled.</summary>
+    public bool ShowExtended { get; set; }
+
+    /// <summary>Gets or sets a value indicating whether Director's Cut badges are enabled.</summary>
+    public bool ShowDirectorsCut { get; set; }
+
+    /// <summary>Gets or sets a value indicating whether Theatrical cut badges are enabled.</summary>
+    public bool ShowTheatrical { get; set; }
+
+    /// <summary>Gets or sets a value indicating whether Unrated badges are enabled.</summary>
+    public bool ShowUnrated { get; set; }
+
+    /// <summary>Gets or sets a value indicating whether Special Edition badges are enabled.</summary>
+    public bool ShowSpecialEdition { get; set; }
+
+    /// <summary>Gets or sets a value indicating whether Remastered badges are enabled.</summary>
+    public bool ShowRemastered { get; set; }
+
+    /// <summary>Gets or sets the anchor position for edition badges.</summary>
+    public AnchorPosition EditionBadgesAnchor { get; set; }
+
+    /// <summary>Gets or sets horizontal offset for edition badges.</summary>
+    public int EditionBadgesOffsetX { get; set; }
+
+    /// <summary>Gets or sets vertical offset for edition badges.</summary>
+    public int EditionBadgesOffsetY { get; set; }
+
+    /// <summary>Gets or sets the scale percentage for edition badges.</summary>
+    public float EditionBadgesScalePercent { get; set; }
+
+    /// <summary>Gets or sets a value indicating whether 3D badge is enabled.</summary>
+    public bool Show3DBadge { get; set; }
+
+    /// <summary>Gets or sets the anchor position for 3D badge.</summary>
+    public AnchorPosition ThreeDBadgeAnchor { get; set; }
+
+    /// <summary>Gets or sets horizontal offset for 3D badge.</summary>
+    public int ThreeDOffsetX { get; set; }
+
+    /// <summary>Gets or sets vertical offset for 3D badge.</summary>
+    public int ThreeDOffsetY { get; set; }
+
+    /// <summary>Gets or sets the scale percentage for 3D badge.</summary>
+    public float ThreeDScalePercent { get; set; }
+
+    /// <summary>Gets or sets a value indicating whether to combine co-located badges in a single dark translucent pill.</summary>
+    public bool CombineBadgesInPill { get; set; }
+
+    /// <summary>Gets or sets the background color of the combined pill.</summary>
+    public string PillBackgroundColor { get; set; }
+
+    /// <summary>Gets or sets the background opacity (0.0 to 1.0) of the combined pill.</summary>
+    public float PillBackgroundOpacity { get; set; }
+
+    /// <summary>Gets or sets the corner radius of the combined pill.</summary>
+    public float PillCornerRadius { get; set; }
+
+    /// <summary>Gets or sets the horizontal padding inside the combined pill.</summary>
+    public float PillPaddingX { get; set; }
+
+    /// <summary>Gets or sets the vertical padding inside the combined pill.</summary>
+    public float PillPaddingY { get; set; }
+
+    /// <summary>Gets or sets the item spacing inside the combined pill.</summary>
+    public float PillItemSpacing { get; set; }
+
+    /// <summary>Gets custom user-uploaded badge image entries (Key and Base64 Data URL).</summary>
+    public Collection<CustomBadgeEntry> CustomBadges { get; } = new Collection<CustomBadgeEntry>();
+
+    /// <summary>
+    /// Gets a custom badge data URI by key, or null if not found.
+    /// </summary>
+    /// <param name="key">The badge key.</param>
+    /// <returns>Base64 data URI string or null.</returns>
+    public string? GetCustomBadge(string key)
+    {
+        if (CustomBadges is null || CustomBadges.Count == 0 || string.IsNullOrEmpty(key))
+        {
+            return null;
+        }
+
+        foreach (var entry in CustomBadges)
+        {
+            if (string.Equals(entry.Key, key, StringComparison.OrdinalIgnoreCase))
+            {
+                return entry.Data;
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Sets or updates a custom badge data URI by key.
+    /// </summary>
+    /// <param name="key">The badge key.</param>
+    /// <param name="data">The base64 data URI.</param>
+    public void SetCustomBadge(string key, string data)
+    {
+        for (var i = 0; i < CustomBadges.Count; i++)
+        {
+            if (string.Equals(CustomBadges[i].Key, key, StringComparison.OrdinalIgnoreCase))
+            {
+                if (string.IsNullOrWhiteSpace(data))
+                {
+                    CustomBadges.RemoveAt(i);
+                }
+                else
+                {
+                    CustomBadges[i].Data = data;
+                }
+
+                return;
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(data))
+        {
+            CustomBadges.Add(new CustomBadgeEntry { Key = key, Data = data });
+        }
+    }
+
     /// <summary>
     /// Gets the background color for a given score based on the configuration.
     /// </summary>
@@ -266,6 +426,38 @@ public class PluginConfiguration : BasePluginConfiguration
         sb.Append(MediaBadgesScalePercent.ToString("F2", CultureInfo.InvariantCulture)).Append('|');
         sb.Append(MediaBadgesSpacing).Append('|');
         sb.Append((int)MediaBadgesDirection).Append('|');
+
+        // Edition
+        sb.Append(ShowEditionBadges).Append('|');
+        sb.Append(ShowImax).Append('|');
+        sb.Append(ShowExtended).Append('|');
+        sb.Append(ShowDirectorsCut).Append('|');
+        sb.Append(ShowTheatrical).Append('|');
+        sb.Append(ShowUnrated).Append('|');
+        sb.Append(ShowSpecialEdition).Append('|');
+        sb.Append(ShowRemastered).Append('|');
+        sb.Append((int)EditionBadgesAnchor).Append('|');
+        sb.Append(EditionBadgesOffsetX).Append('|');
+        sb.Append(EditionBadgesOffsetY).Append('|');
+        sb.Append(EditionBadgesScalePercent.ToString("F2", CultureInfo.InvariantCulture)).Append('|');
+
+        // 3D
+        sb.Append(Show3DBadge).Append('|');
+        sb.Append((int)ThreeDBadgeAnchor).Append('|');
+        sb.Append(ThreeDOffsetX).Append('|');
+        sb.Append(ThreeDOffsetY).Append('|');
+        sb.Append(ThreeDScalePercent.ToString("F2", CultureInfo.InvariantCulture)).Append('|');
+
+        // Pill Styling
+        sb.Append(CombineBadgesInPill).Append('|');
+        sb.Append(PillBackgroundColor).Append('|');
+        sb.Append(PillBackgroundOpacity.ToString("F2", CultureInfo.InvariantCulture)).Append('|');
+        sb.Append(PillCornerRadius.ToString("F2", CultureInfo.InvariantCulture)).Append('|');
+        sb.Append(PillPaddingX.ToString("F2", CultureInfo.InvariantCulture)).Append('|');
+        sb.Append(PillPaddingY.ToString("F2", CultureInfo.InvariantCulture)).Append('|');
+        sb.Append(PillItemSpacing.ToString("F2", CultureInfo.InvariantCulture)).Append('|');
+
+        // Rating
         sb.Append(ShowRatingBadge).Append('|');
         sb.Append((int)RatingBadgeAnchor).Append('|');
         sb.Append(RatingBadgeOffsetX).Append('|');
@@ -281,7 +473,16 @@ public class PluginConfiguration : BasePluginConfiguration
         sb.Append(RatingTextColor).Append('|');
         sb.Append(RatingCornerRadius.ToString("F2", CultureInfo.InvariantCulture)).Append('|');
         sb.Append(RatingPaddingX.ToString("F2", CultureInfo.InvariantCulture)).Append('|');
-        sb.Append(RatingPaddingY.ToString("F2", CultureInfo.InvariantCulture));
+        sb.Append(RatingPaddingY.ToString("F2", CultureInfo.InvariantCulture)).Append('|');
+
+        // Custom badges
+        if (CustomBadges is not null)
+        {
+            foreach (var b in CustomBadges)
+            {
+                sb.Append(b.Key).Append(':').Append(b.Data.Length).Append('|');
+            }
+        }
 
         var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(sb.ToString()));
         return Convert.ToHexString(bytes);

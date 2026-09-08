@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-09-08
+
+### Added
+- Edition badge detection from filename `{edition-...}` tags (IMAX, Extended, Director's Cut, Theatrical, Unrated, Special Edition, Remastered).
+- 3D version badge with 3D glasses icon detected from `{edition-3D}`, `[3D]`, and video stream properties.
+- Unified translucent pill container to group co-located badges seamlessly with configurable opacity, corner radius, and padding.
+- Interactive 3x3 graphical position anchor pickers for all badge types.
+- In-dashboard custom badge asset manager to upload custom PNG/WebP/SVG badge files directly.
+- Refined score badge background colors and snug fitting to match media badge dimensions.
+
 ## [1.0.0.1] - 2026-09-08
 
 ### Fixed
@@ -27,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Interactive configuration dashboard with real-time live preview.
 - One-click restore scheduled task to revert all posters to originals.
 
-[Unreleased]: https://github.com/PlazzmiK/jellyfin-posters-enchanced/compare/1.0.0.1...HEAD
+[Unreleased]: https://github.com/PlazzmiK/jellyfin-posters-enchanced/compare/1.1.0...HEAD
+[1.1.0]: https://github.com/PlazzmiK/jellyfin-posters-enchanced/compare/1.0.0.1...1.1.0
 [1.0.0.1]: https://github.com/PlazzmiK/jellyfin-posters-enchanced/compare/1.0.0-RC1...1.0.0.1
 [1.0.0-RC1]: https://github.com/PlazzmiK/jellyfin-posters-enchanced/tree/1.0.0-RC1

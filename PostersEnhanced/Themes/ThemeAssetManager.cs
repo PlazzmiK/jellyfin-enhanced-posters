@@ -10,6 +10,15 @@ namespace PostersEnhanced.Themes;
 /// </summary>
 public class ThemeAssetManager
 {
+    private static readonly SKColor[] HdrGradientColors =
+    [
+        new SKColor(0xFF, 0xCC, 0x00),
+        new SKColor(0xFF, 0x77, 0x00),
+        new SKColor(0xFF, 0x33, 0x00)
+    ];
+
+    private static readonly float[] HdrGradientPositions = [0.0f, 0.5f, 1.0f];
+
     private readonly IApplicationPaths _applicationPaths;
 
     /// <summary>
@@ -48,13 +57,39 @@ public class ThemeAssetManager
 
     /// <summary>
     /// Loads a badge image for the specified key and theme, or generates a crisp vector fallback if not present on disk.
+    /// Supports custom uploaded data URIs, disk files, embedded resources, and dynamic vector rendering.
     /// </summary>
     /// <param name="theme">The theme name.</param>
-    /// <param name="badgeKey">The badge key (e.g., "4k", "dv", "hdr", "atmos").</param>
+    /// <param name="badgeKey">The badge key (e.g., "4k", "dv", "hdr", "atmos", "3d", "imax").</param>
     /// <param name="targetHeight">The desired badge height for scaling.</param>
+    /// <param name="customBadgeDataUrl">Optional Base64 data URI uploaded by the user.</param>
     /// <returns>An SKBitmap representing the badge, or null.</returns>
-    public SKBitmap? GetBadge(string theme, string badgeKey, float targetHeight)
+    public SKBitmap? GetBadge(string theme, string badgeKey, float targetHeight, string? customBadgeDataUrl = null)
     {
+        // 1. Check custom uploaded data URI from plugin configuration
+        if (!string.IsNullOrWhiteSpace(customBadgeDataUrl))
+        {
+            try
+            {
+                var commaIdx = customBadgeDataUrl.IndexOf(',', StringComparison.Ordinal);
+                var base64 = commaIdx >= 0 ? customBadgeDataUrl[(commaIdx + 1)..] : customBadgeDataUrl;
+                var bytes = Convert.FromBase64String(base64);
+                using var ms = new MemoryStream(bytes);
+                using var original = SKBitmap.Decode(ms);
+                if (original is not null)
+                {
+                    var scale = targetHeight / original.Height;
+                    var targetWidth = (int)Math.Max(1, Math.Round(original.Width * scale));
+                    return original.Resize(new SKImageInfo(targetWidth, (int)targetHeight), SKFilterQuality.High);
+                }
+            }
+            catch
+            {
+                // Fall through on corrupt or invalid base64 data
+            }
+        }
+
+        // 2. Check theme folder on disk
         var customPath = Path.Combine(ThemesDirectory, theme, "badges", $"{badgeKey}.png");
         if (File.Exists(customPath))
         {
@@ -71,11 +106,33 @@ public class ThemeAssetManager
             }
             catch
             {
-                // Fall back to vector generator
+                // Fall back to embedded or vector generator
             }
         }
 
-        // Generate vector badge dynamically
+        // 3. Check embedded assembly resources (e.g. 3D glasses badge)
+        try
+        {
+            var keyLower = badgeKey.ToLowerInvariant();
+            var resName = $"PostersEnhanced.Assets.Badges.{keyLower}.png";
+            using var resStream = typeof(ThemeAssetManager).Assembly.GetManifestResourceStream(resName);
+            if (resStream is not null)
+            {
+                using var original = SKBitmap.Decode(resStream);
+                if (original is not null)
+                {
+                    var scale = targetHeight / original.Height;
+                    var targetWidth = (int)Math.Max(1, Math.Round(original.Width * scale));
+                    return original.Resize(new SKImageInfo(targetWidth, (int)targetHeight), SKFilterQuality.High);
+                }
+            }
+        }
+        catch
+        {
+            // Fall back to vector generator
+        }
+
+        // 4. Generate vector badge dynamically
         return GenerateVectorBadge(badgeKey, targetHeight);
     }
 
@@ -94,8 +151,9 @@ public class ThemeAssetManager
             "4k" => Render4KBadge(height),
             "1080p" => RenderTextBadge("1080p", height, SKColors.White, new SKColor(0x33, 0x33, 0x33, 0xCC)),
             "720p" => RenderTextBadge("720p", height, SKColors.White, new SKColor(0x33, 0x33, 0x33, 0xCC)),
+            "sd" => RenderTextBadge("SD", height, SKColors.White, new SKColor(0x33, 0x33, 0x33, 0xCC)),
             "dv" => RenderDolbyVisionBadge(height),
-            "hdr" => RenderTextBadge("HDR", height, new SKColor(0xFA, 0xCA, 0x16), new SKColor(0x1F, 0x29, 0x37, 0xCC)),
+            "hdr" => RenderHdrBadge(height),
             "hdr10" => RenderTextBadge("HDR10", height, new SKColor(0x38, 0xBD, 0xF8), new SKColor(0x0F, 0x17, 0x2A, 0xCC)),
             "hdr10plus" => RenderTextBadge("HDR10+", height, new SKColor(0x38, 0xBD, 0xF8), new SKColor(0x0F, 0x17, 0x2A, 0xCC)),
             "hlg" => RenderTextBadge("HLG", height, SKColors.White, new SKColor(0x37, 0x41, 0x51, 0xCC)),
@@ -103,6 +161,16 @@ public class ThemeAssetManager
             "dtsx" => RenderTextBadge("DTS:X", height, new SKColor(0xF9, 0x73, 0x16), new SKColor(0x18, 0x18, 0x1B, 0xCC)),
             "truehd" => RenderTextBadge("TrueHD", height, SKColors.White, new SKColor(0x1E, 0x29, 0x3B, 0xCC)),
             "dtshd" => RenderTextBadge("DTS-HD", height, new SKColor(0xFB, 0x92, 0x3C), new SKColor(0x18, 0x18, 0x1B, 0xCC)),
+            "flac" => RenderTextBadge("FLAC", height, SKColors.White, new SKColor(0x18, 0x18, 0x1B, 0xCC)),
+            "3d" => Render3DBadge(height),
+            "imax" => RenderTextBadge("IMAX", height, new SKColor(0x00, 0xA4, 0xE4), new SKColor(0x00, 0x20, 0x40, 0xCC)),
+            "extended" => RenderTextBadge("EXTENDED", height, SKColors.White, new SKColor(0x33, 0x33, 0x33, 0xCC)),
+            "directorscut" => RenderTextBadge("DIRECTOR'S CUT", height, new SKColor(0xF5, 0xC5, 0x18), new SKColor(0x22, 0x1E, 0x10, 0xCC)),
+            "theatrical" => RenderTextBadge("THEATRICAL", height, SKColors.White, new SKColor(0x33, 0x33, 0x33, 0xCC)),
+            "unrated" => RenderTextBadge("UNRATED", height, new SKColor(0xE2, 0x31, 0x33), new SKColor(0x33, 0x10, 0x10, 0xCC)),
+            "specialedition" => RenderTextBadge("SPECIAL EDITION", height, new SKColor(0x5B, 0xC4, 0xF0), new SKColor(0x10, 0x25, 0x35, 0xCC)),
+            "remastered" => RenderTextBadge("REMASTERED", height, new SKColor(0xF5, 0xC5, 0x18), new SKColor(0x28, 0x24, 0x10, 0xCC)),
+            "finalcut" => RenderTextBadge("FINAL CUT", height, SKColors.White, new SKColor(0x33, 0x33, 0x33, 0xCC)),
             _ => RenderTextBadge(badgeKey.ToUpperInvariant(), height, SKColors.White, new SKColor(0x27, 0x27, 0x2A, 0xCC))
         };
     }
@@ -207,6 +275,75 @@ public class ThemeAssetManager
         canvas.DrawRoundRect(rect, bgPaint);
 
         canvas.DrawText(text, paddingX, height * 0.73f, paint);
+        return bitmap;
+    }
+
+    private static SKBitmap RenderHdrBadge(int height)
+    {
+        var fontSize = height * 0.78f;
+        using var paint = new SKPaint
+        {
+            IsAntialias = true,
+            TextSize = fontSize,
+            Typeface = SKTypeface.FromFamilyName("Arial", SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright)
+        };
+
+        var text = "HDR";
+        var textWidth = paint.MeasureText(text);
+        var width = (int)Math.Ceiling(textWidth + (height * 0.15f));
+
+        var bitmap = new SKBitmap(width, height);
+        using var canvas = new SKCanvas(bitmap);
+        canvas.Clear(SKColors.Transparent);
+
+        using var shader = SKShader.CreateLinearGradient(
+            new SKPoint(0, 0),
+            new SKPoint(textWidth, 0),
+            HdrGradientColors,
+            HdrGradientPositions,
+            SKShaderTileMode.Clamp);
+
+        paint.Shader = shader;
+        canvas.DrawText(text, height * 0.05f, height * 0.78f, paint);
+        return bitmap;
+    }
+
+    private static SKBitmap Render3DBadge(int height)
+    {
+        var fontSize = height * 0.78f;
+        using var textPaint = new SKPaint
+        {
+            Color = SKColors.White,
+            IsAntialias = true,
+            TextSize = fontSize,
+            Typeface = SKTypeface.FromFamilyName("Arial", SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright)
+        };
+
+        var text3DWidth = textPaint.MeasureText("3D");
+        var glassesWidth = height * 0.95f;
+        var width = (int)Math.Ceiling(glassesWidth + text3DWidth + (height * 0.35f));
+
+        var bitmap = new SKBitmap(width, height);
+        using var canvas = new SKCanvas(bitmap);
+        canvas.Clear(SKColors.Transparent);
+
+        var lensY = height * 0.28f;
+        var lensH = height * 0.44f;
+        var lensW = height * 0.38f;
+
+        using var redPaint = new SKPaint { Color = new SKColor(0xFF, 0x45, 0x00), IsAntialias = true };
+        using var bluePaint = new SKPaint { Color = new SKColor(0x00, 0x80, 0xFF), IsAntialias = true };
+        using var framePaint = new SKPaint { Color = SKColors.White, IsAntialias = true, Style = SKPaintStyle.Stroke, StrokeWidth = Math.Max(2f, height * 0.06f) };
+
+        var leftRect = new SKRoundRect(new SKRect(height * 0.05f, lensY, (height * 0.05f) + lensW, lensY + lensH), height * 0.08f);
+        var rightRect = new SKRoundRect(new SKRect((height * 0.05f) + lensW + (height * 0.06f), lensY, (height * 0.05f) + (lensW * 2f) + (height * 0.06f), lensY + lensH), height * 0.08f);
+
+        canvas.DrawRoundRect(leftRect, redPaint);
+        canvas.DrawRoundRect(rightRect, bluePaint);
+        canvas.DrawRoundRect(leftRect, framePaint);
+        canvas.DrawRoundRect(rightRect, framePaint);
+
+        canvas.DrawText("3D", glassesWidth + (height * 0.2f), height * 0.78f, textPaint);
         return bitmap;
     }
 }

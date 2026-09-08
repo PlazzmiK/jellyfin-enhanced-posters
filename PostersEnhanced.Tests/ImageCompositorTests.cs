@@ -87,4 +87,55 @@ public class ImageCompositorTests
         Assert.Equal(300, resultBitmap.Width);
         Assert.Equal(450, resultBitmap.Height);
     }
+
+    [Fact]
+    public void Composite_WithCombinedPillAndEdition_GeneratesValidPoster()
+    {
+        using var sourceBitmap = new SKBitmap(300, 450);
+        using var canvas = new SKCanvas(sourceBitmap);
+        canvas.Clear(SKColors.Navy);
+
+        using var sourceStream = new MemoryStream();
+        sourceBitmap.Encode(sourceStream, SKEncodedImageFormat.Jpeg, 80);
+        sourceStream.Position = 0;
+
+        var mockPaths = new Mock<IApplicationPaths>();
+        mockPaths.Setup(p => p.PluginConfigurationsPath).Returns(Path.GetTempPath());
+        var themeManager = new ThemeAssetManager(mockPaths.Object);
+
+        var config = new PluginConfiguration
+        {
+            CombineBadgesInPill = true,
+            ShowResolutionBadges = true,
+            Show4K = true,
+            ShowVideoRangeBadges = true,
+            ShowHdr = true,
+            ShowEditionBadges = true,
+            ShowImax = true,
+            Show3DBadge = true,
+            ShowRatingBadge = true,
+            MediaBadgesAnchor = AnchorPosition.BottomLeft,
+            EditionBadgesAnchor = AnchorPosition.TopRight,
+            ThreeDBadgeAnchor = AnchorPosition.TopLeft,
+            RatingBadgeAnchor = AnchorPosition.BottomRight
+        };
+
+        var mediaInfo = new ExtractedMediaInfo(
+            MediaResolution.Uhd4K,
+            VideoHdrType.Hdr,
+            AudioCodecType.DolbyAtmos,
+            8.3f,
+            EditionType.Imax,
+            null,
+            true);
+
+        using var resultStream = ImageCompositor.Composite(sourceStream, mediaInfo, config, themeManager);
+        Assert.NotNull(resultStream);
+        Assert.True(resultStream.Length > 0);
+
+        using var resultBitmap = SKBitmap.Decode(resultStream);
+        Assert.NotNull(resultBitmap);
+        Assert.Equal(300, resultBitmap.Width);
+        Assert.Equal(450, resultBitmap.Height);
+    }
 }
