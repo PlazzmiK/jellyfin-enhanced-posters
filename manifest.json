@@ -9,6 +9,14 @@
         "imageUrl": "https://raw.githubusercontent.com/PlazzmiK/jellyfin-posters-enchanced/master/Assets/Catalog.png",
         "versions": [
             {
+                "version": "1.1.0.0",
+                "changelog": "### Added\n- Edition badge detection from filename `{edition-...}` tags (IMAX, Extended, Director's Cut, Theatrical, Unrated, Special Edition, Remastered).\n- 3D version badge with 3D glasses icon detected from `{edition-3D}`, `[3D]`, and video stream properties.\n- Unified translucent pill container to group co-located badges seamlessly with configurable opacity, corner radius, and padding.\n- Interactive 3x3 graphical position anchor pickers for all badge types.\n- In-dashboard custom badge asset manager to upload custom PNG/WebP/SVG badge files directly.\n- Refined score badge background colors and snug fitting to match media badge dimensions.\n",
+                "targetAbi": "10.11.10.0",
+                "sourceUrl": "https://github.com/PlazzmiK/jellyfin-posters-enchanced/releases/download/1.1.0/posters-enhanced_1.1.0.0.zip",
+                "checksum": "d73c745c3c6c026910b686ebed707285",
+                "timestamp": "2026-09-08T14:45:14Z"
+            },
+            {
                 "version": "1.0.0.1",
                 "changelog": "### Fixed\n- Fixed `System.InvalidOperationException: An invalid request URI was provided` during poster overlay generation by passing composited image stream with MIME type directly to `ProviderManager.SaveImage`.\n- Updated release pipeline to support 4-part version tags.\n",
                 "targetAbi": "10.11.10.0",
