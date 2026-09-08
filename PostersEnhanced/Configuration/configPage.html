@@ -302,11 +302,11 @@
                                 </div>
                                 <div class="inputContainer" style="flex: 1; min-width: 100px;">
                                     <label class="inputLabel" for="txtMediaOffsetX">Offset X (px)</label>
-                                    <input is="emby-input" type="number" id="txtMediaOffsetX" min="0" max="200" />
+                                    <input is="emby-input" type="number" id="txtMediaOffsetX" min="0" max="200" value="24" />
                                 </div>
                                 <div class="inputContainer" style="flex: 1; min-width: 100px;">
                                     <label class="inputLabel" for="txtMediaOffsetY">Offset Y (px)</label>
-                                    <input is="emby-input" type="number" id="txtMediaOffsetY" min="0" max="200" />
+                                    <input is="emby-input" type="number" id="txtMediaOffsetY" min="0" max="200" value="24" />
                                 </div>
                                 <div class="inputContainer" style="flex: 1; min-width: 100px;">
                                     <label class="inputLabel" for="txtMediaScale">Scale (% height)</label>
@@ -374,11 +374,11 @@
 
                                 <div class="inputContainer" style="flex: 1; min-width: 100px;">
                                     <label class="inputLabel" for="txtEditionOffsetX">Offset X (px)</label>
-                                    <input is="emby-input" type="number" id="txtEditionOffsetX" min="0" max="200" />
+                                    <input is="emby-input" type="number" id="txtEditionOffsetX" min="0" max="200" value="24" />
                                 </div>
                                 <div class="inputContainer" style="flex: 1; min-width: 100px;">
                                     <label class="inputLabel" for="txtEditionOffsetY">Offset Y (px)</label>
-                                    <input is="emby-input" type="number" id="txtEditionOffsetY" min="0" max="200" />
+                                    <input is="emby-input" type="number" id="txtEditionOffsetY" min="0" max="200" value="24" />
                                 </div>
                                 <div class="inputContainer" style="flex: 1; min-width: 100px;">
                                     <label class="inputLabel" for="txtEditionScale">Scale (% height)</label>
@@ -434,11 +434,11 @@
 
                                 <div class="inputContainer" style="flex: 1; min-width: 100px;">
                                     <label class="inputLabel" for="txtThreeDOffsetX">Offset X (px)</label>
-                                    <input is="emby-input" type="number" id="txtThreeDOffsetX" min="0" max="200" />
+                                    <input is="emby-input" type="number" id="txtThreeDOffsetX" min="0" max="200" value="24" />
                                 </div>
                                 <div class="inputContainer" style="flex: 1; min-width: 100px;">
                                     <label class="inputLabel" for="txtThreeDOffsetY">Offset Y (px)</label>
-                                    <input is="emby-input" type="number" id="txtThreeDOffsetY" min="0" max="200" />
+                                    <input is="emby-input" type="number" id="txtThreeDOffsetY" min="0" max="200" value="24" />
                                 </div>
                                 <div class="inputContainer" style="flex: 1; min-width: 100px;">
                                     <label class="inputLabel" for="txtThreeDScale">Scale (% height)</label>
@@ -498,11 +498,11 @@
                                 </div>
                                 <div class="inputContainer" style="flex: 1; min-width: 100px;">
                                     <label class="inputLabel" for="txtRatingOffsetX">Offset X (px)</label>
-                                    <input is="emby-input" type="number" id="txtRatingOffsetX" min="0" max="200" />
+                                    <input is="emby-input" type="number" id="txtRatingOffsetX" min="0" max="200" value="24" />
                                 </div>
                                 <div class="inputContainer" style="flex: 1; min-width: 100px;">
                                     <label class="inputLabel" for="txtRatingOffsetY">Offset Y (px)</label>
-                                    <input is="emby-input" type="number" id="txtRatingOffsetY" min="0" max="200" />
+                                    <input is="emby-input" type="number" id="txtRatingOffsetY" min="0" max="200" value="24" />
                                 </div>
                                 <div class="inputContainer" style="flex: 1; min-width: 100px;">
                                     <label class="inputLabel" for="txtRatingCornerRadius">Corner Radius</label>
@@ -773,6 +773,8 @@
                         mediaPill.style.gap = pillGap;
                         mediaPill.style.boxShadow = "0 3px 10px rgba(0,0,0,0.55)";
                         mediaPill.style.backdropFilter = "blur(3px)";
+                        previewDv.style.background = "transparent";
+                        previewDv.style.padding = "0";
                     } else {
                         mediaPill.style.background = "transparent";
                         mediaPill.style.borderRadius = "0";
@@ -780,6 +782,8 @@
                         mediaPill.style.gap = pillGap;
                         mediaPill.style.boxShadow = "none";
                         mediaPill.style.backdropFilter = "none";
+                        previewDv.style.background = "rgba(0,0,0,0.8)";
+                        previewDv.style.padding = "2px 5px";
                     }
 
                     // Badge toggles inside media anchor pill
@@ -862,81 +866,89 @@
                     Dashboard.showLoadingMsg();
                     setupAnchorGrids();
 
+                    function getCfg(cfg, pKey, cKey, def) {
+                        if (cfg[pKey] !== undefined && cfg[pKey] !== null) return cfg[pKey];
+                        if (cfg[cKey] !== undefined && cfg[cKey] !== null) return cfg[cKey];
+                        return def;
+                    }
+
                     ApiClient.getPluginConfiguration(pluginId).then(function (config) {
-                        document.getElementById("chkSaveOriginalBesideMedia").checked = config.SaveOriginalBesideMedia !== false;
-                        document.getElementById("selectSource").value = config.Source || "LocalFirst";
-                        document.getElementById("txtTheme").value = config.Theme || "default";
+                        document.getElementById("chkSaveOriginalBesideMedia").checked = getCfg(config, "SaveOriginalBesideMedia", "saveOriginalBesideMedia", true);
+                        document.getElementById("selectSource").value = getCfg(config, "Source", "source", "LocalFirst");
+                        document.getElementById("txtTheme").value = getCfg(config, "Theme", "theme", "default");
 
                         // Combined Pill
-                        document.getElementById("chkCombineBadgesInPill").checked = config.CombineBadgesInPill !== false;
-                        document.getElementById("colPillBackground").value = config.PillBackgroundColor || "#000000";
-                        document.getElementById("rngPillOpacity").value = config.PillBackgroundOpacity !== undefined ? config.PillBackgroundOpacity : 0.78;
-                        document.getElementById("txtPillCornerRadius").value = config.PillCornerRadius !== undefined ? config.PillCornerRadius : 8;
-                        document.getElementById("txtPillPaddingX").value = config.PillPaddingX !== undefined ? config.PillPaddingX : 10;
-                        document.getElementById("txtPillPaddingY").value = config.PillPaddingY !== undefined ? config.PillPaddingY : 4;
-                        document.getElementById("txtPillItemSpacing").value = config.PillItemSpacing !== undefined ? config.PillItemSpacing : 8;
+                        document.getElementById("chkCombineBadgesInPill").checked = getCfg(config, "CombineBadgesInPill", "combineBadgesInPill", true);
+                        document.getElementById("colPillBackground").value = getCfg(config, "PillBackgroundColor", "pillBackgroundColor", "#000000");
+                        document.getElementById("rngPillOpacity").value = getCfg(config, "PillBackgroundOpacity", "pillBackgroundOpacity", 0.78);
+                        document.getElementById("txtPillCornerRadius").value = getCfg(config, "PillCornerRadius", "pillCornerRadius", 8);
+                        document.getElementById("txtPillPaddingX").value = getCfg(config, "PillPaddingX", "pillPaddingX", 10);
+                        document.getElementById("txtPillPaddingY").value = getCfg(config, "PillPaddingY", "pillPaddingY", 4);
+                        document.getElementById("txtPillItemSpacing").value = getCfg(config, "PillItemSpacing", "pillItemSpacing", 8);
 
                         // Media Badges
-                        document.getElementById("chkShowMediaBadges").checked = config.ShowResolutionBadges || config.ShowVideoRangeBadges;
-                        document.getElementById("chkShow4K").checked = config.Show4K !== false;
-                        document.getElementById("chkShow1080p").checked = config.Show1080p === true;
-                        document.getElementById("chkShow720p").checked = config.Show720p !== false;
-                        document.getElementById("chkShowSD").checked = config.ShowSD === true;
+                        var resOn = getCfg(config, "ShowResolutionBadges", "showResolutionBadges", true);
+                        var vrOn = getCfg(config, "ShowVideoRangeBadges", "showVideoRangeBadges", true);
+                        document.getElementById("chkShowMediaBadges").checked = resOn || vrOn;
+                        document.getElementById("chkShow4K").checked = getCfg(config, "Show4K", "show4K", true);
+                        document.getElementById("chkShow1080p").checked = getCfg(config, "Show1080p", "show1080p", false);
+                        document.getElementById("chkShow720p").checked = getCfg(config, "Show720p", "show720p", true);
+                        document.getElementById("chkShowSD").checked = getCfg(config, "ShowSD", "showSD", false);
 
-                        document.getElementById("chkShowDolbyVision").checked = config.ShowDolbyVision !== false;
-                        document.getElementById("chkShowHdr10Plus").checked = config.ShowHdr10Plus !== false;
-                        document.getElementById("chkShowHdr10").checked = config.ShowHdr10 !== false;
-                        document.getElementById("chkShowHdr").checked = config.ShowHdr !== false;
-                        document.getElementById("chkShowHlg").checked = config.ShowHlg === true;
+                        document.getElementById("chkShowDolbyVision").checked = getCfg(config, "ShowDolbyVision", "showDolbyVision", true);
+                        document.getElementById("chkShowHdr10Plus").checked = getCfg(config, "ShowHdr10Plus", "showHdr10Plus", true);
+                        document.getElementById("chkShowHdr10").checked = getCfg(config, "ShowHdr10", "showHdr10", true);
+                        document.getElementById("chkShowHdr").checked = getCfg(config, "ShowHdr", "showHdr", true);
+                        document.getElementById("chkShowHlg").checked = getCfg(config, "ShowHlg", "showHlg", false);
 
-                        document.getElementById("chkShowAudioBadges").checked = config.ShowAudioBadges === true;
-                        document.getElementById("chkShowDolbyAtmos").checked = config.ShowDolbyAtmos !== false;
-                        document.getElementById("chkShowDtsX").checked = config.ShowDtsX !== false;
-                        document.getElementById("chkShowTrueHd").checked = config.ShowTrueHd === true;
-                        document.getElementById("chkShowDtsHdMa").checked = config.ShowDtsHdMa === true;
+                        document.getElementById("chkShowAudioBadges").checked = getCfg(config, "ShowAudioBadges", "showAudioBadges", false);
+                        document.getElementById("chkShowDolbyAtmos").checked = getCfg(config, "ShowDolbyAtmos", "showDolbyAtmos", true);
+                        document.getElementById("chkShowDtsX").checked = getCfg(config, "ShowDtsX", "showDtsX", true);
+                        document.getElementById("chkShowTrueHd").checked = getCfg(config, "ShowTrueHd", "showTrueHd", false);
+                        document.getElementById("chkShowDtsHdMa").checked = getCfg(config, "ShowDtsHdMa", "showDtsHdMa", false);
 
-                        document.getElementById("selectMediaAnchor").value = config.MediaBadgesAnchor || "BottomLeft";
-                        document.getElementById("selectMediaDirection").value = config.MediaBadgesDirection || "Horizontal";
-                        document.getElementById("txtMediaOffsetX").value = config.MediaBadgesOffsetX || 24;
-                        document.getElementById("txtMediaOffsetY").value = config.MediaBadgesOffsetY || 24;
-                        document.getElementById("txtMediaScale").value = config.MediaBadgesScalePercent || 4.5;
+                        document.getElementById("selectMediaAnchor").value = getCfg(config, "MediaBadgesAnchor", "mediaBadgesAnchor", "BottomLeft");
+                        document.getElementById("selectMediaDirection").value = getCfg(config, "MediaBadgesDirection", "mediaBadgesDirection", "Horizontal");
+                        document.getElementById("txtMediaOffsetX").value = getCfg(config, "MediaBadgesOffsetX", "mediaBadgesOffsetX", 24);
+                        document.getElementById("txtMediaOffsetY").value = getCfg(config, "MediaBadgesOffsetY", "mediaBadgesOffsetY", 24);
+                        document.getElementById("txtMediaScale").value = getCfg(config, "MediaBadgesScalePercent", "mediaBadgesScalePercent", 4.5);
 
                         // Edition Badges
-                        document.getElementById("chkShowEditionBadges").checked = config.ShowEditionBadges !== false;
-                        document.getElementById("chkShowImax").checked = config.ShowImax !== false;
-                        document.getElementById("chkShowExtended").checked = config.ShowExtended !== false;
-                        document.getElementById("chkShowDirectorsCut").checked = config.ShowDirectorsCut !== false;
-                        document.getElementById("chkShowTheatrical").checked = config.ShowTheatrical === true;
-                        document.getElementById("chkShowUnrated").checked = config.ShowUnrated !== false;
-                        document.getElementById("chkShowSpecialEdition").checked = config.ShowSpecialEdition !== false;
-                        document.getElementById("chkShowRemastered").checked = config.ShowRemastered !== false;
-                        document.getElementById("chkShowCustomEdition").checked = config.ShowCustomEdition !== false;
+                        document.getElementById("chkShowEditionBadges").checked = getCfg(config, "ShowEditionBadges", "showEditionBadges", true);
+                        document.getElementById("chkShowImax").checked = getCfg(config, "ShowImax", "showImax", true);
+                        document.getElementById("chkShowExtended").checked = getCfg(config, "ShowExtended", "showExtended", true);
+                        document.getElementById("chkShowDirectorsCut").checked = getCfg(config, "ShowDirectorsCut", "showDirectorsCut", true);
+                        document.getElementById("chkShowTheatrical").checked = getCfg(config, "ShowTheatrical", "showTheatrical", false);
+                        document.getElementById("chkShowUnrated").checked = getCfg(config, "ShowUnrated", "showUnrated", true);
+                        document.getElementById("chkShowSpecialEdition").checked = getCfg(config, "ShowSpecialEdition", "showSpecialEdition", true);
+                        document.getElementById("chkShowRemastered").checked = getCfg(config, "ShowRemastered", "showRemastered", true);
+                        document.getElementById("chkShowCustomEdition").checked = getCfg(config, "ShowCustomEdition", "showCustomEdition", true);
 
-                        document.getElementById("selectEditionAnchor").value = config.EditionBadgesAnchor || "BottomLeft";
-                        document.getElementById("txtEditionOffsetX").value = config.EditionOffsetX || 24;
-                        document.getElementById("txtEditionOffsetY").value = config.EditionOffsetY || 24;
-                        document.getElementById("txtEditionScale").value = config.EditionScalePercent || 4.5;
+                        document.getElementById("selectEditionAnchor").value = getCfg(config, "EditionBadgesAnchor", "editionBadgesAnchor", "BottomLeft");
+                        document.getElementById("txtEditionOffsetX").value = getCfg(config, "EditionBadgesOffsetX", "editionBadgesOffsetX", 24);
+                        document.getElementById("txtEditionOffsetY").value = getCfg(config, "EditionBadgesOffsetY", "editionBadgesOffsetY", 24);
+                        document.getElementById("txtEditionScale").value = getCfg(config, "EditionBadgesScalePercent", "editionBadgesScalePercent", 4.5);
 
                         // 3D Badge
-                        document.getElementById("chkShow3DBadge").checked = config.Show3DBadge !== false;
-                        document.getElementById("selectThreeDAnchor").value = config.ThreeDBadgeAnchor || "BottomLeft";
-                        document.getElementById("txtThreeDOffsetX").value = config.ThreeDOffsetX || 24;
-                        document.getElementById("txtThreeDOffsetY").value = config.ThreeDOffsetY || 24;
-                        document.getElementById("txtThreeDScale").value = config.ThreeDScalePercent || 4.5;
+                        document.getElementById("chkShow3DBadge").checked = getCfg(config, "Show3DBadge", "show3DBadge", true);
+                        document.getElementById("selectThreeDAnchor").value = getCfg(config, "ThreeDBadgeAnchor", "threeDBadgeAnchor", "BottomLeft");
+                        document.getElementById("txtThreeDOffsetX").value = getCfg(config, "ThreeDOffsetX", "threeDOffsetX", 24);
+                        document.getElementById("txtThreeDOffsetY").value = getCfg(config, "ThreeDOffsetY", "threeDOffsetY", 24);
+                        document.getElementById("txtThreeDScale").value = getCfg(config, "ThreeDScalePercent", "threeDScalePercent", 4.5);
 
                         // Rating Badge
-                        document.getElementById("chkShowRatingBadge").checked = config.ShowRatingBadge !== false;
-                        document.getElementById("selectRatingAnchor").value = config.RatingBadgeAnchor || "BottomRight";
-                        document.getElementById("selectRatingColorMode").value = config.RatingColorMode || "DynamicTiers";
-                        document.getElementById("txtRatingOffsetX").value = config.RatingBadgeOffsetX || 24;
-                        document.getElementById("txtRatingOffsetY").value = config.RatingBadgeOffsetY || 24;
-                        document.getElementById("txtRatingCornerRadius").value = config.RatingCornerRadius || 6;
+                        document.getElementById("chkShowRatingBadge").checked = getCfg(config, "ShowRatingBadge", "showRatingBadge", true);
+                        document.getElementById("selectRatingAnchor").value = getCfg(config, "RatingBadgeAnchor", "ratingBadgeAnchor", "BottomRight");
+                        document.getElementById("selectRatingColorMode").value = getCfg(config, "RatingColorMode", "ratingColorMode", "DynamicTiers");
+                        document.getElementById("txtRatingOffsetX").value = getCfg(config, "RatingBadgeOffsetX", "ratingBadgeOffsetX", 24);
+                        document.getElementById("txtRatingOffsetY").value = getCfg(config, "RatingBadgeOffsetY", "ratingBadgeOffsetY", 24);
+                        document.getElementById("txtRatingCornerRadius").value = getCfg(config, "RatingCornerRadius", "ratingCornerRadius", 6);
 
-                        document.getElementById("colTierRed").value = config.RatingTierRedColor || "#E23133";
-                        document.getElementById("colTierOrange").value = config.RatingTierOrangeColor || "#EF7C2A";
-                        document.getElementById("colTierYellow").value = config.RatingTierYellowColor || "#F5C518";
-                        document.getElementById("colTierGreen").value = config.RatingTierGreenColor || "#5CB85C";
-                        document.getElementById("colTierBlue").value = config.RatingTierBlueColor || "#5BC4F0";
+                        document.getElementById("colTierRed").value = getCfg(config, "RatingTierRedColor", "ratingTierRedColor", "#E23133");
+                        document.getElementById("colTierOrange").value = getCfg(config, "RatingTierOrangeColor", "ratingTierOrangeColor", "#EF7C2A");
+                        document.getElementById("colTierYellow").value = getCfg(config, "RatingTierYellowColor", "ratingTierYellowColor", "#F5C518");
+                        document.getElementById("colTierGreen").value = getCfg(config, "RatingTierGreenColor", "ratingTierGreenColor", "#5CB85C");
+                        document.getElementById("colTierBlue").value = getCfg(config, "RatingTierBlueColor", "ratingTierBlueColor", "#5BC4F0");
 
                         // Sync Anchor 3x3 grids
                         syncAnchorGridUI("selectMediaAnchor");
@@ -1040,41 +1052,87 @@
                         config.ShowDtsHdMa = document.getElementById("chkShowDtsHdMa").checked;
 
                         config.MediaBadgesAnchor = document.getElementById("selectMediaAnchor").value;
+                        config.mediaBadgesAnchor = config.MediaBadgesAnchor;
                         config.MediaBadgesDirection = document.getElementById("selectMediaDirection").value;
-                        config.MediaBadgesOffsetX = parseInt(document.getElementById("txtMediaOffsetX").value || 24, 10);
-                        config.MediaBadgesOffsetY = parseInt(document.getElementById("txtMediaOffsetY").value || 24, 10);
+                        config.mediaBadgesDirection = config.MediaBadgesDirection;
+
+                        var mediaX = parseInt(document.getElementById("txtMediaOffsetX").value || 24, 10);
+                        var mediaY = parseInt(document.getElementById("txtMediaOffsetY").value || 24, 10);
+                        if (isNaN(mediaX) || mediaX <= 0) mediaX = mediaY > 0 ? mediaY : 24;
+                        if (isNaN(mediaY) || mediaY <= 0) mediaY = 24;
+                        config.MediaBadgesOffsetX = mediaX;
+                        config.mediaBadgesOffsetX = mediaX;
+                        config.MediaBadgesOffsetY = mediaY;
+                        config.mediaBadgesOffsetY = mediaY;
                         config.MediaBadgesScalePercent = parseFloat(document.getElementById("txtMediaScale").value || 4.5);
+                        config.mediaBadgesScalePercent = config.MediaBadgesScalePercent;
 
                         // Edition
                         config.ShowEditionBadges = document.getElementById("chkShowEditionBadges").checked;
+                        config.showEditionBadges = config.ShowEditionBadges;
                         config.ShowImax = document.getElementById("chkShowImax").checked;
+                        config.showImax = config.ShowImax;
                         config.ShowExtended = document.getElementById("chkShowExtended").checked;
+                        config.showExtended = config.ShowExtended;
                         config.ShowDirectorsCut = document.getElementById("chkShowDirectorsCut").checked;
+                        config.showDirectorsCut = config.ShowDirectorsCut;
                         config.ShowTheatrical = document.getElementById("chkShowTheatrical").checked;
+                        config.showTheatrical = config.ShowTheatrical;
                         config.ShowUnrated = document.getElementById("chkShowUnrated").checked;
+                        config.showUnrated = config.ShowUnrated;
                         config.ShowSpecialEdition = document.getElementById("chkShowSpecialEdition").checked;
+                        config.showSpecialEdition = config.ShowSpecialEdition;
                         config.ShowRemastered = document.getElementById("chkShowRemastered").checked;
+                        config.showRemastered = config.ShowRemastered;
                         config.ShowCustomEdition = document.getElementById("chkShowCustomEdition").checked;
+                        config.showCustomEdition = config.ShowCustomEdition;
 
                         config.EditionBadgesAnchor = document.getElementById("selectEditionAnchor").value;
-                        config.EditionOffsetX = parseInt(document.getElementById("txtEditionOffsetX").value || 24, 10);
-                        config.EditionOffsetY = parseInt(document.getElementById("txtEditionOffsetY").value || 24, 10);
-                        config.EditionScalePercent = parseFloat(document.getElementById("txtEditionScale").value || 4.5);
+                        config.editionBadgesAnchor = config.EditionBadgesAnchor;
+                        var edX = parseInt(document.getElementById("txtEditionOffsetX").value || 24, 10);
+                        var edY = parseInt(document.getElementById("txtEditionOffsetY").value || 24, 10);
+                        if (isNaN(edX) || edX <= 0) edX = edY > 0 ? edY : 24;
+                        if (isNaN(edY) || edY <= 0) edY = 24;
+                        config.EditionBadgesOffsetX = edX;
+                        config.editionBadgesOffsetX = edX;
+                        config.EditionBadgesOffsetY = edY;
+                        config.editionBadgesOffsetY = edY;
+                        config.EditionBadgesScalePercent = parseFloat(document.getElementById("txtEditionScale").value || 4.5);
+                        config.editionBadgesScalePercent = config.EditionBadgesScalePercent;
 
                         // 3D
                         config.Show3DBadge = document.getElementById("chkShow3DBadge").checked;
+                        config.show3DBadge = config.Show3DBadge;
                         config.ThreeDBadgeAnchor = document.getElementById("selectThreeDAnchor").value;
-                        config.ThreeDOffsetX = parseInt(document.getElementById("txtThreeDOffsetX").value || 24, 10);
-                        config.ThreeDOffsetY = parseInt(document.getElementById("txtThreeDOffsetY").value || 24, 10);
+                        config.threeDBadgeAnchor = config.ThreeDBadgeAnchor;
+                        var t3dX = parseInt(document.getElementById("txtThreeDOffsetX").value || 24, 10);
+                        var t3dY = parseInt(document.getElementById("txtThreeDOffsetY").value || 24, 10);
+                        if (isNaN(t3dX) || t3dX <= 0) t3dX = t3dY > 0 ? t3dY : 24;
+                        if (isNaN(t3dY) || t3dY <= 0) t3dY = 24;
+                        config.ThreeDOffsetX = t3dX;
+                        config.threeDOffsetX = t3dX;
+                        config.ThreeDOffsetY = t3dY;
+                        config.threeDOffsetY = t3dY;
                         config.ThreeDScalePercent = parseFloat(document.getElementById("txtThreeDScale").value || 4.5);
+                        config.threeDScalePercent = config.ThreeDScalePercent;
 
                         // Rating
                         config.ShowRatingBadge = document.getElementById("chkShowRatingBadge").checked;
+                        config.showRatingBadge = config.ShowRatingBadge;
                         config.RatingBadgeAnchor = document.getElementById("selectRatingAnchor").value;
+                        config.ratingBadgeAnchor = config.RatingBadgeAnchor;
                         config.RatingColorMode = document.getElementById("selectRatingColorMode").value;
-                        config.RatingBadgeOffsetX = parseInt(document.getElementById("txtRatingOffsetX").value || 24, 10);
-                        config.RatingBadgeOffsetY = parseInt(document.getElementById("txtRatingOffsetY").value || 24, 10);
+                        config.ratingColorMode = config.RatingColorMode;
+                        var ratX = parseInt(document.getElementById("txtRatingOffsetX").value || 24, 10);
+                        var ratY = parseInt(document.getElementById("txtRatingOffsetY").value || 24, 10);
+                        if (isNaN(ratX) || ratX <= 0) ratX = ratY > 0 ? ratY : 24;
+                        if (isNaN(ratY) || ratY <= 0) ratY = 24;
+                        config.RatingBadgeOffsetX = ratX;
+                        config.ratingBadgeOffsetX = ratX;
+                        config.RatingBadgeOffsetY = ratY;
+                        config.ratingBadgeOffsetY = ratY;
                         config.RatingCornerRadius = parseFloat(document.getElementById("txtRatingCornerRadius").value || 6);
+                        config.ratingCornerRadius = config.RatingCornerRadius;
 
                         config.RatingTierRedColor = document.getElementById("colTierRed").value;
                         config.RatingTierOrangeColor = document.getElementById("colTierOrange").value;

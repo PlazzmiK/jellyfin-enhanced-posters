@@ -63,8 +63,9 @@ public class ThemeAssetManager
     /// <param name="badgeKey">The badge key (e.g., "4k", "dv", "hdr", "atmos", "3d", "imax").</param>
     /// <param name="targetHeight">The desired badge height for scaling.</param>
     /// <param name="customBadgeDataUrl">Optional Base64 data URI uploaded by the user.</param>
+    /// <param name="transparentBg">Whether to render badge with a transparent background (for use inside unified pill).</param>
     /// <returns>An SKBitmap representing the badge, or null.</returns>
-    public SKBitmap? GetBadge(string theme, string badgeKey, float targetHeight, string? customBadgeDataUrl = null)
+    public SKBitmap? GetBadge(string theme, string badgeKey, float targetHeight, string? customBadgeDataUrl = null, bool transparentBg = false)
     {
         // 1. Check custom uploaded data URI from plugin configuration
         if (!string.IsNullOrWhiteSpace(customBadgeDataUrl))
@@ -133,7 +134,7 @@ public class ThemeAssetManager
         }
 
         // 4. Generate vector badge dynamically
-        return GenerateVectorBadge(badgeKey, targetHeight);
+        return GenerateVectorBadge(badgeKey, targetHeight, transparentBg);
     }
 
     /// <summary>
@@ -141,37 +142,38 @@ public class ThemeAssetManager
     /// </summary>
     /// <param name="badgeKey">The badge identifier.</param>
     /// <param name="targetHeight">The height of the badge in pixels.</param>
+    /// <param name="transparentBg">Whether to omit individual capsule backgrounds (for unified pill).</param>
     /// <returns>A rendered SKBitmap.</returns>
-    public static SKBitmap GenerateVectorBadge(string badgeKey, float targetHeight)
+    public static SKBitmap GenerateVectorBadge(string badgeKey, float targetHeight, bool transparentBg = false)
     {
         var height = (int)Math.Max(16, targetHeight);
 
         return badgeKey.ToLowerInvariant() switch
         {
             "4k" => Render4KBadge(height),
-            "1080p" => RenderTextBadge("1080p", height, SKColors.White, new SKColor(0x33, 0x33, 0x33, 0xCC)),
-            "720p" => RenderTextBadge("720p", height, SKColors.White, new SKColor(0x33, 0x33, 0x33, 0xCC)),
-            "sd" => RenderTextBadge("SD", height, SKColors.White, new SKColor(0x33, 0x33, 0x33, 0xCC)),
-            "dv" => RenderDolbyVisionBadge(height),
+            "1080p" => RenderTextBadge("1080p", height, SKColors.White, transparentBg ? null : new SKColor(0x33, 0x33, 0x33, 0xCC)),
+            "720p" => RenderTextBadge("720p", height, SKColors.White, transparentBg ? null : new SKColor(0x33, 0x33, 0x33, 0xCC)),
+            "sd" => RenderTextBadge("SD", height, SKColors.White, transparentBg ? null : new SKColor(0x33, 0x33, 0x33, 0xCC)),
+            "dv" => RenderDolbyVisionBadge(height, transparentBg),
             "hdr" => RenderHdrBadge(height),
-            "hdr10" => RenderTextBadge("HDR10", height, new SKColor(0x38, 0xBD, 0xF8), new SKColor(0x0F, 0x17, 0x2A, 0xCC)),
-            "hdr10plus" => RenderTextBadge("HDR10+", height, new SKColor(0x38, 0xBD, 0xF8), new SKColor(0x0F, 0x17, 0x2A, 0xCC)),
-            "hlg" => RenderTextBadge("HLG", height, SKColors.White, new SKColor(0x37, 0x41, 0x51, 0xCC)),
-            "atmos" => RenderTextBadge("ATMOS", height, SKColors.White, new SKColor(0x11, 0x18, 0x27, 0xCC)),
-            "dtsx" => RenderTextBadge("DTS:X", height, new SKColor(0xF9, 0x73, 0x16), new SKColor(0x18, 0x18, 0x1B, 0xCC)),
-            "truehd" => RenderTextBadge("TrueHD", height, SKColors.White, new SKColor(0x1E, 0x29, 0x3B, 0xCC)),
-            "dtshd" => RenderTextBadge("DTS-HD", height, new SKColor(0xFB, 0x92, 0x3C), new SKColor(0x18, 0x18, 0x1B, 0xCC)),
-            "flac" => RenderTextBadge("FLAC", height, SKColors.White, new SKColor(0x18, 0x18, 0x1B, 0xCC)),
+            "hdr10" => RenderTextBadge("HDR10", height, new SKColor(0x38, 0xBD, 0xF8), transparentBg ? null : new SKColor(0x0F, 0x17, 0x2A, 0xCC)),
+            "hdr10plus" => RenderTextBadge("HDR10+", height, new SKColor(0x38, 0xBD, 0xF8), transparentBg ? null : new SKColor(0x0F, 0x17, 0x2A, 0xCC)),
+            "hlg" => RenderTextBadge("HLG", height, SKColors.White, transparentBg ? null : new SKColor(0x37, 0x41, 0x51, 0xCC)),
+            "atmos" => RenderTextBadge("ATMOS", height, SKColors.White, transparentBg ? null : new SKColor(0x11, 0x18, 0x27, 0xCC)),
+            "dtsx" => RenderTextBadge("DTS:X", height, new SKColor(0xF9, 0x73, 0x16), transparentBg ? null : new SKColor(0x18, 0x18, 0x1B, 0xCC)),
+            "truehd" => RenderTextBadge("TrueHD", height, SKColors.White, transparentBg ? null : new SKColor(0x1E, 0x29, 0x3B, 0xCC)),
+            "dtshd" => RenderTextBadge("DTS-HD", height, new SKColor(0xFB, 0x92, 0x3C), transparentBg ? null : new SKColor(0x18, 0x18, 0x1B, 0xCC)),
+            "flac" => RenderTextBadge("FLAC", height, SKColors.White, transparentBg ? null : new SKColor(0x18, 0x18, 0x1B, 0xCC)),
             "3d" => Render3DBadge(height),
-            "imax" => RenderTextBadge("IMAX", height, new SKColor(0x00, 0xA4, 0xE4), new SKColor(0x00, 0x20, 0x40, 0xCC)),
-            "extended" => RenderTextBadge("EXTENDED", height, SKColors.White, new SKColor(0x33, 0x33, 0x33, 0xCC)),
-            "directorscut" => RenderTextBadge("DIRECTOR'S CUT", height, new SKColor(0xF5, 0xC5, 0x18), new SKColor(0x22, 0x1E, 0x10, 0xCC)),
-            "theatrical" => RenderTextBadge("THEATRICAL", height, SKColors.White, new SKColor(0x33, 0x33, 0x33, 0xCC)),
-            "unrated" => RenderTextBadge("UNRATED", height, new SKColor(0xE2, 0x31, 0x33), new SKColor(0x33, 0x10, 0x10, 0xCC)),
-            "specialedition" => RenderTextBadge("SPECIAL EDITION", height, new SKColor(0x5B, 0xC4, 0xF0), new SKColor(0x10, 0x25, 0x35, 0xCC)),
-            "remastered" => RenderTextBadge("REMASTERED", height, new SKColor(0xF5, 0xC5, 0x18), new SKColor(0x28, 0x24, 0x10, 0xCC)),
-            "finalcut" => RenderTextBadge("FINAL CUT", height, SKColors.White, new SKColor(0x33, 0x33, 0x33, 0xCC)),
-            _ => RenderTextBadge(badgeKey.ToUpperInvariant(), height, SKColors.White, new SKColor(0x27, 0x27, 0x2A, 0xCC))
+            "imax" => RenderTextBadge("IMAX", height, new SKColor(0x00, 0xA4, 0xE4), transparentBg ? null : new SKColor(0x00, 0x20, 0x40, 0xCC)),
+            "extended" => RenderTextBadge("EXTENDED", height, SKColors.White, transparentBg ? null : new SKColor(0x33, 0x33, 0x33, 0xCC)),
+            "directorscut" => RenderTextBadge("DIRECTOR'S CUT", height, new SKColor(0xF5, 0xC5, 0x18), transparentBg ? null : new SKColor(0x22, 0x1E, 0x10, 0xCC)),
+            "theatrical" => RenderTextBadge("THEATRICAL", height, SKColors.White, transparentBg ? null : new SKColor(0x33, 0x33, 0x33, 0xCC)),
+            "unrated" => RenderTextBadge("UNRATED", height, new SKColor(0xE2, 0x31, 0x33), transparentBg ? null : new SKColor(0x33, 0x10, 0x10, 0xCC)),
+            "specialedition" => RenderTextBadge("SPECIAL EDITION", height, new SKColor(0x5B, 0xC4, 0xF0), transparentBg ? null : new SKColor(0x10, 0x25, 0x35, 0xCC)),
+            "remastered" => RenderTextBadge("REMASTERED", height, new SKColor(0xF5, 0xC5, 0x18), transparentBg ? null : new SKColor(0x28, 0x24, 0x10, 0xCC)),
+            "finalcut" => RenderTextBadge("FINAL CUT", height, SKColors.White, transparentBg ? null : new SKColor(0x33, 0x33, 0x33, 0xCC)),
+            _ => RenderTextBadge(badgeKey.ToUpperInvariant(), height, SKColors.White, transparentBg ? null : new SKColor(0x27, 0x27, 0x2A, 0xCC))
         };
     }
 
@@ -209,7 +211,7 @@ public class ThemeAssetManager
         return bitmap;
     }
 
-    private static SKBitmap RenderDolbyVisionBadge(int height)
+    private static SKBitmap RenderDolbyVisionBadge(int height, bool transparentBg = false)
     {
         // Renders Dolby Vision icon: [DO][DV] with iconic blue/cyan styling
         var fontSize = height * 0.78f;
@@ -228,28 +230,46 @@ public class ThemeAssetManager
         using var canvas = new SKCanvas(bitmap);
         canvas.Clear(SKColors.Transparent);
 
-        var pillRect = new SKRoundRect(new SKRect(0, 0, width, height), height * 0.18f);
-        using var bgPaint = new SKPaint
+        var startX = height * 0.15f;
+
+        if (!transparentBg)
         {
-            Color = new SKColor(0x00, 0x00, 0x00, 0xBB),
-            IsAntialias = true
-        };
-        canvas.DrawRoundRect(pillRect, bgPaint);
+            var pillRect = new SKRoundRect(new SKRect(0, 0, width, height), height * 0.18f);
+            using var bgPaint = new SKPaint
+            {
+                Color = new SKColor(0x00, 0x00, 0x00, 0xBB),
+                IsAntialias = true
+            };
+            canvas.DrawRoundRect(pillRect, bgPaint);
+        }
+        else
+        {
+            // Subtle shadow when in unified pill
+            using var shadowPaint = new SKPaint
+            {
+                Color = new SKColor(0x00, 0x00, 0x00, 0xAA),
+                IsAntialias = true,
+                TextSize = fontSize,
+                Typeface = paint.Typeface
+            };
+            canvas.DrawText("DO", startX + 1.5f, (height * 0.78f) + 1.5f, shadowPaint);
+            canvas.DrawText("DV", startX + doWidth + 5.5f, (height * 0.78f) + 1.5f, shadowPaint);
+        }
 
         // DO in Cyan/Blue
         paint.Color = new SKColor(0x38, 0xBD, 0xF8);
-        canvas.DrawText("DO", height * 0.15f, height * 0.78f, paint);
+        canvas.DrawText("DO", startX, height * 0.78f, paint);
 
         // DV in Electric Blue
         paint.Color = new SKColor(0x02, 0x84, 0xC7);
-        canvas.DrawText("DV", (height * 0.15f) + doWidth + 4f, height * 0.78f, paint);
+        canvas.DrawText("DV", startX + doWidth + 4f, height * 0.78f, paint);
 
         return bitmap;
     }
 
-    private static SKBitmap RenderTextBadge(string text, int height, SKColor textColor, SKColor bgColor)
+    private static SKBitmap RenderTextBadge(string text, int height, SKColor textColor, SKColor? bgColor)
     {
-        var fontSize = height * 0.65f;
+        var fontSize = height * (bgColor.HasValue ? 0.65f : 0.75f);
         using var paint = new SKPaint
         {
             Color = textColor,
@@ -259,22 +279,37 @@ public class ThemeAssetManager
         };
 
         var textWidth = paint.MeasureText(text);
-        var paddingX = height * 0.35f;
+        var paddingX = bgColor.HasValue ? (height * 0.35f) : (height * 0.12f);
         var width = (int)Math.Ceiling(textWidth + (paddingX * 2));
 
         var bitmap = new SKBitmap(width, height);
         using var canvas = new SKCanvas(bitmap);
         canvas.Clear(SKColors.Transparent);
 
-        var rect = new SKRoundRect(new SKRect(0, 0, width, height), height * 0.22f);
-        using var bgPaint = new SKPaint
+        if (bgColor.HasValue)
         {
-            Color = bgColor,
-            IsAntialias = true
-        };
-        canvas.DrawRoundRect(rect, bgPaint);
+            var rect = new SKRoundRect(new SKRect(0, 0, width, height), height * 0.22f);
+            using var bgPaint = new SKPaint
+            {
+                Color = bgColor.Value,
+                IsAntialias = true
+            };
+            canvas.DrawRoundRect(rect, bgPaint);
+        }
+        else
+        {
+            // Drop shadow for legibility inside unified transparent pill
+            using var shadowPaint = new SKPaint
+            {
+                Color = new SKColor(0x00, 0x00, 0x00, 0xAA),
+                IsAntialias = true,
+                TextSize = fontSize,
+                Typeface = paint.Typeface
+            };
+            canvas.DrawText(text, paddingX + 1.5f, (height * 0.78f) + 1.5f, shadowPaint);
+        }
 
-        canvas.DrawText(text, paddingX, height * 0.73f, paint);
+        canvas.DrawText(text, paddingX, height * 0.78f, paint);
         return bitmap;
     }
 

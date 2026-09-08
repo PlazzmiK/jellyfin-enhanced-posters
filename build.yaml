@@ -1,7 +1,7 @@
 ---
 name: "Enhanced Posters"
 guid: "e2a4f610-705b-4c59-bfcb-96d54238e88e"
-version: "1.1.1.0"
+version: "1.1.2.0"
 targetAbi: "10.11.10.0"
 framework: "net9.0"
 overview: "Non-destructive poster overlays with media badges and dynamic ratings for Jellyfin."
@@ -13,5 +13,6 @@ imageUrl: "https://raw.githubusercontent.com/PlazzmiK/jellyfin-enhanced-posters/
 artifacts:
   - "PostersEnhanced.dll"
 changelog: |
-  ### Added
-  - Automatic detection of refreshed/updated artwork: when posters are refreshed via metadata scans or manually updated in Jellyfin, the pristine backup is automatically updated with the new artwork before re-applying overlays.
+  ### Fixed
+  - Badges sitting flush against side borders: fixed settings bindings for badge horizontal offsets in Jellyfin dashboard, added automatic fallback to vertical offset when side offset is unspecified/zero, and added proportional resolution scaling.
+  - Combined pill background: removed duplicate dark solid background box behind HDR10, Dolby Vision, and text badges so badges render cleanly and directly inside the unified translucent pill.

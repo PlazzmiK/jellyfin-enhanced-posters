@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.2] - 2026-09-08
+
+### Fixed
+- Badges sitting flush against side borders: fixed settings bindings for badge horizontal offsets in Jellyfin dashboard, added automatic fallback to vertical offset when side offset is unspecified/zero, and added proportional resolution scaling.
+- Combined pill background: removed duplicate dark solid background box behind HDR10, Dolby Vision, and text badges so badges render cleanly and directly inside the unified translucent pill.
+
 ## [1.1.1] - 2026-09-08
 
 ### Added

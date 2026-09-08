@@ -129,7 +129,7 @@ public static class ImageCompositor
                 foreach (var key in keys)
                 {
                     var customData = config.GetCustomBadge(key);
-                    var bmp = themeManager.GetBadge(config.Theme, key, badgeHeight, customData);
+                    var bmp = themeManager.GetBadge(config.Theme, key, badgeHeight, customData, transparentBg: config.CombineBadgesInPill);
                     if (bmp is not null)
                     {
                         loadedBadges.Add(bmp);
@@ -141,13 +141,22 @@ public static class ImageCompositor
                     continue;
                 }
 
+                // Resolve effective offsets: fallback to offsetY if offsetX <= 0, and scale proportionally to poster resolution
+                var effOffsetX = offsetX > 0 ? offsetX : (offsetY > 0 ? offsetY : 24);
+                var effOffsetY = offsetY > 0 ? offsetY : 24;
+
+                var scaleX = Math.Max(1f, posterWidth / 1000f);
+                var scaleY = Math.Max(1f, posterHeight / 1500f);
+                var scaledOffsetX = (int)Math.Round(effOffsetX * scaleX);
+                var scaledOffsetY = (int)Math.Round(effOffsetY * scaleY);
+
                 if (config.CombineBadgesInPill)
                 {
-                    RenderCombinedPill(canvas, posterWidth, posterHeight, anchor, offsetX, offsetY, totalHeight, loadedBadges, config);
+                    RenderCombinedPill(canvas, posterWidth, posterHeight, anchor, scaledOffsetX, scaledOffsetY, totalHeight, loadedBadges, config);
                 }
                 else
                 {
-                    RenderSeparateBadges(canvas, posterWidth, posterHeight, anchor, offsetX, offsetY, badgeHeight, loadedBadges, config);
+                    RenderSeparateBadges(canvas, posterWidth, posterHeight, anchor, scaledOffsetX, scaledOffsetY, badgeHeight, loadedBadges, config);
                 }
             }
             finally
@@ -330,14 +339,22 @@ public static class ImageCompositor
         var paddingX = config.RatingPaddingX;
         var pillWidth = textWidth + (paddingX * 2f);
 
+        var effOffsetX = config.RatingBadgeOffsetX > 0 ? config.RatingBadgeOffsetX : (config.RatingBadgeOffsetY > 0 ? config.RatingBadgeOffsetY : 24);
+        var effOffsetY = config.RatingBadgeOffsetY > 0 ? config.RatingBadgeOffsetY : 24;
+
+        var scaleX = Math.Max(1f, posterWidth / 1000f);
+        var scaleY = Math.Max(1f, posterHeight / 1500f);
+        var scaledOffsetX = (int)Math.Round(effOffsetX * scaleX);
+        var scaledOffsetY = (int)Math.Round(effOffsetY * scaleY);
+
         var (originX, originY) = CalculateAnchorCoordinates(
             config.RatingBadgeAnchor,
             posterWidth,
             posterHeight,
             pillWidth,
             pillHeight,
-            config.RatingBadgeOffsetX,
-            config.RatingBadgeOffsetY);
+            scaledOffsetX,
+            scaledOffsetY);
 
         var pillRect = new SKRect(originX, originY, originX + pillWidth, originY + pillHeight);
         var cornerRadius = config.RatingCornerRadius;
