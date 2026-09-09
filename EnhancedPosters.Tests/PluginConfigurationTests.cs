@@ -70,6 +70,23 @@ public class PluginConfigurationTests
     }
 
     [Fact]
+    public void PreferCombinedBadges_DefaultsToTrue_AndAffectsConfigHash()
+    {
+        var config = new PluginConfiguration();
+        Assert.True(config.PreferCombinedResolutionAndHdrBadges);
+        Assert.True(config.PreferCombinedAudioBadges);
+
+        var hash1 = config.ComputeConfigHash();
+        config.PreferCombinedResolutionAndHdrBadges = false;
+        var hash2 = config.ComputeConfigHash();
+        config.PreferCombinedAudioBadges = false;
+        var hash3 = config.ComputeConfigHash();
+
+        Assert.NotEqual(hash1, hash2);
+        Assert.NotEqual(hash2, hash3);
+    }
+
+    [Fact]
     public void GetRatingBackgroundColor_MatchesDynamicTiers()
     {
         var config = new PluginConfiguration();

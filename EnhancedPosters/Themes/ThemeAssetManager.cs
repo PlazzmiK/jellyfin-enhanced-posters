@@ -192,6 +192,30 @@ public class ThemeAssetManager
             case "hdr10":
                 AddKeyCandidates("hdr");
                 break;
+            case "4khdr10plus":
+                AddKeyCandidates("4kplus");
+                break;
+            case "1080phdr10plus":
+                AddKeyCandidates("1080pplus");
+                break;
+            case "720phdr10plus":
+                AddKeyCandidates("720pplus");
+                break;
+            case "480phdr10plus":
+                AddKeyCandidates("480pplus");
+                break;
+            case "4khdr10":
+                AddKeyCandidates("4khdr");
+                break;
+            case "1080phdr10":
+                AddKeyCandidates("1080phdr");
+                break;
+            case "720phdr10":
+                AddKeyCandidates("720phdr");
+                break;
+            case "480phdr10":
+                AddKeyCandidates("480phdr");
+                break;
             case "dtshd":
                 AddKeyCandidates("ma");
                 AddKeyCandidates("dts");

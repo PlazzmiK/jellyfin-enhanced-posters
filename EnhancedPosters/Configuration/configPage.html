@@ -462,6 +462,20 @@
                                         <label><input is="emby-checkbox" type="checkbox" id="chkShowDtsHdMa" /><span>DTS-HD MA</span></label>
                                         <label><input is="emby-checkbox" type="checkbox" id="chkShowFlac" /><span>FLAC</span></label>
                                     </div>
+
+                                    <h4 style="margin-top: 16px;">Combined Badge Badges</h4>
+                                    <div class="checkboxContainer" style="margin-bottom: 6px;">
+                                        <label>
+                                            <input is="emby-checkbox" type="checkbox" id="chkPreferCombinedResolutionAndHdrBadges" />
+                                            <span><strong>Combine Resolution &amp; HDR into single badge</strong> (e.g. 4K + DV &rarr; 4K DV, 4K + HDR &rarr; 4K HDR)</span>
+                                        </label>
+                                    </div>
+                                    <div class="checkboxContainer">
+                                        <label>
+                                            <input is="emby-checkbox" type="checkbox" id="chkPreferCombinedAudioBadges" />
+                                            <span><strong>Combine Audio Codec &amp; Atmos into single badge</strong> (e.g. TrueHD + Atmos &rarr; TrueHD Atmos)</span>
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
 
@@ -1321,10 +1335,39 @@
                     }
 
                     // Visibility toggles
-                    preview4k.style.display = showMedia && document.getElementById("chkShow4K").checked ? "inline-block" : "none";
-                    previewDv.style.display = showMedia && document.getElementById("chkShowDolbyVision").checked ? "inline-block" : "none";
-                    previewHdr.style.display = showMedia && document.getElementById("chkShowHdr10").checked ? "inline-block" : "none";
-                    previewAtmos.style.display = showMedia && document.getElementById("chkShowAudioBadges").checked && document.getElementById("chkShowDolbyAtmos").checked ? "inline-block" : "none";
+                    var comboResHdr = document.getElementById("chkPreferCombinedResolutionAndHdrBadges").checked;
+                    var comboAudio = document.getElementById("chkPreferCombinedAudioBadges").checked;
+
+                    var show4k = showMedia && document.getElementById("chkShow4K").checked;
+                    var showDv = showMedia && document.getElementById("chkShowDolbyVision").checked;
+                    var showHdr = showMedia && document.getElementById("chkShowHdr10").checked;
+                    var showAtmos = showMedia && document.getElementById("chkShowAudioBadges").checked && document.getElementById("chkShowDolbyAtmos").checked;
+                    var showTrueHd = showMedia && document.getElementById("chkShowAudioBadges").checked && document.getElementById("chkShowTrueHd").checked;
+
+                    if (comboResHdr && show4k && showDv) {
+                        preview4k.textContent = "4K DV";
+                        preview4k.style.display = "inline-block";
+                        previewDv.style.display = "none";
+                        previewHdr.style.display = "none";
+                    } else if (comboResHdr && show4k && showHdr) {
+                        preview4k.textContent = "4K HDR";
+                        preview4k.style.display = "inline-block";
+                        previewDv.style.display = "none";
+                        previewHdr.style.display = "none";
+                    } else {
+                        preview4k.textContent = "4K";
+                        preview4k.style.display = show4k ? "inline-block" : "none";
+                        previewDv.style.display = showDv ? "inline-block" : "none";
+                        previewHdr.style.display = showHdr ? "inline-block" : "none";
+                    }
+
+                    if (comboAudio && showAtmos && showTrueHd) {
+                        previewAtmos.textContent = "TRUEHD ATMOS";
+                        previewAtmos.style.display = "inline-block";
+                    } else {
+                        previewAtmos.textContent = "ATMOS";
+                        previewAtmos.style.display = showAtmos ? "inline-block" : "none";
+                    }
 
                     if (combinePill) {
                         mediaPill.style.display = showMedia ? "flex" : "none";
@@ -1557,6 +1600,8 @@
                         document.getElementById("chkShowDtsX").checked = getCfg(config, "ShowDtsX", "showDtsX", true);
                         document.getElementById("chkShowDtsHdMa").checked = getCfg(config, "ShowDtsHdMa", "showDtsHdMa", false);
                         document.getElementById("chkShowFlac").checked = getCfg(config, "ShowFlac", "showFlac", false);
+                        document.getElementById("chkPreferCombinedResolutionAndHdrBadges").checked = getCfg(config, "PreferCombinedResolutionAndHdrBadges", "preferCombinedResolutionAndHdrBadges", true);
+                        document.getElementById("chkPreferCombinedAudioBadges").checked = getCfg(config, "PreferCombinedAudioBadges", "preferCombinedAudioBadges", true);
 
                         document.getElementById("selectMediaAnchor").value = getCfg(config, "MediaBadgesAnchor", "mediaBadgesAnchor", "BottomLeft");
                         document.getElementById("txtMediaOffsetX").value = getCfg(config, "MediaBadgesOffsetX", "mediaBadgesOffsetX", 24);
@@ -1696,6 +1741,8 @@
                         config.ShowDtsX = document.getElementById("chkShowDtsX").checked;
                         config.ShowDtsHdMa = document.getElementById("chkShowDtsHdMa").checked;
                         config.ShowFlac = document.getElementById("chkShowFlac").checked;
+                        config.PreferCombinedResolutionAndHdrBadges = document.getElementById("chkPreferCombinedResolutionAndHdrBadges").checked;
+                        config.PreferCombinedAudioBadges = document.getElementById("chkPreferCombinedAudioBadges").checked;
 
                         config.MediaBadgesAnchor = document.getElementById("selectMediaAnchor").value;
                         config.MediaBadgesOffsetX = parseInt(document.getElementById("txtMediaOffsetX").value || 24, 10);

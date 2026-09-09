@@ -1,7 +1,7 @@
 ---
 name: "Enhanced Posters"
 guid: "e2a4f610-705b-4c59-bfcb-96d54238e88e"
-version: "1.4.0.0"
+version: "1.4.1.0"
 targetAbi: "10.11.10.0"
 framework: "net9.0"
 overview: "Non-destructive poster overlays with media badges and dynamic ratings for Jellyfin."
@@ -14,11 +14,7 @@ artifacts:
   - "EnhancedPosters.dll"
 changelog: |
   ### Added
-  - Built-in Kometa badge assets embedded natively for resolution (4K, 1080p, 720p, 480p, 576p), video (Dolby Vision, HDR, HDR10+, HLG), audio (Dolby Atmos, DTS:X, TrueHD, DTS-HD MA, FLAC, Opus), edition (IMAX, Extended, Director's Cut, Theatrical, Unrated, Criterion), and combo badges.
-  - Glassmorphic translucent pill container with proportional badge scaling, generous top/bottom margins, and configurable tag spacing.
-  - Unified styling across all badge anchors: edition badges (e.g. IMAX) now render in the matching sleek translucent pill container.
-
-  ### Changed
-  - Transitioned project branding, assembly names, solution, and namespaces to "Enhanced Posters" (`EnhancedPosters`) with full backward-compatibility migration for existing disk data and scheduled tasks.
-  - Updated project logo and catalog assets to the new Enhanced Posters cosmic poster badge design.
-  - Adjusted default pill container styling for enhanced glassmorphism transparency (65% opacity, soft shadow, subtle white border outline).
+  - Native support for combined resolution and HDR badge assets: automatically unifies resolution and dynamic range into authentic pre-combined badges (e.g. 4K DV, 4K HDR, 4K HDR10+, 4K DV HDR, 1080p DV, 1080p HDR, etc.).
+  - Audio combo badge support: automatically pairs Dolby Atmos and Dolby TrueHD into unified `truehd_atmos` badges.
+  - Intelligent HDR fallback detection: detects Dolby Vision media with HDR10 or HDR10+ fallback layers (`DOVIWithHDR10`, `DOVIWithHDR10Plus`, tags) and composites exact multi-format badges (`4kdvhdr`, `4kdvhdrplus`).
+  - Dashboard toggles for combined badges: easily enable or disable resolution/HDR combining and audio combining under Poster Settings, complete with real-time live preview updates.

@@ -12,6 +12,9 @@ namespace EnhancedPosters.Metadata;
 /// <param name="Edition">Detected edition type.</param>
 /// <param name="CustomEditionName">Custom edition label if parsed from tags.</param>
 /// <param name="Is3D">Value indicating whether media is in 3D format.</param>
+/// <param name="HasHdrFallback">Value indicating whether Dolby Vision media has an HDR fallback layer.</param>
+/// <param name="HasHdr10PlusFallback">Value indicating whether Dolby Vision media has an HDR10+ fallback layer.</param>
+/// <param name="HasTrueHdWithAtmos">Value indicating whether Dolby Atmos audio is delivered via Dolby TrueHD.</param>
 public record ExtractedMediaInfo(
     MediaResolution Resolution,
     VideoHdrType HdrType,
@@ -19,4 +22,7 @@ public record ExtractedMediaInfo(
     float? Rating,
     EditionType Edition = EditionType.None,
     string? CustomEditionName = null,
-    bool Is3D = false);
+    bool Is3D = false,
+    bool HasHdrFallback = false,
+    bool HasHdr10PlusFallback = false,
+    bool HasTrueHdWithAtmos = false);

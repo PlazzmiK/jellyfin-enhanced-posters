@@ -555,58 +555,158 @@ public static class ImageCompositor
     {
         var keys = new List<string>();
 
-        // Resolution Badges
+        // 1. Resolve Resolution Prefix
+        string? resPrefix = null;
         if (config.ShowResolutionBadges)
         {
             if (info.Resolution == MediaResolution.Uhd4K && config.Show4K)
             {
-                keys.Add("4k");
+                resPrefix = "4k";
             }
             else if (info.Resolution == MediaResolution.Fhd1080p && config.Show1080p)
             {
-                keys.Add("1080p");
+                resPrefix = "1080p";
             }
             else if (info.Resolution == MediaResolution.Hd720p && config.Show720p)
             {
-                keys.Add("720p");
+                resPrefix = "720p";
             }
             else if (info.Resolution == MediaResolution.Sd && config.ShowSD)
             {
-                keys.Add("sd");
+                resPrefix = "480p";
             }
         }
 
-        // Video Range / HDR Badges
+        // 2. Resolve Video Range / HDR
+        var hdrActive = false;
+        var isDv = false;
+        var isHdr10Plus = false;
+        var isHdr10 = false;
+        var isHdr = false;
+        var isHlg = false;
+
         if (config.ShowVideoRangeBadges)
         {
             if (info.HdrType == VideoHdrType.DolbyVision && config.ShowDolbyVision)
             {
-                keys.Add("dv");
+                hdrActive = true;
+                isDv = true;
             }
             else if (info.HdrType == VideoHdrType.Hdr10Plus && config.ShowHdr10Plus)
             {
-                keys.Add("hdr10plus");
+                hdrActive = true;
+                isHdr10Plus = true;
             }
             else if (info.HdrType == VideoHdrType.Hdr10 && config.ShowHdr10)
             {
-                keys.Add("hdr10");
+                hdrActive = true;
+                isHdr10 = true;
             }
             else if (info.HdrType == VideoHdrType.Hdr && config.ShowHdr)
             {
-                keys.Add("hdr");
+                hdrActive = true;
+                isHdr = true;
             }
             else if (info.HdrType == VideoHdrType.Hlg && config.ShowHlg)
             {
-                keys.Add("hlg");
+                hdrActive = true;
+                isHlg = true;
             }
         }
 
-        // Audio Badges
+        // 3. Combine Resolution & HDR if preferred and both active
+        if (config.PreferCombinedResolutionAndHdrBadges && resPrefix is not null && hdrActive)
+        {
+            if (isDv)
+            {
+                if (info.HasHdr10PlusFallback)
+                {
+                    keys.Add($"{resPrefix}dvhdrplus");
+                }
+                else if (info.HasHdrFallback)
+                {
+                    keys.Add($"{resPrefix}dvhdr");
+                }
+                else
+                {
+                    keys.Add($"{resPrefix}dv");
+                }
+            }
+            else if (isHdr10Plus)
+            {
+                keys.Add($"{resPrefix}plus");
+            }
+            else if (isHdr10 || isHdr)
+            {
+                keys.Add($"{resPrefix}hdr");
+            }
+            else if (isHlg)
+            {
+                keys.Add($"{resPrefix}hlg");
+            }
+        }
+        else
+        {
+            // Add resolution separately if active
+            if (resPrefix is not null)
+            {
+                keys.Add(resPrefix == "480p" ? "sd" : resPrefix);
+            }
+
+            // Add HDR separately if active
+            if (hdrActive)
+            {
+                if (isDv)
+                {
+                    if (info.HasHdr10PlusFallback)
+                    {
+                        keys.Add("dvhdrplus");
+                    }
+                    else if (info.HasHdrFallback)
+                    {
+                        keys.Add("dvhdr");
+                    }
+                    else
+                    {
+                        keys.Add("dv");
+                    }
+                }
+                else if (isHdr10Plus)
+                {
+                    keys.Add("hdr10plus");
+                }
+                else if (isHdr10)
+                {
+                    keys.Add("hdr10");
+                }
+                else if (isHdr)
+                {
+                    keys.Add("hdr");
+                }
+                else if (isHlg)
+                {
+                    keys.Add("hlg");
+                }
+            }
+        }
+
+        // 4. Audio Badges
         if (config.ShowAudioBadges)
         {
             if (info.AudioCodec == AudioCodecType.DolbyAtmos && config.ShowDolbyAtmos)
             {
-                keys.Add("atmos");
+                if (config.PreferCombinedAudioBadges && info.HasTrueHdWithAtmos)
+                {
+                    keys.Add("truehd_atmos");
+                }
+                else
+                {
+                    keys.Add("atmos");
+                    if (!config.PreferCombinedAudioBadges && info.HasTrueHdWithAtmos && config.ShowTrueHd)
+                    {
+                        keys.Add("truehd");
+                    }
+                }
             }
             else if (info.AudioCodec == AudioCodecType.DtsX && config.ShowDtsX)
             {

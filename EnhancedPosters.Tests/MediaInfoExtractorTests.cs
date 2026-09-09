@@ -140,5 +140,37 @@ public class MediaInfoExtractorTests
         // (7.5 + 8.5) / 2 = 8.0
         Assert.Equal(8.0f, score);
     }
+
+    [Theory]
+    [InlineData("DOVI", VideoHdrType.DolbyVision, false, false)]
+    [InlineData("Dolby Vision", VideoHdrType.DolbyVision, false, false)]
+    [InlineData("DOVIWithHDR10", VideoHdrType.DolbyVision, true, false)]
+    [InlineData("DV HDR10", VideoHdrType.DolbyVision, true, false)]
+    [InlineData("DOVIWithHDR10Plus", VideoHdrType.DolbyVision, true, true)]
+    [InlineData("Dolby Vision HDR10+", VideoHdrType.DolbyVision, true, true)]
+    [InlineData("HDR10+", VideoHdrType.Hdr10Plus, false, false)]
+    [InlineData("HDR10", VideoHdrType.Hdr10, false, false)]
+    public void DetectHdrDetails_DetectsFallbackLayersCorrectly(string title, VideoHdrType expectedType, bool expectedHdr, bool expectedPlus)
+    {
+        var stream = new MediaStream { Type = MediaStreamType.Video, Title = title };
+        var (hdrType, hasHdr, hasPlus) = MediaInfoExtractor.DetectHdrDetails(stream);
+
+        Assert.Equal(expectedType, hdrType);
+        Assert.Equal(expectedHdr, hasHdr);
+        Assert.Equal(expectedPlus, hasPlus);
+    }
+
+    [Theory]
+    [InlineData("Dolby TrueHD with Dolby Atmos", "truehd", AudioCodecType.DolbyAtmos, true)]
+    [InlineData("Dolby Digital Plus with Dolby Atmos", "eac3", AudioCodecType.DolbyAtmos, false)]
+    [InlineData("Dolby TrueHD 7.1", "truehd", AudioCodecType.TrueHd, false)]
+    public void DetectAudioDetails_DetectsTrueHdAtmosCorrectly(string title, string codec, AudioCodecType expectedCodec, bool expectedTrueHdAtmos)
+    {
+        var stream = new MediaStream { Type = MediaStreamType.Audio, Title = title, Codec = codec };
+        var (detectedCodec, hasTrueHd) = MediaInfoExtractor.DetectAudioDetails(stream);
+
+        Assert.Equal(expectedCodec, detectedCodec);
+        Assert.Equal(expectedTrueHdAtmos, hasTrueHd);
+    }
 }
 

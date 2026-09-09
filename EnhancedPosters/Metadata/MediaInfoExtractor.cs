@@ -25,7 +25,10 @@ public static class MediaInfoExtractor
 
         var resolution = MediaResolution.None;
         var hdrType = VideoHdrType.None;
+        var hasHdrFallback = false;
+        var hasHdr10PlusFallback = false;
         var audioCodec = AudioCodecType.None;
+        var hasTrueHdWithAtmos = false;
 
         var mediaStreams = item.GetMediaStreams();
         if (mediaStreams is not null && mediaStreams.Count > 0)
@@ -34,13 +37,13 @@ public static class MediaInfoExtractor
             if (videoStream is not null)
             {
                 resolution = DetectResolution(videoStream);
-                hdrType = DetectHdrType(videoStream);
+                (hdrType, hasHdrFallback, hasHdr10PlusFallback) = DetectHdrDetails(videoStream);
             }
 
             var audioStream = mediaStreams.FirstOrDefault(s => s.Type == MediaStreamType.Audio);
             if (audioStream is not null)
             {
-                audioCodec = DetectAudioCodec(audioStream);
+                (audioCodec, hasTrueHdWithAtmos) = DetectAudioDetails(audioStream);
             }
         }
 
@@ -48,7 +51,7 @@ public static class MediaInfoExtractor
         var (edition, customEditionName) = DetectEdition(item);
         var is3D = Detect3D(item);
 
-        return new ExtractedMediaInfo(resolution, hdrType, audioCodec, rating, edition, customEditionName, is3D);
+        return new ExtractedMediaInfo(resolution, hdrType, audioCodec, rating, edition, customEditionName, is3D, hasHdrFallback, hasHdr10PlusFallback, hasTrueHdWithAtmos);
     }
 
     /// <summary>
@@ -87,11 +90,11 @@ public static class MediaInfoExtractor
     }
 
     /// <summary>
-    /// Detects the HDR or color range type from video stream properties.
+    /// Detects HDR details including color range type and fallback layers (e.g. Dolby Vision with HDR10/HDR10+ fallback).
     /// </summary>
     /// <param name="stream">The video stream.</param>
-    /// <returns>The detected HDR type.</returns>
-    public static VideoHdrType DetectHdrType(MediaStream stream)
+    /// <returns>A tuple containing HDR type and fallback flags.</returns>
+    public static (VideoHdrType HdrType, bool HasHdrFallback, bool HasHdr10PlusFallback) DetectHdrDetails(MediaStream stream)
     {
         ArgumentNullException.ThrowIfNull(stream);
 
@@ -102,43 +105,76 @@ public static class MediaInfoExtractor
 
         var combined = $"{videoRange} {videoRangeType} {title} {comment}".ToUpperInvariant();
 
-        if (combined.Contains("DOVI", StringComparison.Ordinal) ||
-            combined.Contains("DV", StringComparison.Ordinal) ||
-            combined.Contains("DOLBY VISION", StringComparison.Ordinal))
+        var hasDv = combined.Contains("DOVI", StringComparison.Ordinal) ||
+                    combined.Contains("DV", StringComparison.Ordinal) ||
+                    combined.Contains("DOLBY VISION", StringComparison.Ordinal);
+
+        var hasHdr10Plus = combined.Contains("HDR10+", StringComparison.Ordinal) ||
+                           combined.Contains("HDR10PLUS", StringComparison.Ordinal) ||
+                           combined.Contains("DOVIWITHHDR10PLUS", StringComparison.Ordinal);
+
+        var hasHdr10 = combined.Contains("HDR10", StringComparison.Ordinal) ||
+                       combined.Contains("DOVIWITHHDR10", StringComparison.Ordinal);
+
+        var hasHlg = combined.Contains("HLG", StringComparison.Ordinal) ||
+                     combined.Contains("DOVIWITHHLG", StringComparison.Ordinal);
+
+        var hasHdr = combined.Contains("HDR", StringComparison.Ordinal);
+
+        if (hasDv)
         {
-            return VideoHdrType.DolbyVision;
+            if (hasHdr10Plus)
+            {
+                return (VideoHdrType.DolbyVision, HasHdrFallback: true, HasHdr10PlusFallback: true);
+            }
+
+            if (hasHdr10 || hasHdr)
+            {
+                return (VideoHdrType.DolbyVision, HasHdrFallback: true, HasHdr10PlusFallback: false);
+            }
+
+            return (VideoHdrType.DolbyVision, HasHdrFallback: false, HasHdr10PlusFallback: false);
         }
 
-        if (combined.Contains("HDR10+", StringComparison.Ordinal) ||
-            combined.Contains("HDR10PLUS", StringComparison.Ordinal))
+        if (hasHdr10Plus)
         {
-            return VideoHdrType.Hdr10Plus;
+            return (VideoHdrType.Hdr10Plus, false, false);
         }
 
-        if (combined.Contains("HDR10", StringComparison.Ordinal))
+        if (hasHdr10)
         {
-            return VideoHdrType.Hdr10;
+            return (VideoHdrType.Hdr10, false, false);
         }
 
-        if (combined.Contains("HLG", StringComparison.Ordinal))
+        if (hasHlg)
         {
-            return VideoHdrType.Hlg;
+            return (VideoHdrType.Hlg, false, false);
         }
 
-        if (combined.Contains("HDR", StringComparison.Ordinal))
+        if (hasHdr)
         {
-            return VideoHdrType.Hdr;
+            return (VideoHdrType.Hdr, false, false);
         }
 
-        return VideoHdrType.None;
+        return (VideoHdrType.None, false, false);
     }
 
     /// <summary>
-    /// Detects the audio codec from audio stream properties.
+    /// Detects the HDR or color range type from video stream properties.
+    /// </summary>
+    /// <param name="stream">The video stream.</param>
+    /// <returns>The detected HDR type.</returns>
+    public static VideoHdrType DetectHdrType(MediaStream stream)
+    {
+        return DetectHdrDetails(stream).HdrType;
+    }
+
+    /// <summary>
+    /// Detects audio details including primary codec and whether Dolby Atmos is paired with TrueHD.
     /// </summary>
     /// <param name="stream">The audio stream.</param>
-    /// <returns>The detected audio codec.</returns>
-    public static AudioCodecType DetectAudioCodec(MediaStream stream)
+    /// <returns>A tuple containing the detected audio codec and whether Atmos has TrueHD base.</returns>
+    public static (AudioCodecType Codec, bool HasTrueHdWithAtmos) DetectAudioDetails(MediaStream stream)
     {
         ArgumentNullException.ThrowIfNull(stream);
 
@@ -148,32 +184,45 @@ public static class MediaInfoExtractor
 
         var combined = $"{title} {codec} {profile}".ToUpperInvariant();
 
-        if (combined.Contains("ATMOS", StringComparison.Ordinal))
+        var isAtmos = combined.Contains("ATMOS", StringComparison.Ordinal);
+        var isTrueHd = combined.Contains("TRUEHD", StringComparison.Ordinal);
+
+        if (isAtmos)
         {
-            return AudioCodecType.DolbyAtmos;
+            return (AudioCodecType.DolbyAtmos, isTrueHd);
         }
 
         if (combined.Contains("DTS:X", StringComparison.Ordinal) || combined.Contains("DTSX", StringComparison.Ordinal))
         {
-            return AudioCodecType.DtsX;
+            return (AudioCodecType.DtsX, false);
         }
 
-        if (combined.Contains("TRUEHD", StringComparison.Ordinal))
+        if (isTrueHd)
         {
-            return AudioCodecType.TrueHd;
+            return (AudioCodecType.TrueHd, false);
         }
 
         if (combined.Contains("DTS-HD MA", StringComparison.Ordinal) || combined.Contains("DTSHD", StringComparison.Ordinal))
         {
-            return AudioCodecType.DtsHdMa;
+            return (AudioCodecType.DtsHdMa, false);
         }
 
         if (combined.Contains("FLAC", StringComparison.Ordinal))
         {
-            return AudioCodecType.Flac;
+            return (AudioCodecType.Flac, false);
         }
 
-        return AudioCodecType.None;
+        return (AudioCodecType.None, false);
+    }
+
+    /// <summary>
+    /// Detects the audio codec from audio stream properties.
+    /// </summary>
+    /// <param name="stream">The audio stream.</param>
+    /// <returns>The detected audio codec.</returns>
+    public static AudioCodecType DetectAudioCodec(MediaStream stream)
+    {
+        return DetectAudioDetails(stream).Codec;
     }
 
     /// <summary>

@@ -47,6 +47,10 @@ public class PluginConfiguration : BasePluginConfiguration
         ShowDtsHdMa = false;
         ShowFlac = false;
 
+        // Combo Badges
+        PreferCombinedResolutionAndHdrBadges = true;
+        PreferCombinedAudioBadges = true;
+
         // Media Badges Layout
         MediaBadgesAnchor = AnchorPosition.BottomLeft;
         MediaBadgesOffsetX = 24;
@@ -176,6 +180,12 @@ public class PluginConfiguration : BasePluginConfiguration
 
     /// <summary>Gets or sets a value indicating whether FLAC badges are enabled.</summary>
     public bool ShowFlac { get; set; }
+
+    /// <summary>Gets or sets a value indicating whether to combine resolution and HDR into a single badge when both are present (e.g. 4K DV, 4K HDR, 1080p DV).</summary>
+    public bool PreferCombinedResolutionAndHdrBadges { get; set; }
+
+    /// <summary>Gets or sets a value indicating whether to combine audio codec and Atmos into a single badge when applicable (e.g. TrueHD Atmos).</summary>
+    public bool PreferCombinedAudioBadges { get; set; }
 
     /// <summary>Gets or sets the anchor position for media badges.</summary>
     public AnchorPosition MediaBadgesAnchor { get; set; }
@@ -461,6 +471,8 @@ public class PluginConfiguration : BasePluginConfiguration
         sb.Append(ShowDtsX).Append('|');
         sb.Append(ShowDtsHdMa).Append('|');
         sb.Append(ShowFlac).Append('|');
+        sb.Append(PreferCombinedResolutionAndHdrBadges).Append('|');
+        sb.Append(PreferCombinedAudioBadges).Append('|');
         sb.Append((int)MediaBadgesAnchor).Append('|');
         sb.Append(MediaBadgesOffsetX).Append('|');
         sb.Append(MediaBadgesOffsetY).Append('|');

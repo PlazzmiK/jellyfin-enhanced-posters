@@ -667,5 +667,171 @@ public class ImageCompositorTests
             Assert.Equal(40, badge.Height);
         }
     }
+
+    [Theory]
+    [InlineData(MediaResolution.Uhd4K, VideoHdrType.DolbyVision, false, false, true)]
+    [InlineData(MediaResolution.Uhd4K, VideoHdrType.DolbyVision, true, false, true)]
+    [InlineData(MediaResolution.Uhd4K, VideoHdrType.DolbyVision, true, true, true)]
+    [InlineData(MediaResolution.Uhd4K, VideoHdrType.Hdr10Plus, false, false, true)]
+    [InlineData(MediaResolution.Uhd4K, VideoHdrType.Hdr10, false, false, true)]
+    [InlineData(MediaResolution.Fhd1080p, VideoHdrType.DolbyVision, false, false, true)]
+    [InlineData(MediaResolution.Hd720p, VideoHdrType.Hdr, false, false, true)]
+    [InlineData(MediaResolution.Uhd4K, VideoHdrType.DolbyVision, false, false, false)]
+    public void Composite_WithCombinedResolutionAndHdr_GeneratesValidPoster(
+        MediaResolution resolution,
+        VideoHdrType hdrType,
+        bool hasHdrFallback,
+        bool hasHdr10PlusFallback,
+        bool preferCombined)
+    {
+        using var sourceBitmap = new SKBitmap(300, 450);
+        using var canvas = new SKCanvas(sourceBitmap);
+        canvas.Clear(SKColors.DarkBlue);
+
+        using var sourceStream = new MemoryStream();
+        sourceBitmap.Encode(sourceStream, SKEncodedImageFormat.Jpeg, 80);
+        sourceStream.Position = 0;
+
+        var mockPaths = new Mock<IApplicationPaths>();
+        mockPaths.Setup(p => p.PluginConfigurationsPath).Returns(Path.GetTempPath());
+        var themeManager = new ThemeAssetManager(mockPaths.Object);
+
+        var config = new PluginConfiguration
+        {
+            ResizeLowResolutionPosters = false,
+            ShowResolutionBadges = true,
+            Show4K = true,
+            Show1080p = true,
+            Show720p = true,
+            ShowVideoRangeBadges = true,
+            ShowDolbyVision = true,
+            ShowHdr10Plus = true,
+            ShowHdr10 = true,
+            ShowHdr = true,
+            PreferCombinedResolutionAndHdrBadges = preferCombined,
+            CombineBadgesInPill = true
+        };
+
+        var mediaInfo = new ExtractedMediaInfo(
+            resolution,
+            hdrType,
+            AudioCodecType.None,
+            8.0f,
+            HasHdrFallback: hasHdrFallback,
+            HasHdr10PlusFallback: hasHdr10PlusFallback);
+
+        using var resultStream = ImageCompositor.Composite(sourceStream, mediaInfo, config, themeManager);
+        Assert.NotNull(resultStream);
+        Assert.True(resultStream.Length > 0);
+
+        using var resultBitmap = SKBitmap.Decode(resultStream);
+        Assert.NotNull(resultBitmap);
+        Assert.Equal(300, resultBitmap.Width);
+        Assert.Equal(450, resultBitmap.Height);
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void Composite_WithAudioCombo_GeneratesValidPoster(bool preferCombinedAudio)
+    {
+        using var sourceBitmap = new SKBitmap(300, 450);
+        using var canvas = new SKCanvas(sourceBitmap);
+        canvas.Clear(SKColors.DarkGreen);
+
+        using var sourceStream = new MemoryStream();
+        sourceBitmap.Encode(sourceStream, SKEncodedImageFormat.Jpeg, 80);
+        sourceStream.Position = 0;
+
+        var mockPaths = new Mock<IApplicationPaths>();
+        mockPaths.Setup(p => p.PluginConfigurationsPath).Returns(Path.GetTempPath());
+        var themeManager = new ThemeAssetManager(mockPaths.Object);
+
+        var config = new PluginConfiguration
+        {
+            ResizeLowResolutionPosters = false,
+            ShowResolutionBadges = true,
+            Show4K = true,
+            ShowAudioBadges = true,
+            ShowDolbyAtmos = true,
+            ShowTrueHd = true,
+            PreferCombinedAudioBadges = preferCombinedAudio,
+            CombineBadgesInPill = true
+        };
+
+        var mediaInfo = new ExtractedMediaInfo(
+            MediaResolution.Uhd4K,
+            VideoHdrType.None,
+            AudioCodecType.DolbyAtmos,
+            null,
+            HasTrueHdWithAtmos: true);
+
+        using var resultStream = ImageCompositor.Composite(sourceStream, mediaInfo, config, themeManager);
+        Assert.NotNull(resultStream);
+        Assert.True(resultStream.Length > 0);
+
+        using var resultBitmap = SKBitmap.Decode(resultStream);
+        Assert.NotNull(resultBitmap);
+    }
+
+    [Fact]
+    public void GenerateComboBadgesArtifactPreview()
+    {
+        using var sourceBitmap = new SKBitmap(1000, 1500);
+        using var canvas = new SKCanvas(sourceBitmap);
+        using var shader = SKShader.CreateLinearGradient(
+            new SKPoint(0, 0),
+            new SKPoint(1000, 1500),
+            new[] { new SKColor(0x0F, 0x17, 0x2A), new SKColor(0x1E, 0x1B, 0x4B), new SKColor(0x02, 0x06, 0x17) },
+            null,
+            SKShaderTileMode.Clamp);
+        using var bgPaint = new SKPaint { Shader = shader };
+        canvas.DrawRect(0, 0, 1000, 1500, bgPaint);
+
+        using var sourceStream = new MemoryStream();
+        sourceBitmap.Encode(sourceStream, SKEncodedImageFormat.Jpeg, 95);
+        sourceStream.Position = 0;
+
+        var mockPaths = new Mock<IApplicationPaths>();
+        mockPaths.Setup(p => p.PluginConfigurationsPath).Returns(Path.GetTempPath());
+        var themeManager = new ThemeAssetManager(mockPaths.Object);
+
+        var config = new PluginConfiguration
+        {
+            ShowResolutionBadges = true,
+            Show4K = true,
+            ShowVideoRangeBadges = true,
+            ShowDolbyVision = true,
+            ShowAudioBadges = true,
+            ShowDolbyAtmos = true,
+            ShowTrueHd = true,
+            ShowEditionBadges = true,
+            ShowImax = true,
+            Show3DBadge = true,
+            ShowRatingBadge = true,
+            PreferCombinedResolutionAndHdrBadges = true,
+            PreferCombinedAudioBadges = true,
+            CombineBadgesInPill = true
+        };
+
+        var mediaInfo = new ExtractedMediaInfo(
+            MediaResolution.Uhd4K,
+            VideoHdrType.DolbyVision,
+            AudioCodecType.DolbyAtmos,
+            8.6f,
+            Edition: EditionType.Imax,
+            Is3D: true,
+            HasHdrFallback: true,
+            HasTrueHdWithAtmos: true);
+
+        using var resultStream = ImageCompositor.Composite(sourceStream, mediaInfo, config, themeManager);
+        var artifactDir = @"C:\Users\Jan\.gemini\antigravity-ide\brain\70da7e80-969c-4c77-8b55-57d5a19b870e";
+        if (Directory.Exists(artifactDir))
+        {
+            var previewPath = Path.Combine(artifactDir, "combo_badges_preview_v141.png");
+            using var file = File.Create(previewPath);
+            resultStream.CopyTo(file);
+        }
+    }
 }
 

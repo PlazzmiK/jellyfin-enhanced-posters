@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.1] - 2026-09-09
+
+### Added
+- Native support for combined resolution and HDR badge assets: automatically unifies resolution and dynamic range into authentic pre-combined badges (e.g. 4K DV, 4K HDR, 4K HDR10+, 4K DV HDR, 1080p DV, 1080p HDR, etc.).
+- Audio combo badge support: automatically pairs Dolby Atmos and Dolby TrueHD into unified `truehd_atmos` badges.
+- Intelligent HDR fallback detection: detects Dolby Vision media with HDR10 or HDR10+ fallback layers (`DOVIWithHDR10`, `DOVIWithHDR10Plus`, tags) and composites exact multi-format badges (`4kdvhdr`, `4kdvhdrplus`).
+- Dashboard toggles for combined badges: easily enable or disable resolution/HDR combining and audio combining under Poster Settings, complete with real-time live preview updates.
+
 ## [1.4.0] - 2026-09-09
 
 ### Added
