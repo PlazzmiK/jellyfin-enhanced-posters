@@ -9,6 +9,14 @@
         "imageUrl": "https://raw.githubusercontent.com/PlazzmiK/jellyfin-enhanced-posters/master/Assets/Catalog.png",
         "versions": [
             {
+                "version": "1.4.1.0",
+                "changelog": "### Added\n- Native support for combined resolution and HDR badge assets: automatically unifies resolution and dynamic range into authentic pre-combined badges (e.g. 4K DV, 4K HDR, 4K HDR10+, 4K DV HDR, 1080p DV, 1080p HDR, etc.).\n- Audio combo badge support: automatically pairs Dolby Atmos and Dolby TrueHD into unified `truehd_atmos` badges.\n- Intelligent HDR fallback detection: detects Dolby Vision media with HDR10 or HDR10+ fallback layers (`DOVIWithHDR10`, `DOVIWithHDR10Plus`, tags) and composites exact multi-format badges (`4kdvhdr`, `4kdvhdrplus`).\n- Dashboard toggles for combined badges: easily enable or disable resolution/HDR combining and audio combining under Poster Settings, complete with real-time live preview updates.\n",
+                "targetAbi": "10.11.10.0",
+                "sourceUrl": "https://github.com/PlazzmiK/jellyfin-enhanced-posters/releases/download/1.4.1/enhanced-posters_1.4.1.0.zip",
+                "checksum": "893afc8fc385cd56240cee392767ac71",
+                "timestamp": "2026-09-09T17:58:26Z"
+            },
+            {
                 "version": "1.4.0.0",
                 "changelog": "### Added\n- Built-in Kometa badge assets embedded natively for resolution (4K, 1080p, 720p, 480p, 576p), video (Dolby Vision, HDR, HDR10+, HLG), audio (Dolby Atmos, DTS:X, TrueHD, DTS-HD MA, FLAC, Opus), edition (IMAX, Extended, Director's Cut, Theatrical, Unrated, Criterion), and combo badges.\n- Glassmorphic translucent pill container with proportional badge scaling, generous top/bottom margins, and configurable tag spacing.\n- Unified styling across all badge anchors: edition badges (e.g. IMAX) now render in the matching sleek translucent pill container.\n\n### Changed\n- Transitioned project branding, assembly names, solution, and namespaces to \"Enhanced Posters\" (`EnhancedPosters`) with full backward-compatibility migration for existing disk data and scheduled tasks.\n- Updated project logo and catalog assets to the new Enhanced Posters cosmic poster badge design.\n- Adjusted default pill container styling for enhanced glassmorphism transparency (65% opacity, soft shadow, subtle white border outline).\n",
                 "targetAbi": "10.11.10.0",
