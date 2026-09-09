@@ -86,7 +86,7 @@ To add Enhanced Posters to your Jellyfin server:
 2. From the repository root, run:
 
    ```shell
-   dotnet publish PostersEnhanced/PostersEnhanced.csproj -c Release
+   dotnet publish EnhancedPosters/EnhancedPosters.csproj -c Release
    ```
 
-3. Copy `PostersEnhanced.dll` into your Jellyfin plugin folder and restart Jellyfin.
+3. Copy `EnhancedPosters.dll` into your Jellyfin plugin folder and restart Jellyfin.

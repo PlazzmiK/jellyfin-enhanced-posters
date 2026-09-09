@@ -11,11 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Redesigned plugin configuration UI featuring a modern sidebar layout with 5 categorized tabs and registered in Jellyfin's primary navigation drawer under Plug-ins.
+- Built-in Kometa badge assets embedded natively for resolution (4K, 1080p, 720p, 480p, 576p), video (Dolby Vision, HDR, HDR10+, HLG), audio (Dolby Atmos, DTS:X, TrueHD, DTS-HD MA, FLAC, Opus), edition (IMAX, Extended, Director's Cut, Theatrical, Unrated, Criterion), and combo badges rendered seamlessly inside translucent glass pills.
 - Direct Task Runner in dashboard: trigger and monitor "Process Posters Now" and "Restore Original Posters" with real-time status and live progress tracking.
 - Fully dynamic Score Tiers manager: configure arbitrary score ranges, colors, and tier names with one-click presets (5-tier, 10-tier).
 - Rating source preferences: select between Community Rating (IMDb/TMDb), Critic Rating (Rotten Tomatoes/Metacritic), or Combined Average with 10-point normalization.
 - Score badge corner radius inheritance: choose between using the default badge corner radius from Global Settings or setting a custom corner radius.
 - Automatic low-resolution poster upscaling: upscales small posters to standard 1000×1500 resolution using high-quality filtering so badges never appear oversized.
+
+### Changed
+- Transitioned project branding, assembly names, solution, and namespaces to "Enhanced Posters" (`EnhancedPosters`) with full backward-compatibility migration for existing disk data and scheduled tasks.
+- Updated project logo and catalog assets to the new Enhanced Posters cosmic poster badge design.
 
 ## [1.2.0] - 2026-09-08
 

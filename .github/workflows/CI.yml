@@ -33,7 +33,7 @@ jobs:
           dotnet-version: 9.0.x
 
       - name: Test
-        run: dotnet test PostersEnhanced.sln --configuration Release --verbosity normal
+        run: dotnet test EnhancedPosters.sln --configuration Release --verbosity normal
 
   release:
     name: Release
@@ -41,7 +41,7 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     concurrency:
-      group: posters-enhanced-release
+      group: enhanced-posters-release
       cancel-in-progress: false
     permissions:
       contents: write
