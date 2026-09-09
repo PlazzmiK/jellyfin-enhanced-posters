@@ -100,4 +100,45 @@ public class MediaInfoExtractorTests
         var actual = MediaInfoExtractor.Is3DPathOrTitle(path);
         Assert.Equal(expected3D, actual);
     }
+
+    [Fact]
+    public void ExtractRating_WithCommunityPreference_ReturnsCommunityScore()
+    {
+        var movie = new MediaBrowser.Controller.Entities.Movies.Movie
+        {
+            CommunityRating = 7.8f,
+            CriticRating = 85f
+        };
+
+        var score = MediaInfoExtractor.ExtractRating(movie, RatingSourcePreference.Community);
+        Assert.Equal(7.8f, score);
+    }
+
+    [Fact]
+    public void ExtractRating_WithCriticPreference_Normalizes100PointScale()
+    {
+        var movie = new MediaBrowser.Controller.Entities.Movies.Movie
+        {
+            CommunityRating = 7.8f,
+            CriticRating = 85f
+        };
+
+        var score = MediaInfoExtractor.ExtractRating(movie, RatingSourcePreference.Critic);
+        Assert.Equal(8.5f, score);
+    }
+
+    [Fact]
+    public void ExtractRating_WithCombinedAverage_AveragesBothScores()
+    {
+        var movie = new MediaBrowser.Controller.Entities.Movies.Movie
+        {
+            CommunityRating = 7.5f,
+            CriticRating = 85f // Normalized to 8.5
+        };
+
+        var score = MediaInfoExtractor.ExtractRating(movie, RatingSourcePreference.CombinedAverage);
+        // (7.5 + 8.5) / 2 = 8.0
+        Assert.Equal(8.0f, score);
+    }
 }
+

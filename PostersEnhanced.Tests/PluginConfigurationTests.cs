@@ -68,4 +68,50 @@ public class PluginConfigurationTests
 
         Assert.NotEqual(hash1, hash2);
     }
+
+    [Fact]
+    public void GetRatingBackgroundColor_MatchesDynamicTiers()
+    {
+        var config = new PluginConfiguration();
+        config.RatingTiers.Clear();
+        config.RatingTiers.Add(new RatingTierEntry(0f, 4.99f, "#FF0000", "Bad"));
+        config.RatingTiers.Add(new RatingTierEntry(5f, 7.49f, "#FFA500", "Decent"));
+        config.RatingTiers.Add(new RatingTierEntry(7.5f, 10f, "#00FF00", "Great"));
+
+        Assert.Equal("#FF0000", config.GetRatingBackgroundColor(3.5f));
+        Assert.Equal("#FFA500", config.GetRatingBackgroundColor(6.0f));
+        Assert.Equal("#00FF00", config.GetRatingBackgroundColor(8.8f));
+    }
+
+    [Fact]
+    public void RatingTiers_XmlSerialization_RoundtripsSuccessfully()
+    {
+        var config = new PluginConfiguration
+        {
+            UseGlobalCornerRadiusForRating = false,
+            RatingSource = Models.RatingSourcePreference.CombinedAverage,
+            ResizeLowResolutionPosters = true
+        };
+        config.RatingTiers.Clear();
+        config.RatingTiers.Add(new RatingTierEntry(1.0f, 2.0f, "#112233", "Tier1"));
+
+        var serializer = new XmlSerializer(typeof(PluginConfiguration));
+        using var writer = new StringWriter();
+        serializer.Serialize(writer, config);
+
+        var xml = writer.ToString();
+        Assert.Contains("<UseGlobalCornerRadiusForRating>false</UseGlobalCornerRadiusForRating>", xml);
+        Assert.Contains("<RatingSource>CombinedAverage</RatingSource>", xml);
+        Assert.Contains("#112233", xml);
+
+        using var reader = new StringReader(xml);
+        var deserialized = (PluginConfiguration?)serializer.Deserialize(reader);
+
+        Assert.NotNull(deserialized);
+        Assert.False(deserialized.UseGlobalCornerRadiusForRating);
+        Assert.Equal(Models.RatingSourcePreference.CombinedAverage, deserialized.RatingSource);
+        Assert.Single(deserialized.RatingTiers);
+        Assert.Equal("#112233", deserialized.RatingTiers[0].Color);
+    }
 }
+

@@ -45,6 +45,11 @@ public static class ImageCompositor
             baseBitmap = CropToPortraitRatio(baseBitmap);
         }
 
+        if (configuration.ResizeLowResolutionPosters)
+        {
+            baseBitmap = UpscaleToMinimumResolution(baseBitmap, configuration.TargetPosterWidth, configuration.TargetPosterHeight);
+        }
+
         using (baseBitmap)
         {
             var width = baseBitmap.Width;
@@ -365,7 +370,7 @@ public static class ImageCompositor
             scaledOffsetY);
 
         var pillRect = new SKRect(originX, originY, originX + pillWidth, originY + pillHeight);
-        var cornerRadius = config.RatingCornerRadius;
+        var cornerRadius = config.UseGlobalCornerRadiusForRating ? config.PillCornerRadius : config.RatingCornerRadius;
         var roundRect = new SKRoundRect(pillRect, cornerRadius);
 
         // Resolve background color (score-based tiers or fixed)
@@ -492,6 +497,37 @@ public static class ImageCompositor
 
         source.Dispose();
         return croppedBitmap;
+    }
+
+    /// <summary>
+    /// Upscales a bitmap to the target minimum dimensions using high-quality filtering if it is smaller than either dimension.
+    /// </summary>
+    /// <param name="source">The source bitmap.</param>
+    /// <param name="minWidth">The target minimum width in pixels.</param>
+    /// <param name="minHeight">The target minimum height in pixels.</param>
+    /// <returns>The upscaled bitmap, or the original bitmap if already meeting or exceeding the minimum dimensions.</returns>
+    public static SKBitmap UpscaleToMinimumResolution(SKBitmap source, int minWidth, int minHeight)
+    {
+        ArgumentNullException.ThrowIfNull(source);
+
+        if (source.Width >= minWidth && source.Height >= minHeight)
+        {
+            return source;
+        }
+
+        var targetWidth = Math.Max(source.Width, minWidth);
+        var targetHeight = Math.Max(source.Height, minHeight);
+
+        var upscaled = new SKBitmap(targetWidth, targetHeight, source.ColorType, source.AlphaType);
+        using var canvas = new SKCanvas(upscaled);
+        var srcRect = new SKRect(0, 0, source.Width, source.Height);
+        var dstRect = new SKRect(0, 0, targetWidth, targetHeight);
+        using var paint = new SKPaint { FilterQuality = SKFilterQuality.High };
+        canvas.DrawBitmap(source, srcRect, dstRect, paint);
+        canvas.Flush();
+
+        source.Dispose();
+        return upscaled;
     }
 
     private static List<string> ResolveActiveMediaBadgeKeys(ExtractedMediaInfo info, PluginConfiguration config)

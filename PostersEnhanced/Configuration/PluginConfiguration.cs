@@ -75,6 +75,13 @@ public class PluginConfiguration : BasePluginConfiguration
         RatingCornerRadius = 6f;
         RatingPaddingX = 8f;
         RatingPaddingY = 4f;
+        UseGlobalCornerRadiusForRating = true;
+        RatingSource = RatingSourcePreference.Community;
+
+        // Sizing & Upscaling
+        ResizeLowResolutionPosters = true;
+        TargetPosterWidth = 1000;
+        TargetPosterHeight = 1500;
 
         // Edition Badges
         ShowEditionBadges = true;
@@ -236,6 +243,24 @@ public class PluginConfiguration : BasePluginConfiguration
     /// <summary>Gets or sets the vertical padding for the rating pill.</summary>
     public float RatingPaddingY { get; set; }
 
+    /// <summary>Gets or sets the rating source preference.</summary>
+    public RatingSourcePreference RatingSource { get; set; }
+
+    /// <summary>Gets or sets a value indicating whether to inherit the corner radius from global badge settings.</summary>
+    public bool UseGlobalCornerRadiusForRating { get; set; }
+
+    /// <summary>Gets the dynamic rating score tiers.</summary>
+    public Collection<RatingTierEntry> RatingTiers { get; } = new Collection<RatingTierEntry>();
+
+    /// <summary>Gets or sets a value indicating whether low-resolution posters are automatically upscaled to standard dimensions.</summary>
+    public bool ResizeLowResolutionPosters { get; set; }
+
+    /// <summary>Gets or sets the target minimum poster width in pixels.</summary>
+    public int TargetPosterWidth { get; set; }
+
+    /// <summary>Gets or sets the target minimum poster height in pixels.</summary>
+    public int TargetPosterHeight { get; set; }
+
     /// <summary>Gets or sets a value indicating whether edition badges are enabled.</summary>
     public bool ShowEditionBadges { get; set; }
 
@@ -376,6 +401,17 @@ public class PluginConfiguration : BasePluginConfiguration
             return RatingFixedColor;
         }
 
+        if (RatingTiers is not null && RatingTiers.Count > 0)
+        {
+            foreach (var tier in RatingTiers)
+            {
+                if (score >= tier.MinScore && score <= tier.MaxScore)
+                {
+                    return tier.Color;
+                }
+            }
+        }
+
         if (score < 5.0f)
         {
             return RatingTierRedColor;
@@ -479,6 +515,21 @@ public class PluginConfiguration : BasePluginConfiguration
         sb.Append(RatingCornerRadius.ToString("F2", CultureInfo.InvariantCulture)).Append('|');
         sb.Append(RatingPaddingX.ToString("F2", CultureInfo.InvariantCulture)).Append('|');
         sb.Append(RatingPaddingY.ToString("F2", CultureInfo.InvariantCulture)).Append('|');
+        sb.Append((int)RatingSource).Append('|');
+        sb.Append(UseGlobalCornerRadiusForRating).Append('|');
+        sb.Append(ResizeLowResolutionPosters).Append('|');
+        sb.Append(TargetPosterWidth).Append('|');
+        sb.Append(TargetPosterHeight).Append('|');
+
+        if (RatingTiers is not null)
+        {
+            foreach (var tier in RatingTiers)
+            {
+                sb.Append(tier.MinScore.ToString("F2", CultureInfo.InvariantCulture)).Append(':')
+                  .Append(tier.MaxScore.ToString("F2", CultureInfo.InvariantCulture)).Append(':')
+                  .Append(tier.Color).Append('|');
+            }
+        }
 
         // Custom badges
         if (CustomBadges is not null)

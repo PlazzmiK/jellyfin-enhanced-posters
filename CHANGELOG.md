@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-09-09
+
+### Added
+- Redesigned plugin configuration UI featuring a modern sidebar layout with 5 categorized tabs and registered in Jellyfin's primary navigation drawer under Plug-ins.
+- Direct Task Runner in dashboard: trigger and monitor "Process Posters Now" and "Restore Original Posters" with real-time status and live progress tracking.
+- Fully dynamic Score Tiers manager: configure arbitrary score ranges, colors, and tier names with one-click presets (5-tier, 10-tier).
+- Rating source preferences: select between Community Rating (IMDb/TMDb), Critic Rating (Rotten Tomatoes/Metacritic), or Combined Average with 10-point normalization.
+- Score badge corner radius inheritance: choose between using the default badge corner radius from Global Settings or setting a custom corner radius.
+- Automatic low-resolution poster upscaling: upscales small posters to standard 1000×1500 resolution using high-quality filtering so badges never appear oversized.
+
 ## [1.2.0] - 2026-09-08
 
 ### Added
@@ -59,7 +69,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Interactive configuration dashboard with real-time live preview.
 - One-click restore scheduled task to revert all posters to originals.
 
-[Unreleased]: https://github.com/PlazzmiK/jellyfin-enhanced-posters/compare/1.2.0...HEAD
+[Unreleased]: https://github.com/PlazzmiK/jellyfin-enhanced-posters/compare/1.3.0...HEAD
+[1.3.0]: https://github.com/PlazzmiK/jellyfin-enhanced-posters/compare/1.2.0...1.3.0
 [1.2.0]: https://github.com/PlazzmiK/jellyfin-enhanced-posters/compare/1.1.3...1.2.0
 [1.1.3]: https://github.com/PlazzmiK/jellyfin-enhanced-posters/compare/1.1.2...1.1.3
 [1.1.2]: https://github.com/PlazzmiK/jellyfin-enhanced-posters/compare/1.1.1...1.1.2

@@ -17,8 +17,9 @@ public static class MediaInfoExtractor
     /// Extracts media and rating information from a Jellyfin BaseItem.
     /// </summary>
     /// <param name="item">The Jellyfin library item.</param>
+    /// <param name="ratingPreference">The rating source preference.</param>
     /// <returns>The extracted media information.</returns>
-    public static ExtractedMediaInfo Extract(BaseItem item)
+    public static ExtractedMediaInfo Extract(BaseItem item, RatingSourcePreference ratingPreference = RatingSourcePreference.Community)
     {
         ArgumentNullException.ThrowIfNull(item);
 
@@ -43,7 +44,7 @@ public static class MediaInfoExtractor
             }
         }
 
-        var rating = ExtractRating(item);
+        var rating = ExtractRating(item, ratingPreference);
         var (edition, customEditionName) = DetectEdition(item);
         var is3D = Detect3D(item);
 
@@ -176,25 +177,42 @@ public static class MediaInfoExtractor
     }
 
     /// <summary>
-    /// Extracts the community or IMDb rating for a library item.
+    /// Extracts the rating score for a library item based on source preference.
+    /// Supports Community (IMDb/TMDb), Critic (Rotten Tomatoes), and Combined Average.
     /// </summary>
     /// <param name="item">The library item.</param>
+    /// <param name="preference">The rating source preference.</param>
     /// <returns>The rating score, or null if unavailable.</returns>
-    public static float? ExtractRating(BaseItem item)
+    public static float? ExtractRating(BaseItem item, RatingSourcePreference preference = RatingSourcePreference.Community)
     {
         ArgumentNullException.ThrowIfNull(item);
 
-        if (item.CommunityRating.HasValue)
+        float? community = item.CommunityRating;
+        if (!community.HasValue && item is Series series)
         {
-            return item.CommunityRating.Value;
+            community = series.CommunityRating;
         }
 
-        if (item is Series series && series.CommunityRating.HasValue)
+        float? critic = item.CriticRating;
+        if (!critic.HasValue && item is Series sCritic)
         {
-            return series.CommunityRating.Value;
+            critic = sCritic.CriticRating;
         }
 
-        return null;
+        // Normalize Critic Rating to 10-point scale if it's on a 100-point scale (e.g. Rotten Tomatoes 84 -> 8.4)
+        if (critic.HasValue && critic.Value > 10.0f)
+        {
+            critic = critic.Value / 10.0f;
+        }
+
+        return preference switch
+        {
+            RatingSourcePreference.Critic => critic ?? community,
+            RatingSourcePreference.CombinedAverage => (community.HasValue && critic.HasValue)
+                ? (float)Math.Round((community.Value + critic.Value) / 2f, 1)
+                : (community ?? critic),
+            _ => community ?? critic
+        };
     }
 
     /// <summary>

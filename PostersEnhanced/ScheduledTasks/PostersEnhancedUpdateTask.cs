@@ -147,7 +147,7 @@ public class PostersEnhancedUpdateTask : IScheduledTask, IConfigurableScheduledT
 
     private async Task<int> ProcessItemAsync(BaseItem item, PluginConfiguration configuration, CancellationToken cancellationToken)
     {
-        var mediaInfo = MediaInfoExtractor.Extract(item);
+        var mediaInfo = MediaInfoExtractor.Extract(item, configuration.RatingSource);
         var backupPath = _backupManager.GetBackupFilePath(item, configuration);
         var currentPrimaryPath = item.GetImagePath(ImageType.Primary);
 

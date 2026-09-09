@@ -7,6 +7,161 @@
 <body>
     <div id="PostersEnhancedConfigPage" data-role="page" class="page type-interior pluginConfigurationPage" data-require="emby-input,emby-button,emby-select,emby-checkbox">
         <style>
+            #PostersEnhancedConfigPage .pe-layout {
+                display: flex;
+                gap: 28px;
+                min-height: 80vh;
+                margin-top: 10px;
+            }
+            #PostersEnhancedConfigPage .pe-sidebar {
+                width: 290px;
+                flex-shrink: 0;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+            #PostersEnhancedConfigPage .pe-sidebar-brand {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                padding: 14px 16px;
+                margin-bottom: 12px;
+                background: linear-gradient(135deg, rgba(0, 164, 220, 0.12) 0%, rgba(15, 23, 42, 0.6) 100%);
+                border: 1px solid rgba(0, 164, 220, 0.3);
+                border-radius: 10px;
+            }
+            #PostersEnhancedConfigPage .pe-brand-icon {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 44px;
+                height: 44px;
+                background: #00a4dc;
+                color: #ffffff;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 164, 220, 0.4);
+            }
+            #PostersEnhancedConfigPage .pe-brand-title {
+                font-size: 17px;
+                font-weight: 700;
+                color: #ffffff;
+                letter-spacing: 0.3px;
+            }
+            #PostersEnhancedConfigPage .pe-brand-badge {
+                display: inline-block;
+                font-size: 10px;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                background: rgba(255, 255, 255, 0.12);
+                color: #94a3b8;
+                padding: 2px 6px;
+                border-radius: 4px;
+                margin-top: 2px;
+            }
+            #PostersEnhancedConfigPage .pe-nav-item {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                width: 100%;
+                padding: 12px 16px;
+                background: rgba(255, 255, 255, 0.03);
+                border: 1px solid rgba(255, 255, 255, 0.06);
+                border-left: 3px solid transparent;
+                border-radius: 8px;
+                cursor: pointer;
+                text-align: left;
+                transition: all 0.2s ease;
+                color: inherit;
+                box-sizing: border-box;
+            }
+            #PostersEnhancedConfigPage .pe-nav-item:hover {
+                background: rgba(255, 255, 255, 0.08);
+                border-color: rgba(255, 255, 255, 0.15);
+                transform: translateX(2px);
+            }
+            #PostersEnhancedConfigPage .pe-nav-item.active {
+                background: rgba(0, 164, 220, 0.14);
+                border-color: rgba(0, 164, 220, 0.35);
+                border-left: 3px solid #00a4dc;
+                box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25), inset 0 0 12px rgba(0, 164, 220, 0.08);
+            }
+            #PostersEnhancedConfigPage .pe-nav-icon {
+                font-size: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 24px;
+            }
+            #PostersEnhancedConfigPage .pe-nav-text {
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+                overflow: hidden;
+            }
+            #PostersEnhancedConfigPage .pe-nav-title {
+                font-size: 14px;
+                font-weight: 600;
+                color: #e2e8f0;
+            }
+            #PostersEnhancedConfigPage .pe-nav-item.active .pe-nav-title {
+                color: #ffffff;
+            }
+            #PostersEnhancedConfigPage .pe-nav-subtitle {
+                font-size: 11px;
+                color: #8899a6;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            #PostersEnhancedConfigPage .pe-content {
+                flex: 1;
+                min-width: 0;
+            }
+            #PostersEnhancedConfigPage .pe-tab-pane {
+                display: none;
+                animation: peFadeIn 0.2s ease forwards;
+            }
+            #PostersEnhancedConfigPage .pe-tab-pane.active {
+                display: block;
+            }
+            @keyframes peFadeIn {
+                from { opacity: 0; transform: translateY(4px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            #PostersEnhancedConfigPage .pe-panel-header {
+                margin-bottom: 20px;
+                padding-bottom: 12px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            #PostersEnhancedConfigPage .pe-panel-title {
+                font-size: 22px;
+                font-weight: 700;
+                color: #ffffff;
+                margin: 0 0 4px 0;
+            }
+            #PostersEnhancedConfigPage .pe-panel-subtitle {
+                font-size: 13px;
+                color: #94a3b8;
+                margin: 0;
+            }
+            #PostersEnhancedConfigPage .pe-card {
+                background: rgba(15, 23, 42, 0.55);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                border-radius: 10px;
+                padding: 20px;
+                margin-bottom: 20px;
+                box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            }
+            #PostersEnhancedConfigPage .pe-card-title {
+                font-size: 16px;
+                font-weight: 600;
+                color: #f1f5f9;
+                margin: 0 0 12px 0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
             #PostersEnhancedConfigPage .pe-anchor-widget {
                 display: flex;
                 align-items: center;
@@ -103,541 +258,748 @@
                 align-items: center;
                 justify-content: center;
                 overflow: hidden;
-                flex-shrink: 0;
             }
             #PostersEnhancedConfigPage .pe-badge-preview-box img {
                 max-width: 100%;
                 max-height: 100%;
                 object-fit: contain;
             }
+            #PostersEnhancedConfigPage .pe-tier-row {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                background: rgba(0, 0, 0, 0.2);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                border-radius: 6px;
+                padding: 8px 12px;
+                margin-bottom: 8px;
+                flex-wrap: wrap;
+            }
+            #PostersEnhancedConfigPage .pe-progress-container {
+                width: 100%;
+                height: 10px;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 5px;
+                overflow: hidden;
+                margin: 12px 0;
+            }
+            #PostersEnhancedConfigPage .pe-progress-bar {
+                height: 100%;
+                width: 0%;
+                background: linear-gradient(90deg, #00a4dc 0%, #38bdf8 100%);
+                transition: width 0.3s ease;
+            }
+            @media (max-width: 900px) {
+                #PostersEnhancedConfigPage .pe-layout {
+                    flex-direction: column;
+                    gap: 16px;
+                }
+                #PostersEnhancedConfigPage .pe-sidebar {
+                    width: 100%;
+                }
+                #PostersEnhancedConfigPage .pe-nav {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                    gap: 8px;
+                }
+            }
         </style>
-        <div data-role="content">
-            <div class="content-primary">
-                <h1>Enhanced Posters</h1>
-                <p class="fieldDescription">
-                    Non-destructively overlay media badges (4K, Dolby Vision, HDR, Audio), Edition badges (IMAX, Extended), 3D badges, and dynamic score-tiered rating pills on movie and show posters.
-                </p>
 
-                <!-- Live Visual Preview -->
-                <div style="display: flex; gap: 24px; margin-bottom: 24px; flex-wrap: wrap;">
-                    <div style="flex: 0 0 240px;">
-                        <div style="font-weight: bold; margin-bottom: 8px;">Live Poster Preview</div>
-                        <div id="previewContainer" style="position: relative; width: 220px; height: 330px; border-radius: 8px; overflow: hidden; background: linear-gradient(135deg, #200005 0%, #150824 50%, #0a0e1c 100%); box-shadow: 0 8px 24px rgba(0,0,0,0.6); border: 1px solid #333;">
-                            <div style="position: absolute; top: 35%; left: 10%; right: 10%; text-align: center; color: rgba(255,255,255,0.85); font-family: sans-serif; font-size: 16px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 2px 8px rgba(0,0,0,0.8);">
-                                Poster<br><span style="font-size: 12px; color: rgba(255,255,255,0.6); letter-spacing: 1px;">Sample Artwork</span>
-                            </div>
-
-                            <!-- Preview Media Anchor Group (contains badges co-located at media anchor) -->
-                            <div id="previewMediaPill" style="position: absolute; display: flex; align-items: center; gap: 6px; z-index: 10; transition: all 0.2s ease;">
-                                <span id="preview4k" style="color: #fff; font-weight: 900; font-size: 12px; font-family: Arial, sans-serif; letter-spacing: 0.5px; text-shadow: 0 2px 4px #000;">4K</span>
-                                <span id="previewDv" style="background: rgba(0,0,0,0.8); border-radius: 4px; padding: 2px 5px; font-family: Arial, sans-serif; font-size: 10px; font-weight: bold; display: inline-flex; align-items: center; gap: 3px;">
-                                    <span style="color: #38bdf8;">DO</span><span style="color: #0284c7;">DV</span>
-                                </span>
-                                <span id="previewHdr" style="background: linear-gradient(90deg, #ff007a, #7928ca, #0070f3); color: #fff; font-family: Arial, sans-serif; font-size: 10px; font-weight: 900; padding: 2px 5px; border-radius: 4px; display: none;">HDR</span>
-                                <span id="previewAtmos" style="color: #fff; font-family: Arial, sans-serif; font-size: 9px; font-weight: bold; letter-spacing: 0.5px; display: none;">ATMOS</span>
-                                <span id="preview3D" style="display: none; align-items: center;">
-                                    <svg width="22" height="12" viewBox="0 0 40 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M4 2H36C37.5 2 39 3.5 39 5V14C39 16 37 18 34 18H28C26 18 24 16 23 14L21 11C20.5 10 19.5 10 19 11L17 14C16 16 14 18 12 18H6C3 18 1 16 1 14V5C1 3.5 2.5 2 4 2Z" fill="#1e293b" stroke="#ffffff" stroke-width="2"/>
-                                        <rect x="5" y="5" width="11" height="9" rx="2" fill="#ef4444" opacity="0.85"/>
-                                        <rect x="24" y="5" width="11" height="9" rx="2" fill="#06b6d4" opacity="0.85"/>
-                                    </svg>
-                                </span>
-                                <span id="previewImax" style="background: #000; color: #38bdf8; font-family: Arial, sans-serif; font-size: 10px; font-weight: 900; letter-spacing: 1px; padding: 2px 6px; border-radius: 3px; border: 1px solid #0284c7; display: none;">IMAX</span>
-                            </div>
-
-                            <!-- Preview Dedicated 3D Badge (if separate anchor) -->
-                            <div id="previewSeparate3D" style="position: absolute; display: none; z-index: 10;">
-                                <svg width="26" height="15" viewBox="0 0 40 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M4 2H36C37.5 2 39 3.5 39 5V14C39 16 37 18 34 18H28C26 18 24 16 23 14L21 11C20.5 10 19.5 10 19 11L17 14C16 16 14 18 12 18H6C3 18 1 16 1 14V5C1 3.5 2.5 2 4 2Z" fill="#1e293b" stroke="#ffffff" stroke-width="2"/>
-                                    <rect x="5" y="5" width="11" height="9" rx="2" fill="#ef4444" opacity="0.85"/>
-                                    <rect x="24" y="5" width="11" height="9" rx="2" fill="#06b6d4" opacity="0.85"/>
+        <div class="content-primary" style="max-width: 1350px; margin: 0 auto; padding: 16px 24px;">
+            <form id="PostersEnhancedConfigForm">
+                <div class="pe-layout">
+                    <!-- LEFT SECONDARY SIDEBAR MENU -->
+                    <div class="pe-sidebar">
+                        <div class="pe-sidebar-brand">
+                            <div class="pe-brand-icon">
+                                <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor">
+                                    <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
                                 </svg>
                             </div>
-
-                            <!-- Preview Dedicated Edition Badge (if separate anchor) -->
-                            <div id="previewSeparateEdition" style="position: absolute; display: none; z-index: 10; background: #000; color: #38bdf8; font-family: Arial, sans-serif; font-size: 10px; font-weight: 900; letter-spacing: 1px; padding: 2px 6px; border-radius: 3px; border: 1px solid #0284c7;">
-                                IMAX
+                            <div>
+                                <div class="pe-brand-title">Enhanced Posters</div>
+                                <span class="pe-brand-badge">v1.3.0.0</span>
                             </div>
+                        </div>
 
-                            <!-- Preview Rating Pill -->
-                            <div id="previewRatingPill" style="position: absolute; background: #F5C518; color: #000; font-family: Arial, sans-serif; font-size: 12px; font-weight: 800; padding: 2px 7px; border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.6); z-index: 10; line-height: 1.2;">
-                                6.3
-                            </div>
+                        <div class="pe-nav" style="display: flex; flex-direction: column; gap: 8px;">
+                            <button type="button" class="pe-nav-item active" data-tab="tabPosterSettings">
+                                <span class="pe-nav-icon">🎬</span>
+                                <div class="pe-nav-text">
+                                    <div class="pe-nav-title">Poster Settings</div>
+                                    <div class="pe-nav-subtitle">Where &amp; what badges to show</div>
+                                </div>
+                            </button>
+                            <button type="button" class="pe-nav-item" data-tab="tabGlobalBadgeSettings">
+                                <span class="pe-nav-icon">🎨</span>
+                                <div class="pe-nav-text">
+                                    <div class="pe-nav-title">Global Badge Settings</div>
+                                    <div class="pe-nav-subtitle">Scale, spacing &amp; pill appearance</div>
+                                </div>
+                            </button>
+                            <button type="button" class="pe-nav-item" data-tab="tabScoreSettings">
+                                <span class="pe-nav-icon">⭐</span>
+                                <div class="pe-nav-text">
+                                    <div class="pe-nav-title">Score Badge Settings</div>
+                                    <div class="pe-nav-subtitle">Colors, tier settings &amp; sources</div>
+                                </div>
+                            </button>
+                            <button type="button" class="pe-nav-item" data-tab="tabCustomBadges">
+                                <span class="pe-nav-icon">🖼️</span>
+                                <div class="pe-nav-text">
+                                    <div class="pe-nav-title">Custom Badges</div>
+                                    <div class="pe-nav-subtitle">Upload &amp; manage custom badges</div>
+                                </div>
+                            </button>
+                            <button type="button" class="pe-nav-item" data-tab="tabGeneralSettings">
+                                <span class="pe-nav-icon">⚙️</span>
+                                <div class="pe-nav-text">
+                                    <div class="pe-nav-title">Settings &amp; Tasks</div>
+                                    <div class="pe-nav-subtitle">Sources, auto-crop &amp; task runner</div>
+                                </div>
+                            </button>
+                        </div>
+
+                        <div style="margin-top: 24px;">
+                            <button is="emby-button" type="submit" class="raised button-submit block emby-button" style="background: #00a4dc; color: #fff; font-weight: bold; padding: 12px;">
+                                <span>Save Changes</span>
+                            </button>
                         </div>
                     </div>
 
-                    <div style="flex: 1; min-width: 280px;">
-                        <div class="selectContainer">
-                            <label class="selectLabel" for="selectPreset">Configuration Presets</label>
-                            <select is="emby-select" id="selectPreset" class="emby-select-withcolor emby-select">
-                                <option value="default">Default (4K + Dolby Vision + IMAX/3D + Dynamic Rating)</option>
-                                <option value="minimal">Minimal (Rating Pill Only)</option>
-                                <option value="full">Full Badges (Resolution + HDR + Audio + Edition + 3D + Rating)</option>
-                            </select>
-                        </div>
-                        <p class="fieldDescription">Quickly apply recommended presets or customize each option below.</p>
-                    </div>
-                </div>
-
-                <form id="PostersEnhancedConfigForm">
-                    <!-- SECTION 1: STORAGE & SOURCES -->
-                    <div class="verticalSection">
-                        <h2>1. Poster Sources & Backup Storage</h2>
-                        <div class="checkboxContainer checkboxContainer-withDescription">
-                            <label>
-                                <input is="emby-checkbox" type="checkbox" id="chkSaveOriginalBesideMedia" />
-                                <span>Save untouched backup beside media files (poster-original.jpg)</span>
-                            </label>
-                            <div class="fieldDescription checkboxFieldDescription">
-                                Keeps original posters directly with your movie/show folders so your pristine artwork is never lost and survives library migrations.
-                            </div>
-                        </div>
-
-                        <div class="checkboxContainer checkboxContainer-withDescription">
-                            <label>
-                                <input is="emby-checkbox" type="checkbox" id="chkAutoCropToPortraitRatio" />
-                                <span><strong>Auto-crop posters to standard 2:3 portrait ratio (1:1.5)</strong></span>
-                            </label>
-                            <div class="fieldDescription checkboxFieldDescription">
-                                Automatically center-crops base posters to Jellyfin's official 2:3 card aspect ratio before compositing badges. Prevents Jellyfin's card grid from silently cropping the left and right side margins of wider posters.
-                            </div>
-                        </div>
-
-                        <div class="selectContainer">
-                            <label class="selectLabel" for="selectSource">Poster Source</label>
-                            <select is="emby-select" id="selectSource" class="emby-select-withcolor emby-select">
-                                <option value="LocalFirst">Local First (Use existing library poster, fallback to clean remote)</option>
-                                <option value="LocalOnly">Local Only (Never download remote posters)</option>
-                                <option value="BtttrCcClean">btttr.cc Clean (Fetch textless clean poster via IMDb ID)</option>
-                            </select>
-                            <div class="fieldDescription">Starting poster source before overlays are composited.</div>
-                        </div>
-
-                        <div class="inputContainer">
-                            <label class="inputLabel" for="txtTheme">Theme Pack</label>
-                            <input is="emby-input" type="text" id="txtTheme" />
-                            <div class="fieldDescription">Theme subfolder in /PostersEnhanced/themes/ (default: default). Drop custom PNG badges into badges/ or use section 6 below.</div>
-                        </div>
-                    </div>
-
-                    <!-- SECTION 2: COMBINED PILL CONTAINER -->
-                    <div class="verticalSection">
-                        <h2>2. Unified Pill Container (Co-located Badges)</h2>
-                        <div class="checkboxContainer checkboxContainer-withDescription">
-                            <label>
-                                <input is="emby-checkbox" type="checkbox" id="chkCombineBadgesInPill" />
-                                <span><strong>Group co-located badges in a single dark translucent pill</strong></span>
-                            </label>
-                            <div class="fieldDescription checkboxFieldDescription">
-                                When enabled, all badges sharing the same corner/anchor (e.g. 4K, Dolby Vision, 3D, IMAX) are combined seamlessly into a single stylish pill container with configurable transparency and roundness.
-                            </div>
-                        </div>
-
-                        <div id="pillConfigGroup" style="display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px;">
-                            <div style="flex: 1; min-width: 140px;">
-                                <label class="inputLabel" for="colPillBackground">Pill Background Color</label>
-                                <input type="color" id="colPillBackground" style="width: 100%; height: 38px; border-radius: 4px; cursor: pointer;" />
-                            </div>
-                            <div style="flex: 1; min-width: 180px;">
-                                <label class="inputLabel" for="rngPillOpacity">Opacity: <span id="lblPillOpacity">78%</span></label>
-                                <input type="range" id="rngPillOpacity" min="0" max="1" step="0.02" value="0.78" style="width: 100%; margin-top: 10px;" />
-                            </div>
-                            <div class="inputContainer" style="flex: 1; min-width: 120px;">
-                                <label class="inputLabel" for="txtPillCornerRadius">Corner Radius (px)</label>
-                                <input is="emby-input" type="number" id="txtPillCornerRadius" min="0" max="40" step="1" />
-                            </div>
-                            <div class="inputContainer" style="flex: 1; min-width: 110px;">
-                                <label class="inputLabel" for="txtPillPaddingX">Padding X (px)</label>
-                                <input is="emby-input" type="number" id="txtPillPaddingX" min="0" max="40" step="1" />
-                            </div>
-                            <div class="inputContainer" style="flex: 1; min-width: 110px;">
-                                <label class="inputLabel" for="txtPillPaddingY">Padding Y (px)</label>
-                                <input is="emby-input" type="number" id="txtPillPaddingY" min="0" max="40" step="1" />
-                            </div>
-                            <div class="inputContainer" style="flex: 1; min-width: 110px;">
-                                <label class="inputLabel" for="txtPillItemSpacing">Item Spacing (px)</label>
-                                <input is="emby-input" type="number" id="txtPillItemSpacing" min="0" max="40" step="1" />
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- SECTION 3: MEDIA BADGES (RESOLUTION, HDR, AUDIO) -->
-                    <div class="verticalSection">
-                        <h2>3. Media Info Badges (Resolution, HDR, Audio)</h2>
-                        <div class="checkboxContainer">
-                            <label>
-                                <input is="emby-checkbox" type="checkbox" id="chkShowMediaBadges" />
-                                <span><strong>Enable Media Info Badges</strong></span>
-                            </label>
-                        </div>
-
-                        <div id="mediaBadgesGroup" style="margin-top: 12px;">
-                            <h3>Resolution Badges</h3>
-                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-                                <label><input is="emby-checkbox" type="checkbox" id="chkShow4K" /> <span>4K Ultra HD</span></label>
-                                <label><input is="emby-checkbox" type="checkbox" id="chkShow1080p" /> <span>1080p FHD</span></label>
-                                <label><input is="emby-checkbox" type="checkbox" id="chkShow720p" /> <span>720p HD</span></label>
-                                <label><input is="emby-checkbox" type="checkbox" id="chkShowSD" /> <span>SD</span></label>
+                    <!-- RIGHT CONTENT PANE -->
+                    <div class="pe-content">
+                        <!-- TAB 1: POSTER SETTINGS -->
+                        <div id="tabPosterSettings" class="pe-tab-pane active">
+                            <div class="pe-panel-header">
+                                <h1 class="pe-panel-title">Poster Settings</h1>
+                                <p class="pe-panel-subtitle">Configure which badges appear on your posters and select their placement corners.</p>
                             </div>
 
-                            <h3 style="margin-top: 16px;">Video Range / HDR Badges</h3>
-                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-                                <label><input is="emby-checkbox" type="checkbox" id="chkShowDolbyVision" /> <span>Dolby Vision (DV)</span></label>
-                                <label><input is="emby-checkbox" type="checkbox" id="chkShowHdr10Plus" /> <span>HDR10+</span></label>
-                                <label><input is="emby-checkbox" type="checkbox" id="chkShowHdr10" /> <span>HDR10</span></label>
-                                <label><input is="emby-checkbox" type="checkbox" id="chkShowHdr" /> <span>HDR</span></label>
-                                <label><input is="emby-checkbox" type="checkbox" id="chkShowHlg" /> <span>HLG</span></label>
-                            </div>
+                            <!-- Media Info Badges -->
+                            <div class="pe-card">
+                                <h2 class="pe-card-title"><span>📺</span> Media Info Badges (Resolution, HDR, Audio)</h2>
+                                <div class="checkboxContainer">
+                                    <label>
+                                        <input is="emby-checkbox" type="checkbox" id="chkShowMediaBadges" />
+                                        <span><strong>Enable Media Info Badges</strong></span>
+                                    </label>
+                                </div>
 
-                            <h3 style="margin-top: 16px;">Audio Codec Badges</h3>
-                            <div class="checkboxContainer" style="margin-bottom: 8px;">
-                                <label><input is="emby-checkbox" type="checkbox" id="chkShowAudioBadges" /> <span>Enable Audio Badges</span></label>
-                            </div>
-                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-                                <label><input is="emby-checkbox" type="checkbox" id="chkShowDolbyAtmos" /> <span>Dolby Atmos</span></label>
-                                <label><input is="emby-checkbox" type="checkbox" id="chkShowDtsX" /> <span>DTS:X</span></label>
-                                <label><input is="emby-checkbox" type="checkbox" id="chkShowTrueHd" /> <span>TrueHD</span></label>
-                                <label><input is="emby-checkbox" type="checkbox" id="chkShowDtsHdMa" /> <span>DTS-HD MA</span></label>
-                            </div>
-
-                            <h3 style="margin-top: 16px;">Media Badges Placement & Anchor</h3>
-                            <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start;">
-                                <div>
-                                    <label class="inputLabel">Position Anchor (Portrait Poster Frame)</label>
-                                    <div class="pe-anchor-widget">
-                                        <div class="pe-anchor-grid pe-portrait-frame" data-target="selectMediaAnchor">
-                                            <div class="pe-portrait-watermark">POSTER</div>
-                                            <button type="button" class="pe-anchor-btn" data-anchor="TopLeft" title="Top-Left">↖</button>
-                                            <button type="button" class="pe-anchor-btn" data-anchor="TopCenter" title="Top-Center">↑</button>
-                                            <button type="button" class="pe-anchor-btn" data-anchor="TopRight" title="Top-Right">↗</button>
-                                            <button type="button" class="pe-anchor-btn" data-anchor="CenterLeft" title="Center-Left">←</button>
-                                            <button type="button" class="pe-anchor-btn" data-anchor="Center" title="Center">■</button>
-                                            <button type="button" class="pe-anchor-btn" data-anchor="CenterRight" title="Center-Right">→</button>
-                                            <button type="button" class="pe-anchor-btn" data-anchor="BottomLeft" title="Bottom-Left">↙</button>
-                                            <button type="button" class="pe-anchor-btn" data-anchor="BottomCenter" title="Bottom-Center">↓</button>
-                                            <button type="button" class="pe-anchor-btn" data-anchor="BottomRight" title="Bottom-Right">↘</button>
-                                        </div>
-                                        <div style="display: flex; flex-direction: column; gap: 8px;">
-                                            <div>
-                                                <div style="font-size: 11px; color: #8899a6; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Placement</div>
-                                                <span class="pe-anchor-badge-desc" id="lblDescMediaAnchor">Bottom-Left</span>
+                                <div id="mediaBadgeGroup" style="margin-top: 14px;">
+                                    <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start; margin-bottom: 16px;">
+                                        <div>
+                                            <label class="inputLabel">Placement Corner (2:3 Frame)</label>
+                                            <div class="pe-anchor-widget">
+                                                <div class="pe-anchor-grid pe-portrait-frame" data-target="selectMediaAnchor">
+                                                    <div class="pe-portrait-watermark">POSTER</div>
+                                                    <button type="button" class="pe-anchor-btn" data-anchor="TopLeft" title="Top-Left">↖</button>
+                                                    <button type="button" class="pe-anchor-btn" data-anchor="TopCenter" title="Top-Center">↑</button>
+                                                    <button type="button" class="pe-anchor-btn" data-anchor="TopRight" title="Top-Right">↗</button>
+                                                    <button type="button" class="pe-anchor-btn" data-anchor="CenterLeft" title="Center-Left">←</button>
+                                                    <button type="button" class="pe-anchor-btn" data-anchor="Center" title="Center">•</button>
+                                                    <button type="button" class="pe-anchor-btn" data-anchor="CenterRight" title="Center-Right">→</button>
+                                                    <button type="button" class="pe-anchor-btn active" data-anchor="BottomLeft" title="Bottom-Left">↙</button>
+                                                    <button type="button" class="pe-anchor-btn" data-anchor="BottomCenter" title="Bottom-Center">↓</button>
+                                                    <button type="button" class="pe-anchor-btn" data-anchor="BottomRight" title="Bottom-Right">↘</button>
+                                                </div>
+                                                <div style="display: flex; flex-direction: column; gap: 8px;">
+                                                    <div>
+                                                        <div style="font-size: 11px; color: #8899a6; text-transform: uppercase; font-weight: 600;">Position</div>
+                                                        <span class="pe-anchor-badge-desc" id="lblDescMediaAnchor">Bottom-Left</span>
+                                                    </div>
+                                                    <div class="selectContainer" style="margin: 0;">
+                                                        <select is="emby-select" id="selectMediaAnchor" class="emby-select" style="font-size: 12px; padding: 4px 8px;">
+                                                            <option value="TopLeft">Top-Left</option>
+                                                            <option value="TopCenter">Top-Center</option>
+                                                            <option value="TopRight">Top-Right</option>
+                                                            <option value="CenterLeft">Center-Left</option>
+                                                            <option value="Center">Center</option>
+                                                            <option value="CenterRight">Center-Right</option>
+                                                            <option value="BottomLeft">Bottom-Left</option>
+                                                            <option value="BottomCenter">Bottom-Center</option>
+                                                            <option value="BottomRight">Bottom-Right</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="selectContainer" style="margin: 0;">
-                                                <select is="emby-select" id="selectMediaAnchor" class="emby-select" style="font-size: 12px; padding: 4px 8px;">
-                                                    <option value="TopLeft">Top-Left</option>
-                                                    <option value="TopCenter">Top-Center</option>
-                                                    <option value="TopRight">Top-Right</option>
-                                                    <option value="CenterLeft">Center-Left</option>
-                                                    <option value="Center">Center</option>
-                                                    <option value="CenterRight">Center-Right</option>
-                                                    <option value="BottomLeft">Bottom-Left</option>
-                                                    <option value="BottomCenter">Bottom-Center</option>
-                                                    <option value="BottomRight">Bottom-Right</option>
+                                        </div>
+                                        <div class="inputContainer" style="flex: 1; min-width: 100px;">
+                                            <label class="inputLabel" for="txtMediaOffsetX">Offset X (px)</label>
+                                            <input is="emby-input" type="number" id="txtMediaOffsetX" min="0" max="200" value="24" />
+                                        </div>
+                                        <div class="inputContainer" style="flex: 1; min-width: 100px;">
+                                            <label class="inputLabel" for="txtMediaOffsetY">Offset Y (px)</label>
+                                            <input is="emby-input" type="number" id="txtMediaOffsetY" min="0" max="200" value="24" />
+                                        </div>
+                                    </div>
+
+                                    <h4>Resolution</h4>
+                                    <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                                        <label><input is="emby-checkbox" type="checkbox" id="chkShow4K" /><span>4K Ultra HD</span></label>
+                                        <label><input is="emby-checkbox" type="checkbox" id="chkShow1080p" /><span>1080p FHD</span></label>
+                                        <label><input is="emby-checkbox" type="checkbox" id="chkShow720p" /><span>720p HD</span></label>
+                                        <label><input is="emby-checkbox" type="checkbox" id="chkShowSD" /><span>SD</span></label>
+                                    </div>
+
+                                    <h4 style="margin-top: 14px;">HDR &amp; Video Range</h4>
+                                    <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                                        <label><input is="emby-checkbox" type="checkbox" id="chkShowDolbyVision" /><span>Dolby Vision</span></label>
+                                        <label><input is="emby-checkbox" type="checkbox" id="chkShowHdr10Plus" /><span>HDR10+</span></label>
+                                        <label><input is="emby-checkbox" type="checkbox" id="chkShowHdr10" /><span>HDR10</span></label>
+                                        <label><input is="emby-checkbox" type="checkbox" id="chkShowHdr" /><span>HDR</span></label>
+                                        <label><input is="emby-checkbox" type="checkbox" id="chkShowHlg" /><span>HLG</span></label>
+                                    </div>
+
+                                    <h4 style="margin-top: 14px;">Audio Codecs</h4>
+                                    <div class="checkboxContainer" style="margin-bottom: 8px;">
+                                        <label><input is="emby-checkbox" type="checkbox" id="chkShowAudioBadges" /><span><strong>Enable Audio Badges</strong></span></label>
+                                    </div>
+                                    <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                                        <label><input is="emby-checkbox" type="checkbox" id="chkShowDolbyAtmos" /><span>Dolby Atmos</span></label>
+                                        <label><input is="emby-checkbox" type="checkbox" id="chkShowTrueHd" /><span>TrueHD</span></label>
+                                        <label><input is="emby-checkbox" type="checkbox" id="chkShowDtsX" /><span>DTS:X</span></label>
+                                        <label><input is="emby-checkbox" type="checkbox" id="chkShowDtsHdMa" /><span>DTS-HD MA</span></label>
+                                        <label><input is="emby-checkbox" type="checkbox" id="chkShowFlac" /><span>FLAC</span></label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Edition Badges -->
+                            <div class="pe-card">
+                                <h2 class="pe-card-title"><span>🏷️</span> Edition &amp; Cut Badges</h2>
+                                <div class="checkboxContainer">
+                                    <label>
+                                        <input is="emby-checkbox" type="checkbox" id="chkShowEditionBadges" />
+                                        <span><strong>Enable Edition Badges (IMAX, Extended, etc.)</strong></span>
+                                    </label>
+                                </div>
+
+                                <div id="editionBadgeGroup" style="margin-top: 14px;">
+                                    <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start; margin-bottom: 16px;">
+                                        <div>
+                                            <label class="inputLabel">Placement Corner (2:3 Frame)</label>
+                                            <div class="pe-anchor-widget">
+                                                <div class="pe-anchor-grid pe-portrait-frame" data-target="selectEditionAnchor">
+                                                    <div class="pe-portrait-watermark">POSTER</div>
+                                                    <button type="button" class="pe-anchor-btn" data-anchor="TopLeft" title="Top-Left">↖</button>
+                                                    <button type="button" class="pe-anchor-btn" data-anchor="TopCenter" title="Top-Center">↑</button>
+                                                    <button type="button" class="pe-anchor-btn active" data-anchor="TopRight" title="Top-Right">↗</button>
+                                                    <button type="button" class="pe-anchor-btn" data-anchor="CenterLeft" title="Center-Left">←</button>
+                                                    <button type="button" class="pe-anchor-btn" data-anchor="Center" title="Center">•</button>
+                                                    <button type="button" class="pe-anchor-btn" data-anchor="CenterRight" title="Center-Right">→</button>
+                                                    <button type="button" class="pe-anchor-btn" data-anchor="BottomLeft" title="Bottom-Left">↙</button>
+                                                    <button type="button" class="pe-anchor-btn" data-anchor="BottomCenter" title="Bottom-Center">↓</button>
+                                                    <button type="button" class="pe-anchor-btn" data-anchor="BottomRight" title="Bottom-Right">↘</button>
+                                                </div>
+                                                <div style="display: flex; flex-direction: column; gap: 8px;">
+                                                    <div>
+                                                        <div style="font-size: 11px; color: #8899a6; text-transform: uppercase; font-weight: 600;">Position</div>
+                                                        <span class="pe-anchor-badge-desc" id="lblDescEditionAnchor">Top-Right</span>
+                                                    </div>
+                                                    <div class="selectContainer" style="margin: 0;">
+                                                        <select is="emby-select" id="selectEditionAnchor" class="emby-select" style="font-size: 12px; padding: 4px 8px;">
+                                                            <option value="TopLeft">Top-Left</option>
+                                                            <option value="TopCenter">Top-Center</option>
+                                                            <option value="TopRight">Top-Right</option>
+                                                            <option value="CenterLeft">Center-Left</option>
+                                                            <option value="Center">Center</option>
+                                                            <option value="CenterRight">Center-Right</option>
+                                                            <option value="BottomLeft">Bottom-Left</option>
+                                                            <option value="BottomCenter">Bottom-Center</option>
+                                                            <option value="BottomRight">Bottom-Right</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="inputContainer" style="flex: 1; min-width: 100px;">
+                                            <label class="inputLabel" for="txtEditionOffsetX">Offset X (px)</label>
+                                            <input is="emby-input" type="number" id="txtEditionOffsetX" min="0" max="200" value="24" />
+                                        </div>
+                                        <div class="inputContainer" style="flex: 1; min-width: 100px;">
+                                            <label class="inputLabel" for="txtEditionOffsetY">Offset Y (px)</label>
+                                            <input is="emby-input" type="number" id="txtEditionOffsetY" min="0" max="200" value="24" />
+                                        </div>
+                                    </div>
+
+                                    <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                                        <label><input is="emby-checkbox" type="checkbox" id="chkShowImax" /><span>IMAX</span></label>
+                                        <label><input is="emby-checkbox" type="checkbox" id="chkShowExtended" /><span>Extended Cut</span></label>
+                                        <label><input is="emby-checkbox" type="checkbox" id="chkShowDirectorsCut" /><span>Director's Cut</span></label>
+                                        <label><input is="emby-checkbox" type="checkbox" id="chkShowTheatrical" /><span>Theatrical</span></label>
+                                        <label><input is="emby-checkbox" type="checkbox" id="chkShowUnrated" /><span>Unrated</span></label>
+                                        <label><input is="emby-checkbox" type="checkbox" id="chkShowSpecialEdition" /><span>Special Edition</span></label>
+                                        <label><input is="emby-checkbox" type="checkbox" id="chkShowRemastered" /><span>Remastered</span></label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 3D Version Badge -->
+                            <div class="pe-card">
+                                <h2 class="pe-card-title"><span>👓</span> 3D Version Badge</h2>
+                                <div class="checkboxContainer">
+                                    <label>
+                                        <input is="emby-checkbox" type="checkbox" id="chkShow3DBadge" />
+                                        <span><strong>Enable 3D Version Badge</strong></span>
+                                    </label>
+                                </div>
+
+                                <div id="threeDBadgeGroup" style="margin-top: 14px;">
+                                    <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start;">
+                                        <div>
+                                            <label class="inputLabel">Placement Corner (2:3 Frame)</label>
+                                            <div class="pe-anchor-widget">
+                                                <div class="pe-anchor-grid pe-portrait-frame" data-target="selectThreeDAnchor">
+                                                    <div class="pe-portrait-watermark">POSTER</div>
+                                                    <button type="button" class="pe-anchor-btn active" data-anchor="TopLeft" title="Top-Left">↖</button>
+                                                    <button type="button" class="pe-anchor-btn" data-anchor="TopCenter" title="Top-Center">↑</button>
+                                                    <button type="button" class="pe-anchor-btn" data-anchor="TopRight" title="Top-Right">↗</button>
+                                                    <button type="button" class="pe-anchor-btn" data-anchor="CenterLeft" title="Center-Left">←</button>
+                                                    <button type="button" class="pe-anchor-btn" data-anchor="Center" title="Center">•</button>
+                                                    <button type="button" class="pe-anchor-btn" data-anchor="CenterRight" title="Center-Right">→</button>
+                                                    <button type="button" class="pe-anchor-btn" data-anchor="BottomLeft" title="Bottom-Left">↙</button>
+                                                    <button type="button" class="pe-anchor-btn" data-anchor="BottomCenter" title="Bottom-Center">↓</button>
+                                                    <button type="button" class="pe-anchor-btn" data-anchor="BottomRight" title="Bottom-Right">↘</button>
+                                                </div>
+                                                <div style="display: flex; flex-direction: column; gap: 8px;">
+                                                    <div>
+                                                        <div style="font-size: 11px; color: #8899a6; text-transform: uppercase; font-weight: 600;">Position</div>
+                                                        <span class="pe-anchor-badge-desc" id="lblDescThreeDAnchor">Top-Left</span>
+                                                    </div>
+                                                    <div class="selectContainer" style="margin: 0;">
+                                                        <select is="emby-select" id="selectThreeDAnchor" class="emby-select" style="font-size: 12px; padding: 4px 8px;">
+                                                            <option value="TopLeft">Top-Left</option>
+                                                            <option value="TopCenter">Top-Center</option>
+                                                            <option value="TopRight">Top-Right</option>
+                                                            <option value="CenterLeft">Center-Left</option>
+                                                            <option value="Center">Center</option>
+                                                            <option value="CenterRight">Center-Right</option>
+                                                            <option value="BottomLeft">Bottom-Left</option>
+                                                            <option value="BottomCenter">Bottom-Center</option>
+                                                            <option value="BottomRight">Bottom-Right</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="inputContainer" style="flex: 1; min-width: 100px;">
+                                            <label class="inputLabel" for="txtThreeDOffsetX">Offset X (px)</label>
+                                            <input is="emby-input" type="number" id="txtThreeDOffsetX" min="0" max="200" value="24" />
+                                        </div>
+                                        <div class="inputContainer" style="flex: 1; min-width: 100px;">
+                                            <label class="inputLabel" for="txtThreeDOffsetY">Offset Y (px)</label>
+                                            <input is="emby-input" type="number" id="txtThreeDOffsetY" min="0" max="200" value="24" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Rating Badge Placement -->
+                            <div class="pe-card">
+                                <h2 class="pe-card-title"><span>⭐</span> Dynamic Rating Score Badge</h2>
+                                <div class="checkboxContainer">
+                                    <label>
+                                        <input is="emby-checkbox" type="checkbox" id="chkShowRatingBadge" />
+                                        <span><strong>Enable Rating Pill Badge</strong></span>
+                                    </label>
+                                </div>
+
+                                <div id="ratingPlacementGroup" style="margin-top: 14px;">
+                                    <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start;">
+                                        <div>
+                                            <label class="inputLabel">Placement Corner (2:3 Frame)</label>
+                                            <div class="pe-anchor-widget">
+                                                <div class="pe-anchor-grid pe-portrait-frame" data-target="selectRatingAnchor">
+                                                    <div class="pe-portrait-watermark">POSTER</div>
+                                                    <button type="button" class="pe-anchor-btn" data-anchor="TopLeft" title="Top-Left">↖</button>
+                                                    <button type="button" class="pe-anchor-btn" data-anchor="TopCenter" title="Top-Center">↑</button>
+                                                    <button type="button" class="pe-anchor-btn" data-anchor="TopRight" title="Top-Right">↗</button>
+                                                    <button type="button" class="pe-anchor-btn" data-anchor="CenterLeft" title="Center-Left">←</button>
+                                                    <button type="button" class="pe-anchor-btn" data-anchor="Center" title="Center">•</button>
+                                                    <button type="button" class="pe-anchor-btn" data-anchor="CenterRight" title="Center-Right">→</button>
+                                                    <button type="button" class="pe-anchor-btn" data-anchor="BottomLeft" title="Bottom-Left">↙</button>
+                                                    <button type="button" class="pe-anchor-btn" data-anchor="BottomCenter" title="Bottom-Center">↓</button>
+                                                    <button type="button" class="pe-anchor-btn active" data-anchor="BottomRight" title="Bottom-Right">↘</button>
+                                                </div>
+                                                <div style="display: flex; flex-direction: column; gap: 8px;">
+                                                    <div>
+                                                        <div style="font-size: 11px; color: #8899a6; text-transform: uppercase; font-weight: 600;">Position</div>
+                                                        <span class="pe-anchor-badge-desc" id="lblDescRatingAnchor">Bottom-Right</span>
+                                                    </div>
+                                                    <div class="selectContainer" style="margin: 0;">
+                                                        <select is="emby-select" id="selectRatingAnchor" class="emby-select" style="font-size: 12px; padding: 4px 8px;">
+                                                            <option value="TopLeft">Top-Left</option>
+                                                            <option value="TopCenter">Top-Center</option>
+                                                            <option value="TopRight">Top-Right</option>
+                                                            <option value="CenterLeft">Center-Left</option>
+                                                            <option value="Center">Center</option>
+                                                            <option value="CenterRight">Center-Right</option>
+                                                            <option value="BottomLeft">Bottom-Left</option>
+                                                            <option value="BottomCenter">Bottom-Center</option>
+                                                            <option value="BottomRight">Bottom-Right</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="inputContainer" style="flex: 1; min-width: 100px;">
+                                            <label class="inputLabel" for="txtRatingOffsetX">Offset X (px)</label>
+                                            <input is="emby-input" type="number" id="txtRatingOffsetX" min="0" max="200" value="24" />
+                                        </div>
+                                        <div class="inputContainer" style="flex: 1; min-width: 100px;">
+                                            <label class="inputLabel" for="txtRatingOffsetY">Offset Y (px)</label>
+                                            <input is="emby-input" type="number" id="txtRatingOffsetY" min="0" max="200" value="24" />
+                                        </div>
+                                    </div>
+                                    <p class="fieldDescription" style="margin-top: 10px;">
+                                        Configure score sources, custom dynamic color tiers, and thresholds under the <strong>Score Badge Settings</strong> tab.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAB 2: GLOBAL BADGE SETTINGS -->
+                        <div id="tabGlobalBadgeSettings" class="pe-tab-pane">
+                            <div class="pe-panel-header">
+                                <h1 class="pe-panel-title">Global Badge Settings</h1>
+                                <p class="pe-panel-subtitle">Fine-tune visual sizing, unified pill grouping, opacity, roundness, and spacing.</p>
+                            </div>
+
+                            <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 320px;">
+                                    <!-- Unified Dark Translucent Pill -->
+                                    <div class="pe-card">
+                                        <h2 class="pe-card-title"><span>💊</span> Unified Pill Container</h2>
+                                        <div class="checkboxContainer">
+                                            <label>
+                                                <input is="emby-checkbox" type="checkbox" id="chkCombineBadgesInPill" />
+                                                <span><strong>Group co-located badges in a single dark translucent pill</strong></span>
+                                            </label>
+                                        </div>
+                                        <div class="fieldDescription" style="margin-bottom: 14px;">
+                                            Combines badges sharing the same corner (e.g. 4K, Dolby Vision, IMAX) into a sleek pill container.
+                                        </div>
+
+                                        <div id="pillConfigGroup" style="display: flex; gap: 16px; flex-wrap: wrap;">
+                                            <div style="flex: 1; min-width: 140px;">
+                                                <label class="inputLabel" for="colPillBackground">Background Color</label>
+                                                <input type="color" id="colPillBackground" style="width: 100%; height: 38px; border-radius: 4px; cursor: pointer;" />
+                                            </div>
+                                            <div style="flex: 1; min-width: 180px;">
+                                                <label class="inputLabel" for="rngPillOpacity">Opacity: <span id="lblPillOpacity">78%</span></label>
+                                                <input type="range" id="rngPillOpacity" min="0" max="1" step="0.02" value="0.78" style="width: 100%; margin-top: 10px;" />
+                                            </div>
+                                            <div class="inputContainer" style="flex: 1; min-width: 110px;">
+                                                <label class="inputLabel" for="txtPillCornerRadius">Corner Radius (px)</label>
+                                                <input is="emby-input" type="number" id="txtPillCornerRadius" min="0" max="40" step="1" />
+                                            </div>
+                                            <div class="inputContainer" style="flex: 1; min-width: 100px;">
+                                                <label class="inputLabel" for="txtPillPaddingX">Padding X (px)</label>
+                                                <input is="emby-input" type="number" id="txtPillPaddingX" min="0" max="40" step="1" />
+                                            </div>
+                                            <div class="inputContainer" style="flex: 1; min-width: 100px;">
+                                                <label class="inputLabel" for="txtPillPaddingY">Padding Y (px)</label>
+                                                <input is="emby-input" type="number" id="txtPillPaddingY" min="0" max="40" step="1" />
+                                            </div>
+                                            <div class="inputContainer" style="flex: 1; min-width: 100px;">
+                                                <label class="inputLabel" for="txtPillItemSpacing">Item Spacing (px)</label>
+                                                <input is="emby-input" type="number" id="txtPillItemSpacing" min="0" max="40" step="1" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Proportional Sizing & Layout -->
+                                    <div class="pe-card">
+                                        <h2 class="pe-card-title"><span>📐</span> Sizing &amp; Layout</h2>
+                                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px;">
+                                            <div class="inputContainer">
+                                                <label class="inputLabel" for="txtMediaScale">Media Badge Scale (%)</label>
+                                                <input is="emby-input" type="number" id="txtMediaScale" min="2" max="15" step="0.1" value="4.5" />
+                                            </div>
+                                            <div class="inputContainer">
+                                                <label class="inputLabel" for="txtEditionScale">Edition Badge Scale (%)</label>
+                                                <input is="emby-input" type="number" id="txtEditionScale" min="2" max="15" step="0.1" value="4.5" />
+                                            </div>
+                                            <div class="inputContainer">
+                                                <label class="inputLabel" for="txtThreeDScale">3D Badge Scale (%)</label>
+                                                <input is="emby-input" type="number" id="txtThreeDScale" min="2" max="15" step="0.1" value="4.5" />
+                                            </div>
+                                            <div class="inputContainer">
+                                                <label class="inputLabel" for="txtRatingScale">Rating Scale (%)</label>
+                                                <input is="emby-input" type="number" id="txtRatingScale" min="2" max="15" step="0.1" value="4.5" />
+                                            </div>
+                                            <div class="selectContainer">
+                                                <label class="selectLabel" for="selectMediaDirection">Direction (Non-Pill)</label>
+                                                <select is="emby-select" id="selectMediaDirection" class="emby-select">
+                                                    <option value="Horizontal">Horizontal</option>
+                                                    <option value="Vertical">Vertical</option>
                                                 </select>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="selectContainer" style="flex: 1; min-width: 140px;">
-                                    <label class="selectLabel" for="selectMediaDirection">Direction</label>
-                                    <select is="emby-select" id="selectMediaDirection" class="emby-select">
-                                        <option value="Horizontal">Horizontal</option>
-                                        <option value="Vertical">Vertical</option>
+                                <!-- Sticky Live Poster Preview -->
+                                <div style="width: 250px; flex-shrink: 0;">
+                                    <div class="pe-card" style="position: sticky; top: 20px; text-align: center;">
+                                        <div style="font-size: 13px; font-weight: 700; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Live Preview</div>
+                                        <div id="previewCardContainer" style="position: relative; width: 180px; height: 270px; margin: 0 auto; background: #0f172a; border-radius: 8px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.15);">
+                                            <div style="position: absolute; inset: 0; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);"></div>
+                                            <div style="position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); color: rgba(255,255,255,0.25); font-size: 12px; font-weight: bold; pointer-events: none;">POSTER</div>
+
+                                            <div id="previewMediaPill" style="position: absolute; bottom: 8px; left: 8px; display: flex; align-items: center; z-index: 10;">
+                                                <div id="preview4k" style="padding: 2px 4px; font-weight: 900; font-size: 8px; border-radius: 3px; background: #fff; color: #000; margin-right: 4px;">4K</div>
+                                                <div id="previewDv" style="padding: 2px 4px; font-weight: 900; font-size: 8px; border-radius: 3px; background: #000; color: #fff; border: 1px solid rgba(255,255,255,0.3); margin-right: 4px;">DO DV</div>
+                                                <div id="previewHdr" style="padding: 2px 4px; font-weight: 900; font-size: 8px; border-radius: 3px; background: #00a4dc; color: #fff; margin-right: 4px;">HDR10</div>
+                                                <div id="previewAtmos" style="padding: 2px 4px; font-weight: 900; font-size: 8px; border-radius: 3px; background: #fff; color: #000; margin-right: 4px;">ATMOS</div>
+                                                <div id="preview3D" style="padding: 2px 4px; font-weight: 900; font-size: 8px; border-radius: 3px; background: #e23133; color: #fff; margin-right: 4px;">3D</div>
+                                                <div id="previewImax" style="padding: 2px 4px; font-weight: 900; font-size: 8px; border-radius: 3px; background: #00a4dc; color: #fff;">IMAX</div>
+                                            </div>
+
+                                            <div id="previewSeparate3D" style="position: absolute; top: 8px; left: 8px; z-index: 10; display: none;">
+                                                <div style="padding: 2px 4px; font-weight: 900; font-size: 8px; border-radius: 3px; background: #e23133; color: #fff;">3D</div>
+                                            </div>
+                                            <div id="previewSeparateEdition" style="position: absolute; top: 8px; right: 8px; z-index: 10; display: none;">
+                                                <div style="padding: 2px 4px; font-weight: 900; font-size: 8px; border-radius: 3px; background: #00a4dc; color: #fff;">IMAX</div>
+                                            </div>
+                                            <div id="previewRatingPill" style="position: absolute; bottom: 8px; right: 8px; background: #f5c518; color: #000; font-weight: 900; font-size: 9px; padding: 2px 6px; border-radius: 4px; z-index: 10;">8.6</div>
+                                        </div>
+                                        <div style="font-size: 11px; color: #8899a6; margin-top: 10px;">Updates live as you tweak settings</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAB 3: SCORE BADGE SETTINGS -->
+                        <div id="tabScoreSettings" class="pe-tab-pane">
+                            <div class="pe-panel-header">
+                                <h1 class="pe-panel-title">Score Badge Settings</h1>
+                                <p class="pe-panel-subtitle">Configure rating score sources, corner radius inheritance, and custom dynamic score tiers.</p>
+                            </div>
+
+                            <!-- Rating Sources & Appearance -->
+                            <div class="pe-card">
+                                <h2 class="pe-card-title"><span>📊</span> Rating Sources &amp; Style</h2>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+                                    <div class="selectContainer">
+                                        <label class="selectLabel" for="selectRatingSource">Rating Source Preference</label>
+                                        <select is="emby-select" id="selectRatingSource" class="emby-select">
+                                            <option value="Community">Community Rating (IMDb / TMDb)</option>
+                                            <option value="Critic">Critic Rating (Rotten Tomatoes / Metacritic)</option>
+                                            <option value="CombinedAverage">Combined Average (All Available Scores)</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="selectContainer">
+                                        <label class="selectLabel" for="selectRatingColorMode">Coloring Mode</label>
+                                        <select is="emby-select" id="selectRatingColorMode" class="emby-select">
+                                            <option value="DynamicTiers">Dynamic Score Tiers (Custom Ranges)</option>
+                                            <option value="FixedColor">Single Fixed Color</option>
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label class="inputLabel" for="colRatingFixed">Fixed Badge Color</label>
+                                        <input type="color" id="colRatingFixed" style="width: 100%; height: 38px; border-radius: 4px; cursor: pointer;" />
+                                    </div>
+
+                                    <div>
+                                        <label class="inputLabel" for="colRatingText">Text Color</label>
+                                        <input type="color" id="colRatingText" style="width: 100%; height: 38px; border-radius: 4px; cursor: pointer;" />
+                                    </div>
+                                </div>
+
+                                <div style="margin-top: 16px; display: flex; gap: 20px; flex-wrap: wrap; align-items: center;">
+                                    <div class="checkboxContainer" style="margin: 0;">
+                                        <label>
+                                            <input is="emby-checkbox" type="checkbox" id="chkUseGlobalCornerRadiusForRating" />
+                                            <span><strong>Use default badge radius from Global Settings (Tab 2)</strong></span>
+                                        </label>
+                                    </div>
+                                    <div id="customRadiusGroup" class="inputContainer" style="width: 140px; margin: 0; display: none;">
+                                        <label class="inputLabel" for="txtRatingCornerRadius">Corner Radius (px)</label>
+                                        <input is="emby-input" type="number" id="txtRatingCornerRadius" min="0" max="30" step="1" value="6" />
+                                    </div>
+                                    <div class="inputContainer" style="width: 110px; margin: 0;">
+                                        <label class="inputLabel" for="txtRatingPaddingX">Padding X (px)</label>
+                                        <input is="emby-input" type="number" id="txtRatingPaddingX" min="0" max="30" step="1" value="8" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Dynamic Score Tiers Manager -->
+                            <div class="pe-card" id="tierManagerCard">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+                                    <h2 class="pe-card-title" style="margin: 0;"><span>🎯</span> Dynamic Score Tiers</h2>
+                                    <div style="display: flex; gap: 8px;">
+                                        <button type="button" is="emby-button" id="btnPreset5Tiers" class="emby-button" style="font-size: 12px; padding: 4px 10px; background: rgba(255,255,255,0.08);">Default 5 Tiers</button>
+                                        <button type="button" is="emby-button" id="btnPreset10Tiers" class="emby-button" style="font-size: 12px; padding: 4px 10px; background: rgba(255,255,255,0.08);">10 Tiers (0-10)</button>
+                                        <button type="button" is="emby-button" id="btnAddTier" class="raised emby-button" style="font-size: 12px; padding: 4px 12px; background: #00a4dc; color: #fff; font-weight: bold;">+ Add Score Tier</button>
+                                    </div>
+                                </div>
+                                <p class="fieldDescription" style="margin-bottom: 16px;">
+                                    Define custom score ranges and badge colors. You can add as many tiers as desired (e.g. 0.0–0.9, 1.0–1.9, etc.).
+                                </p>
+                                <div id="tiersContainer">
+                                    <!-- Dynamic Tier Rows Rendered via JS -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAB 4: CUSTOM BADGES -->
+                        <div id="tabCustomBadges" class="pe-tab-pane">
+                            <div class="pe-panel-header">
+                                <h1 class="pe-panel-title">Custom Badges</h1>
+                                <p class="pe-panel-subtitle">Upload custom PNG, WebP, or SVG images to replace default badge assets.</p>
+                            </div>
+
+                            <div class="pe-card">
+                                <h2 class="pe-card-title"><span>🎨</span> Badge Asset Overrides</h2>
+                                <p class="fieldDescription" style="margin-bottom: 16px;">
+                                    Upload custom badge images. Uploaded images are stored in plugin configuration and composited automatically.
+                                </p>
+                                <div id="badgeManagerGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;">
+                                    <!-- Items injected dynamically via JS -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAB 5: SETTINGS & TASKS -->
+                        <div id="tabGeneralSettings" class="pe-tab-pane">
+                            <div class="pe-panel-header">
+                                <h1 class="pe-panel-title">Settings &amp; Tasks</h1>
+                                <p class="pe-panel-subtitle">Manage scheduled tasks directly, poster sources, backups, auto-crop, and upscale settings.</p>
+                            </div>
+
+                            <!-- Task Runner Card -->
+                            <div class="pe-card">
+                                <h2 class="pe-card-title"><span>⚡</span> Task Runner (Direct Execution)</h2>
+                                <p class="fieldDescription">Trigger poster processing or restoration directly without navigating to Scheduled Tasks.</p>
+
+                                <div style="display: flex; gap: 14px; margin-top: 14px; flex-wrap: wrap; align-items: center;">
+                                    <button type="button" is="emby-button" id="btnRunUpdate" class="raised emby-button" style="background: #00a4dc; color: #fff; font-weight: bold; padding: 10px 18px;">
+                                        <span>▶ Process Posters Now</span>
+                                    </button>
+                                    <button type="button" is="emby-button" id="btnRunRestore" class="emby-button" style="background: rgba(239, 68, 68, 0.18); border: 1px solid rgba(239, 68, 68, 0.4); color: #ef4444; font-weight: bold; padding: 10px 18px;">
+                                        <span>↺ Restore Original Posters</span>
+                                    </button>
+                                    <div id="taskStatusBadge" style="display: inline-block; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; color: #94a3b8;">
+                                        Status: Idle
+                                    </div>
+                                </div>
+
+                                <div id="taskProgressSection" style="margin-top: 16px; display: none;">
+                                    <div style="display: flex; justify-content: space-between; font-size: 12px; color: #94a3b8; margin-bottom: 4px;">
+                                        <span id="taskProgressText">Processing posters...</span>
+                                        <span id="taskProgressPercent">0%</span>
+                                    </div>
+                                    <div class="pe-progress-container">
+                                        <div id="taskProgressBar" class="pe-progress-bar"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Poster Sources & Backup Storage -->
+                            <div class="pe-card">
+                                <h2 class="pe-card-title"><span>🗄️</span> Poster Sources &amp; Backups</h2>
+                                <div class="checkboxContainer checkboxContainer-withDescription">
+                                    <label>
+                                        <input is="emby-checkbox" type="checkbox" id="chkSaveOriginalBesideMedia" />
+                                        <span><strong>Save untouched backup beside media files (poster-original.jpg)</strong></span>
+                                    </label>
+                                    <div class="fieldDescription checkboxFieldDescription">
+                                        Keeps untouched original posters directly with your media folders so pristine artwork survives library migrations.
+                                    </div>
+                                </div>
+
+                                <div class="selectContainer" style="margin-top: 14px;">
+                                    <label class="selectLabel" for="selectSource">Poster Source Strategy</label>
+                                    <select is="emby-select" id="selectSource" class="emby-select-withcolor emby-select">
+                                        <option value="LocalFirst">Local First (Use existing library poster, fallback to clean remote)</option>
+                                        <option value="LocalOnly">Local Only (Never download remote posters)</option>
+                                        <option value="BtttrCcClean">btttr.cc Clean (Fetch textless clean poster via IMDb ID)</option>
+                                    </select>
+                                    <div class="fieldDescription">
+                                        Works seamlessly with all Jellyfin image fetchers (TheMovieDb, Fanart.tv, TheTVDB) configured under <strong>Dashboard &rarr; Libraries</strong>.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Cropping & Sizing -->
+                            <div class="pe-card">
+                                <h2 class="pe-card-title"><span>📐</span> Aspect Ratio &amp; Poster Upscaling</h2>
+                                <div class="checkboxContainer checkboxContainer-withDescription">
+                                    <label>
+                                        <input is="emby-checkbox" type="checkbox" id="chkAutoCropToPortraitRatio" />
+                                        <span><strong>Auto-crop posters to standard 2:3 portrait ratio (1:1.5)</strong></span>
+                                    </label>
+                                    <div class="fieldDescription checkboxFieldDescription">
+                                        Automatically center-crops base posters to Jellyfin's official 2:3 card aspect ratio before compositing badges. Prevents Jellyfin's card grid from silently cropping the side margins of wider posters.
+                                    </div>
+                                </div>
+
+                                <div class="checkboxContainer checkboxContainer-withDescription" style="margin-top: 14px;">
+                                    <label>
+                                        <input is="emby-checkbox" type="checkbox" id="chkResizeLowResolutionPosters" />
+                                        <span><strong>Auto-resize / upscale low-resolution posters before applying badges</strong></span>
+                                    </label>
+                                    <div class="fieldDescription checkboxFieldDescription">
+                                        Upscales smaller posters to standard resolution (1000×1500) using high-quality filtering so badges never appear oversized.
+                                    </div>
+                                </div>
+
+                                <div class="selectContainer" style="margin-top: 14px; max-width: 320px;">
+                                    <label class="selectLabel" for="selectTargetResolution">Target Minimum Resolution</label>
+                                    <select is="emby-select" id="selectTargetResolution" class="emby-select">
+                                        <option value="1000x1500">1000 × 1500 (Jellyfin Standard - Recommended)</option>
+                                        <option value="2000x3000">2000 × 3000 (Ultra-HD / 4K)</option>
                                     </select>
                                 </div>
-                                <div class="inputContainer" style="flex: 1; min-width: 100px;">
-                                    <label class="inputLabel" for="txtMediaOffsetX">Offset X (px)</label>
-                                    <input is="emby-input" type="number" id="txtMediaOffsetX" min="0" max="200" value="24" />
-                                </div>
-                                <div class="inputContainer" style="flex: 1; min-width: 100px;">
-                                    <label class="inputLabel" for="txtMediaOffsetY">Offset Y (px)</label>
-                                    <input is="emby-input" type="number" id="txtMediaOffsetY" min="0" max="200" value="24" />
-                                </div>
-                                <div class="inputContainer" style="flex: 1; min-width: 100px;">
-                                    <label class="inputLabel" for="txtMediaScale">Scale (% height)</label>
-                                    <input is="emby-input" type="number" id="txtMediaScale" step="0.5" min="2" max="15" />
+                            </div>
+
+                            <!-- Theme Pack -->
+                            <div class="pe-card">
+                                <h2 class="pe-card-title"><span>📦</span> Theme Pack</h2>
+                                <div class="inputContainer" style="max-width: 320px;">
+                                    <label class="inputLabel" for="txtTheme">Theme Subfolder</label>
+                                    <input is="emby-input" type="text" id="txtTheme" value="default" />
+                                    <div class="fieldDescription">Subfolder in /PostersEnhanced/themes/ (default: default).</div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- SECTION 4: EDITION BADGES -->
-                    <div class="verticalSection">
-                        <h2>4. Edition Badges (IMAX, Extended, Director's Cut, etc.)</h2>
-                        <div class="checkboxContainer checkboxContainer-withDescription">
-                            <label>
-                                <input is="emby-checkbox" type="checkbox" id="chkShowEditionBadges" />
-                                <span><strong>Enable Edition Badges</strong></span>
-                            </label>
-                            <div class="fieldDescription checkboxFieldDescription">
-                                Automatically detected from filenames containing tags like <code>{edition-Imax}</code>, <code>{edition-Extended}</code>, or keywords in filename/title.
-                            </div>
-                        </div>
-
-                        <div id="editionBadgesGroup" style="margin-top: 12px;">
-                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-                                <label><input is="emby-checkbox" type="checkbox" id="chkShowImax" /> <span>IMAX</span></label>
-                                <label><input is="emby-checkbox" type="checkbox" id="chkShowExtended" /> <span>Extended Cut</span></label>
-                                <label><input is="emby-checkbox" type="checkbox" id="chkShowDirectorsCut" /> <span>Director's Cut</span></label>
-                                <label><input is="emby-checkbox" type="checkbox" id="chkShowTheatrical" /> <span>Theatrical</span></label>
-                                <label><input is="emby-checkbox" type="checkbox" id="chkShowUnrated" /> <span>Unrated</span></label>
-                                <label><input is="emby-checkbox" type="checkbox" id="chkShowSpecialEdition" /> <span>Special Edition</span></label>
-                                <label><input is="emby-checkbox" type="checkbox" id="chkShowRemastered" /> <span>Remastered</span></label>
-                                <label><input is="emby-checkbox" type="checkbox" id="chkShowCustomEdition" /> <span>Custom Tag (e.g. {edition-FanEdit})</span></label>
-                            </div>
-
-                            <h3 style="margin-top: 16px;">Edition Placement & Anchor</h3>
-                            <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start;">
-                                <div>
-                                    <label class="inputLabel">Position Anchor (Portrait Poster Frame)</label>
-                                    <div class="pe-anchor-widget">
-                                        <div class="pe-anchor-grid pe-portrait-frame" data-target="selectEditionAnchor">
-                                            <div class="pe-portrait-watermark">POSTER</div>
-                                            <button type="button" class="pe-anchor-btn" data-anchor="TopLeft" title="Top-Left">↖</button>
-                                            <button type="button" class="pe-anchor-btn" data-anchor="TopCenter" title="Top-Center">↑</button>
-                                            <button type="button" class="pe-anchor-btn" data-anchor="TopRight" title="Top-Right">↗</button>
-                                            <button type="button" class="pe-anchor-btn" data-anchor="CenterLeft" title="Center-Left">←</button>
-                                            <button type="button" class="pe-anchor-btn" data-anchor="Center" title="Center">■</button>
-                                            <button type="button" class="pe-anchor-btn" data-anchor="CenterRight" title="Center-Right">→</button>
-                                            <button type="button" class="pe-anchor-btn" data-anchor="BottomLeft" title="Bottom-Left">↙</button>
-                                            <button type="button" class="pe-anchor-btn" data-anchor="BottomCenter" title="Bottom-Center">↓</button>
-                                            <button type="button" class="pe-anchor-btn" data-anchor="BottomRight" title="Bottom-Right">↘</button>
-                                        </div>
-                                        <div style="display: flex; flex-direction: column; gap: 8px;">
-                                            <div>
-                                                <div style="font-size: 11px; color: #8899a6; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Placement</div>
-                                                <span class="pe-anchor-badge-desc" id="lblDescEditionAnchor">Bottom-Left</span>
-                                            </div>
-                                            <div class="selectContainer" style="margin: 0;">
-                                                <select is="emby-select" id="selectEditionAnchor" class="emby-select" style="font-size: 12px; padding: 4px 8px;">
-                                                    <option value="TopLeft">Top-Left</option>
-                                                    <option value="TopCenter">Top-Center</option>
-                                                    <option value="TopRight">Top-Right</option>
-                                                    <option value="CenterLeft">Center-Left</option>
-                                                    <option value="Center">Center</option>
-                                                    <option value="CenterRight">Center-Right</option>
-                                                    <option value="BottomLeft">Bottom-Left</option>
-                                                    <option value="BottomCenter">Bottom-Center</option>
-                                                    <option value="BottomRight">Bottom-Right</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="inputContainer" style="flex: 1; min-width: 100px;">
-                                    <label class="inputLabel" for="txtEditionOffsetX">Offset X (px)</label>
-                                    <input is="emby-input" type="number" id="txtEditionOffsetX" min="0" max="200" value="24" />
-                                </div>
-                                <div class="inputContainer" style="flex: 1; min-width: 100px;">
-                                    <label class="inputLabel" for="txtEditionOffsetY">Offset Y (px)</label>
-                                    <input is="emby-input" type="number" id="txtEditionOffsetY" min="0" max="200" value="24" />
-                                </div>
-                                <div class="inputContainer" style="flex: 1; min-width: 100px;">
-                                    <label class="inputLabel" for="txtEditionScale">Scale (% height)</label>
-                                    <input is="emby-input" type="number" id="txtEditionScale" step="0.5" min="2" max="15" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- SECTION 5: 3D BADGE -->
-                    <div class="verticalSection">
-                        <h2>5. 3D Version Badge (Glasses Icon)</h2>
-                        <div class="checkboxContainer checkboxContainer-withDescription">
-                            <label>
-                                <input is="emby-checkbox" type="checkbox" id="chkShow3DBadge" />
-                                <span><strong>Enable 3D Version Badge</strong></span>
-                            </label>
-                            <div class="fieldDescription checkboxFieldDescription">
-                                Displays a 3D glasses badge for 3D movies (detected via <code>{edition-3D}</code>, <code>[3D]</code>, or 3D video stream properties).
-                            </div>
-                        </div>
-
-                        <div id="threeDBadgeGroup" style="margin-top: 12px;">
-                            <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start;">
-                                <div>
-                                    <label class="inputLabel">Position Anchor (Portrait Poster Frame)</label>
-                                    <div class="pe-anchor-widget">
-                                        <div class="pe-anchor-grid pe-portrait-frame" data-target="selectThreeDAnchor">
-                                            <div class="pe-portrait-watermark">POSTER</div>
-                                            <button type="button" class="pe-anchor-btn" data-anchor="TopLeft" title="Top-Left">↖</button>
-                                            <button type="button" class="pe-anchor-btn" data-anchor="TopCenter" title="Top-Center">↑</button>
-                                            <button type="button" class="pe-anchor-btn" data-anchor="TopRight" title="Top-Right">↗</button>
-                                            <button type="button" class="pe-anchor-btn" data-anchor="CenterLeft" title="Center-Left">←</button>
-                                            <button type="button" class="pe-anchor-btn" data-anchor="Center" title="Center">■</button>
-                                            <button type="button" class="pe-anchor-btn" data-anchor="CenterRight" title="Center-Right">→</button>
-                                            <button type="button" class="pe-anchor-btn" data-anchor="BottomLeft" title="Bottom-Left">↙</button>
-                                            <button type="button" class="pe-anchor-btn" data-anchor="BottomCenter" title="Bottom-Center">↓</button>
-                                            <button type="button" class="pe-anchor-btn" data-anchor="BottomRight" title="Bottom-Right">↘</button>
-                                        </div>
-                                        <div style="display: flex; flex-direction: column; gap: 8px;">
-                                            <div>
-                                                <div style="font-size: 11px; color: #8899a6; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Placement</div>
-                                                <span class="pe-anchor-badge-desc" id="lblDescThreeDAnchor">Bottom-Left</span>
-                                            </div>
-                                            <div class="selectContainer" style="margin: 0;">
-                                                <select is="emby-select" id="selectThreeDAnchor" class="emby-select" style="font-size: 12px; padding: 4px 8px;">
-                                                    <option value="TopLeft">Top-Left</option>
-                                                    <option value="TopCenter">Top-Center</option>
-                                                    <option value="TopRight">Top-Right</option>
-                                                    <option value="CenterLeft">Center-Left</option>
-                                                    <option value="Center">Center</option>
-                                                    <option value="CenterRight">Center-Right</option>
-                                                    <option value="BottomLeft">Bottom-Left</option>
-                                                    <option value="BottomCenter">Bottom-Center</option>
-                                                    <option value="BottomRight">Bottom-Right</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="inputContainer" style="flex: 1; min-width: 100px;">
-                                    <label class="inputLabel" for="txtThreeDOffsetX">Offset X (px)</label>
-                                    <input is="emby-input" type="number" id="txtThreeDOffsetX" min="0" max="200" value="24" />
-                                </div>
-                                <div class="inputContainer" style="flex: 1; min-width: 100px;">
-                                    <label class="inputLabel" for="txtThreeDOffsetY">Offset Y (px)</label>
-                                    <input is="emby-input" type="number" id="txtThreeDOffsetY" min="0" max="200" value="24" />
-                                </div>
-                                <div class="inputContainer" style="flex: 1; min-width: 100px;">
-                                    <label class="inputLabel" for="txtThreeDScale">Scale (% height)</label>
-                                    <input is="emby-input" type="number" id="txtThreeDScale" step="0.5" min="2" max="15" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- SECTION 6: RATING BADGE & COLOR TIERS -->
-                    <div class="verticalSection">
-                        <h2>6. Rating Pill Badge</h2>
-                        <div class="checkboxContainer">
-                            <label>
-                                <input is="emby-checkbox" type="checkbox" id="chkShowRatingBadge" />
-                                <span><strong>Enable Rating Badge</strong></span>
-                            </label>
-                        </div>
-
-                        <div id="ratingBadgeGroup" style="margin-top: 12px;">
-                            <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start;">
-                                <div>
-                                    <label class="inputLabel">Position Anchor (Portrait Poster Frame)</label>
-                                    <div class="pe-anchor-widget">
-                                        <div class="pe-anchor-grid pe-portrait-frame" data-target="selectRatingAnchor">
-                                            <div class="pe-portrait-watermark">POSTER</div>
-                                            <button type="button" class="pe-anchor-btn" data-anchor="TopLeft" title="Top-Left">↖</button>
-                                            <button type="button" class="pe-anchor-btn" data-anchor="TopCenter" title="Top-Center">↑</button>
-                                            <button type="button" class="pe-anchor-btn" data-anchor="TopRight" title="Top-Right">↗</button>
-                                            <button type="button" class="pe-anchor-btn" data-anchor="CenterLeft" title="Center-Left">←</button>
-                                            <button type="button" class="pe-anchor-btn" data-anchor="Center" title="Center">■</button>
-                                            <button type="button" class="pe-anchor-btn" data-anchor="CenterRight" title="Center-Right">→</button>
-                                            <button type="button" class="pe-anchor-btn" data-anchor="BottomLeft" title="Bottom-Left">↙</button>
-                                            <button type="button" class="pe-anchor-btn" data-anchor="BottomCenter" title="Bottom-Center">↓</button>
-                                            <button type="button" class="pe-anchor-btn" data-anchor="BottomRight" title="Bottom-Right">↘</button>
-                                        </div>
-                                        <div style="display: flex; flex-direction: column; gap: 8px;">
-                                            <div>
-                                                <div style="font-size: 11px; color: #8899a6; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Placement</div>
-                                                <span class="pe-anchor-badge-desc" id="lblDescRatingAnchor">Bottom-Right</span>
-                                            </div>
-                                            <div class="selectContainer" style="margin: 0;">
-                                                <select is="emby-select" id="selectRatingAnchor" class="emby-select" style="font-size: 12px; padding: 4px 8px;">
-                                                    <option value="TopLeft">Top-Left</option>
-                                                    <option value="TopCenter">Top-Center</option>
-                                                    <option value="TopRight">Top-Right</option>
-                                                    <option value="CenterLeft">Center-Left</option>
-                                                    <option value="Center">Center</option>
-                                                    <option value="CenterRight">Center-Right</option>
-                                                    <option value="BottomLeft">Bottom-Left</option>
-                                                    <option value="BottomCenter">Bottom-Center</option>
-                                                    <option value="BottomRight">Bottom-Right</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="selectContainer" style="flex: 1; min-width: 140px;">
-                                    <label class="selectLabel" for="selectRatingColorMode">Coloring Mode</label>
-                                    <select is="emby-select" id="selectRatingColorMode" class="emby-select">
-                                        <option value="DynamicTiers">Dynamic Score Tiers</option>
-                                        <option value="FixedColor">Fixed Color</option>
-                                    </select>
-                                </div>
-                                <div class="inputContainer" style="flex: 1; min-width: 100px;">
-                                    <label class="inputLabel" for="txtRatingOffsetX">Offset X (px)</label>
-                                    <input is="emby-input" type="number" id="txtRatingOffsetX" min="0" max="200" value="24" />
-                                </div>
-                                <div class="inputContainer" style="flex: 1; min-width: 100px;">
-                                    <label class="inputLabel" for="txtRatingOffsetY">Offset Y (px)</label>
-                                    <input is="emby-input" type="number" id="txtRatingOffsetY" min="0" max="200" value="24" />
-                                </div>
-                                <div class="inputContainer" style="flex: 1; min-width: 100px;">
-                                    <label class="inputLabel" for="txtRatingCornerRadius">Corner Radius</label>
-                                    <input is="emby-input" type="number" id="txtRatingCornerRadius" min="0" max="30" step="1" />
-                                </div>
-                            </div>
-
-                            <h3 style="margin-top: 16px;">Dynamic Score Color Tiers</h3>
-                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px;">
-                                <div>
-                                    <label class="inputLabel" for="colTierRed">&lt; 5.0 (Red)</label>
-                                    <input type="color" id="colTierRed" style="width: 100%; height: 38px; border-radius: 4px; cursor: pointer;" />
-                                </div>
-                                <div>
-                                    <label class="inputLabel" for="colTierOrange">5.0 – 5.9 (Orange)</label>
-                                    <input type="color" id="colTierOrange" style="width: 100%; height: 38px; border-radius: 4px; cursor: pointer;" />
-                                </div>
-                                <div>
-                                    <label class="inputLabel" for="colTierYellow">6.0 – 6.9 (Yellow)</label>
-                                    <input type="color" id="colTierYellow" style="width: 100%; height: 38px; border-radius: 4px; cursor: pointer;" />
-                                </div>
-                                <div>
-                                    <label class="inputLabel" for="colTierGreen">7.0 – 7.9 (Green)</label>
-                                    <input type="color" id="colTierGreen" style="width: 100%; height: 38px; border-radius: 4px; cursor: pointer;" />
-                                </div>
-                                <div>
-                                    <label class="inputLabel" for="colTierBlue">&ge; 8.0 (Blue / Top)</label>
-                                    <input type="color" id="colTierBlue" style="width: 100%; height: 38px; border-radius: 4px; cursor: pointer;" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- SECTION 7: CUSTOM BADGE ASSET MANAGER -->
-                    <div class="verticalSection">
-                        <h2>7. Custom Badge Image Overrides (Upload PNG/WebP/SVG)</h2>
-                        <p class="fieldDescription">
-                            Upload your own custom PNG, WebP, or SVG images directly to replace default badge designs. Uploaded images are stored securely in configuration.
-                        </p>
-                        <div id="badgeManagerGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-top: 14px;">
-                            <!-- Items injected dynamically via JS -->
-                        </div>
-                    </div>
-
-                    <div style="margin-top: 24px;">
-                        <button is="emby-button" type="submit" class="raised button-submit block emby-button">
-                            <span>Save Configuration</span>
-                        </button>
-                    </div>
-                </form>
-
-                <div class="verticalSection" style="margin-top: 32px; padding-top: 16px; border-top: 1px solid #444;">
-                    <h2>Scheduled Tasks</h2>
-                    <p>To apply or update posters across your library, run <strong>Update Enhanced Posters</strong> under <strong>Dashboard &rarr; Scheduled Tasks</strong>. Posters will only be re-rendered when settings or media information change.</p>
-                    <p>To revert your posters back to pristine copies, run the <strong>Restore Original Posters</strong> scheduled task.</p>
                 </div>
-            </div>
+            </form>
         </div>
 
         <script type="text/javascript">
             (function () {
                 var pluginId = "e2a4f610-705b-4c59-bfcb-96d54238e88e";
-
-                // Map of custom badge uploads: { [badgeKey]: base64DataUri }
                 var customBadgesData = {};
+                var ratingTiersData = [];
+                var taskPollInterval = null;
+
+                var default5Tiers = [
+                    { minScore: 0.0, maxScore: 4.9, color: "#E23133", name: "Poor" },
+                    { minScore: 5.0, maxScore: 5.9, color: "#EF7C2A", name: "Mediocre" },
+                    { minScore: 6.0, maxScore: 6.9, color: "#F5C518", name: "Decent" },
+                    { minScore: 7.0, maxScore: 7.9, color: "#5CB85C", name: "Good" },
+                    { minScore: 8.0, maxScore: 10.0, color: "#5BC4F0", name: "Masterpiece" }
+                ];
+
+                var default10Tiers = [
+                    { minScore: 0.0, maxScore: 0.9, color: "#881337", name: "0" },
+                    { minScore: 1.0, maxScore: 1.9, color: "#9F1239", name: "1" },
+                    { minScore: 2.0, maxScore: 2.9, color: "#BE123C", name: "2" },
+                    { minScore: 3.0, maxScore: 3.9, color: "#E11D48", name: "3" },
+                    { minScore: 4.0, maxScore: 4.9, color: "#E23133", name: "4" },
+                    { minScore: 5.0, maxScore: 5.9, color: "#EF7C2A", name: "5" },
+                    { minScore: 6.0, maxScore: 6.9, color: "#F5C518", name: "6" },
+                    { minScore: 7.0, maxScore: 7.9, color: "#5CB85C", name: "7" },
+                    { minScore: 8.0, maxScore: 8.9, color: "#38BDF8", name: "8" },
+                    { minScore: 9.0, maxScore: 10.0, color: "#5BC4F0", name: "9+" }
+                ];
 
                 var badgeCatalog = [
                     { key: "4k", label: "4K Ultra HD", defaultText: "4K" },
@@ -653,13 +1015,21 @@
                     { key: "dtsx", label: "DTS:X", defaultText: "DTS:X" }
                 ];
 
-                function hexToRgba(hex, alpha) {
-                    hex = (hex || "#000000").replace("#", "");
-                    if (hex.length === 3) hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
-                    var r = parseInt(hex.substring(0, 2), 16) || 0;
-                    var g = parseInt(hex.substring(2, 4), 16) || 0;
-                    var b = parseInt(hex.substring(4, 6), 16) || 0;
-                    return "rgba(" + r + "," + g + "," + b + "," + alpha + ")";
+                function setupTabs() {
+                    var navButtons = document.querySelectorAll("#PostersEnhancedConfigPage .pe-nav-item");
+                    navButtons.forEach(function (btn) {
+                        btn.addEventListener("click", function () {
+                            var targetTabId = this.getAttribute("data-tab");
+                            navButtons.forEach(function (b) { b.classList.remove("active"); });
+                            this.classList.add("active");
+
+                            document.querySelectorAll("#PostersEnhancedConfigPage .pe-tab-pane").forEach(function (pane) {
+                                pane.classList.remove("active");
+                            });
+                            var targetPane = document.getElementById(targetTabId);
+                            if (targetPane) targetPane.classList.add("active");
+                        });
+                    });
                 }
 
                 function formatAnchorName(val) {
@@ -702,10 +1072,9 @@
                         if (!select) return;
 
                         grid.querySelectorAll(".pe-anchor-btn").forEach(function (btn) {
-                            btn.addEventListener("click", function (e) {
-                                e.preventDefault();
-                                var anchorVal = btn.getAttribute("data-anchor");
-                                select.value = anchorVal;
+                            btn.addEventListener("click", function () {
+                                var anchor = this.getAttribute("data-anchor");
+                                select.value = anchor;
                                 syncAnchorGridUI(targetSelectId);
                                 updatePreview();
                             });
@@ -718,8 +1087,103 @@
                     });
                 }
 
+                function renderTiers() {
+                    var container = document.getElementById("tiersContainer");
+                    if (!container) return;
+                    container.innerHTML = "";
+
+                    if (ratingTiersData.length === 0) {
+                        container.innerHTML = '<div style="color: #94a3b8; font-size: 13px; padding: 8px;">No tiers configured. Click "+ Add Score Tier" to create one.</div>';
+                        return;
+                    }
+
+                    ratingTiersData.forEach(function (tier, index) {
+                        var row = document.createElement("div");
+                        row.className = "pe-tier-row";
+
+                        row.innerHTML =
+                            '<div style="display: flex; align-items: center; gap: 6px;">' +
+                                '<span style="font-size: 12px; color: #8899a6;">Min:</span>' +
+                                '<input type="number" step="0.1" min="0" max="10" value="' + tier.minScore + '" data-idx="' + index + '" data-field="minScore" style="width: 60px; padding: 4px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #fff; border-radius: 4px;" />' +
+                            '</div>' +
+                            '<div style="display: flex; align-items: center; gap: 6px;">' +
+                                '<span style="font-size: 12px; color: #8899a6;">Max:</span>' +
+                                '<input type="number" step="0.1" min="0" max="10" value="' + tier.maxScore + '" data-idx="' + index + '" data-field="maxScore" style="width: 60px; padding: 4px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #fff; border-radius: 4px;" />' +
+                            '</div>' +
+                            '<div style="display: flex; align-items: center; gap: 6px;">' +
+                                '<span style="font-size: 12px; color: #8899a6;">Color:</span>' +
+                                '<input type="color" value="' + (tier.color || "#5BC4F0") + '" data-idx="' + index + '" data-field="color" style="width: 44px; height: 32px; border: none; border-radius: 4px; cursor: pointer;" />' +
+                            '</div>' +
+                            '<div style="display: flex; align-items: center; gap: 6px; flex: 1; min-width: 100px;">' +
+                                '<span style="font-size: 12px; color: #8899a6;">Label:</span>' +
+                                '<input type="text" value="' + (tier.name || "") + '" placeholder="e.g. Great" data-idx="' + index + '" data-field="name" style="flex: 1; padding: 4px 8px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #fff; border-radius: 4px;" />' +
+                            '</div>' +
+                            '<button type="button" data-del="' + index + '" style="background: rgba(239,68,68,0.2); border: 1px solid rgba(239,68,68,0.4); color: #ef4444; border-radius: 4px; padding: 4px 8px; cursor: pointer;" title="Delete Tier">🗑️</button>';
+
+                        container.appendChild(row);
+                    });
+
+                    container.querySelectorAll("input").forEach(function (inp) {
+                        inp.addEventListener("input", function () {
+                            var idx = parseInt(this.getAttribute("data-idx"), 10);
+                            var field = this.getAttribute("data-field");
+                            if (field === "minScore" || field === "maxScore") {
+                                ratingTiersData[idx][field] = parseFloat(this.value) || 0;
+                            } else {
+                                ratingTiersData[idx][field] = this.value;
+                            }
+                            updatePreview();
+                        });
+                    });
+
+                    container.querySelectorAll("button[data-del]").forEach(function (btn) {
+                        btn.addEventListener("click", function () {
+                            var idx = parseInt(this.getAttribute("data-del"), 10);
+                            ratingTiersData.splice(idx, 1);
+                            renderTiers();
+                            updatePreview();
+                        });
+                    });
+                }
+
+                function setupTierButtons() {
+                    var addBtn = document.getElementById("btnAddTier");
+                    if (addBtn) {
+                        addBtn.addEventListener("click", function () {
+                            var lastMax = ratingTiersData.length > 0 ? ratingTiersData[ratingTiersData.length - 1].maxScore : 0;
+                            ratingTiersData.push({
+                                minScore: Math.min(10, Math.round((lastMax + 0.1) * 10) / 10),
+                                maxScore: Math.min(10, Math.round((lastMax + 1.0) * 10) / 10),
+                                color: "#5BC4F0",
+                                name: ""
+                            });
+                            renderTiers();
+                            updatePreview();
+                        });
+                    }
+
+                    var p5Btn = document.getElementById("btnPreset5Tiers");
+                    if (p5Btn) {
+                        p5Btn.addEventListener("click", function () {
+                            ratingTiersData = JSON.parse(JSON.stringify(default5Tiers));
+                            renderTiers();
+                            updatePreview();
+                        });
+                    }
+
+                    var p10Btn = document.getElementById("btnPreset10Tiers");
+                    if (p10Btn) {
+                        p10Btn.addEventListener("click", function () {
+                            ratingTiersData = JSON.parse(JSON.stringify(default10Tiers));
+                            renderTiers();
+                            updatePreview();
+                        });
+                    }
+                }
+
                 function renderBadgeManager() {
                     var container = document.getElementById("badgeManagerGrid");
+                    if (!container) return;
                     container.innerHTML = "";
 
                     badgeCatalog.forEach(function (item) {
@@ -727,26 +1191,17 @@
                         card.className = "pe-badge-card";
 
                         var infoDiv = document.createElement("div");
-                        infoDiv.style.flex = "1";
-                        var title = document.createElement("div");
-                        title.style.fontWeight = "bold";
-                        title.style.fontSize = "13px";
-                        title.textContent = item.label;
-                        var code = document.createElement("div");
-                        code.style.fontSize = "11px";
-                        code.style.color = "#888";
-                        code.textContent = "Key: " + item.key;
-                        infoDiv.appendChild(title);
-                        infoDiv.appendChild(code);
+                        infoDiv.innerHTML =
+                            '<div style="font-weight: 600; font-size: 14px; color: #fff;">' + item.label + '</div>' +
+                            '<div style="font-size: 11px; color: #8899a6;">Key: ' + item.key + '</div>';
 
                         var rightDiv = document.createElement("div");
                         rightDiv.style.display = "flex";
                         rightDiv.style.alignItems = "center";
-                        rightDiv.style.gap = "8px";
+                        rightDiv.style.gap = "10px";
 
                         var previewBox = document.createElement("div");
                         previewBox.className = "pe-badge-preview-box";
-                        previewBox.id = "badgePreview_" + item.key;
 
                         var customData = customBadgesData[item.key];
                         if (customData) {
@@ -781,8 +1236,7 @@
                             if (!file) return;
                             var reader = new FileReader();
                             reader.onload = function (evt) {
-                                var base64 = evt.target.result;
-                                customBadgesData[item.key] = base64;
+                                customBadgesData[item.key] = evt.target.result;
                                 renderBadgeManager();
                                 updatePreview();
                             };
@@ -814,6 +1268,15 @@
                         card.appendChild(rightDiv);
                         container.appendChild(card);
                     });
+                }
+
+                function hexToRgba(hex, alpha) {
+                    hex = (hex || "#000000").replace("#", "");
+                    if (hex.length === 3) hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+                    var r = parseInt(hex.substring(0, 2), 16) || 0;
+                    var g = parseInt(hex.substring(2, 4), 16) || 0;
+                    var b = parseInt(hex.substring(4, 6), 16) || 0;
+                    return "rgba(" + r + "," + g + "," + b + "," + alpha + ")";
                 }
 
                 function updatePreview() {
@@ -850,93 +1313,85 @@
                     var editionAnchor = document.getElementById("selectEditionAnchor").value;
                     var ratingAnchor = document.getElementById("selectRatingAnchor").value;
 
-                    // Container styling
+                    // Toggle corner radius input visibility based on inherit checkbox
+                    var inheritRadius = document.getElementById("chkUseGlobalCornerRadiusForRating").checked;
+                    var customRadiusGroup = document.getElementById("customRadiusGroup");
+                    if (customRadiusGroup) {
+                        customRadiusGroup.style.display = inheritRadius ? "none" : "block";
+                    }
+
+                    // Visibility toggles
+                    preview4k.style.display = showMedia && document.getElementById("chkShow4K").checked ? "inline-block" : "none";
+                    previewDv.style.display = showMedia && document.getElementById("chkShowDolbyVision").checked ? "inline-block" : "none";
+                    previewHdr.style.display = showMedia && document.getElementById("chkShowHdr10").checked ? "inline-block" : "none";
+                    previewAtmos.style.display = showMedia && document.getElementById("chkShowAudioBadges").checked && document.getElementById("chkShowDolbyAtmos").checked ? "inline-block" : "none";
+
                     if (combinePill) {
+                        mediaPill.style.display = showMedia ? "flex" : "none";
                         mediaPill.style.background = hexToRgba(pillBg, pillOpacity);
                         mediaPill.style.borderRadius = pillRadius;
                         mediaPill.style.padding = pillPadY + " " + pillPadX;
                         mediaPill.style.gap = pillGap;
-                        mediaPill.style.boxShadow = "0 3px 10px rgba(0,0,0,0.55)";
-                        mediaPill.style.backdropFilter = "blur(3px)";
-                        previewDv.style.background = "transparent";
-                        previewDv.style.padding = "0";
+
+                        preview3D.style.display = show3D && (threeDAnchor === mediaAnchor) ? "inline-block" : "none";
+                        previewImax.style.display = showEdition && showImax && (editionAnchor === mediaAnchor) ? "inline-block" : "none";
+
+                        separate3D.style.display = show3D && (threeDAnchor !== mediaAnchor) ? "block" : "none";
+                        separateEdition.style.display = showEdition && showImax && (editionAnchor !== mediaAnchor) ? "block" : "none";
                     } else {
+                        mediaPill.style.display = showMedia ? "flex" : "none";
                         mediaPill.style.background = "transparent";
-                        mediaPill.style.borderRadius = "0";
                         mediaPill.style.padding = "0";
                         mediaPill.style.gap = pillGap;
-                        mediaPill.style.boxShadow = "none";
-                        mediaPill.style.backdropFilter = "none";
-                        previewDv.style.background = "rgba(0,0,0,0.8)";
-                        previewDv.style.padding = "2px 5px";
-                    }
 
-                    // Badge toggles inside media anchor pill
-                    mediaPill.style.display = showMedia ? "flex" : "none";
-                    preview4k.style.display = document.getElementById("chkShow4K").checked ? "inline" : "none";
-                    previewDv.style.display = document.getElementById("chkShowDolbyVision").checked ? "inline-flex" : "none";
-                    previewHdr.style.display = document.getElementById("chkShowHdr").checked && !document.getElementById("chkShowDolbyVision").checked ? "inline-block" : "none";
-                    previewAtmos.style.display = (document.getElementById("chkShowAudioBadges").checked && document.getElementById("chkShowDolbyAtmos").checked) ? "inline-block" : "none";
-
-                    // 3D badge co-location check
-                    if (show3D && threeDAnchor === mediaAnchor) {
-                        preview3D.style.display = "inline-flex";
-                        separate3D.style.display = "none";
-                    } else if (show3D) {
                         preview3D.style.display = "none";
-                        separate3D.style.display = "block";
-                    } else {
-                        preview3D.style.display = "none";
-                        separate3D.style.display = "none";
-                    }
-
-                    // Edition badge co-location check
-                    if (showEdition && showImax && editionAnchor === mediaAnchor) {
-                        previewImax.style.display = "inline-block";
-                        separateEdition.style.display = "none";
-                    } else if (showEdition && showImax) {
                         previewImax.style.display = "none";
-                        separateEdition.style.display = "block";
+                        separate3D.style.display = show3D ? "block" : "none";
+                        separateEdition.style.display = showEdition && showImax ? "block" : "none";
+                    }
+
+                    positionElement(mediaPill, mediaAnchor, 8, 8);
+                    positionElement(separate3D, threeDAnchor, 8, 8);
+                    positionElement(separateEdition, editionAnchor, 8, 8);
+
+                    // Rating Pill Color & Style
+                    if (showRating) {
+                        ratingPill.style.display = "block";
+                        var ratingColorMode = document.getElementById("selectRatingColorMode").value;
+                        var ratingScore = 8.6;
+                        var finalColor = "#5BC4F0";
+
+                        if (ratingColorMode === "FixedColor") {
+                            finalColor = document.getElementById("colRatingFixed").value || "#F5C518";
+                        } else if (ratingTiersData.length > 0) {
+                            for (var t = 0; t < ratingTiersData.length; t++) {
+                                var tr = ratingTiersData[t];
+                                if (ratingScore >= tr.minScore && ratingScore <= tr.maxScore) {
+                                    finalColor = tr.color;
+                                    break;
+                                }
+                            }
+                        }
+
+                        ratingPill.style.background = finalColor;
+                        ratingPill.style.color = document.getElementById("colRatingText").value || "#000000";
+                        var effectiveRatingRadius = inheritRadius ? pillRadius : (parseInt(document.getElementById("txtRatingCornerRadius").value || 6, 10) + "px");
+                        ratingPill.style.borderRadius = effectiveRatingRadius;
+
+                        positionElement(ratingPill, ratingAnchor, 8, 8);
                     } else {
-                        previewImax.style.display = "none";
-                        separateEdition.style.display = "none";
+                        ratingPill.style.display = "none";
                     }
-
-                    // Rating badge preview
-                    ratingPill.style.display = showRating ? "block" : "none";
-                    var ratingRadius = parseInt(document.getElementById("txtRatingCornerRadius").value || 6, 10) + "px";
-                    ratingPill.style.borderRadius = ratingRadius;
-
-                    var colorMode = document.getElementById("selectRatingColorMode").value;
-                    if (colorMode === "DynamicTiers") {
-                        ratingPill.style.background = document.getElementById("colTierYellow").value;
-                    }
-
-                    // Position media pill
-                    var mediaOffX = parseInt(document.getElementById("txtMediaOffsetX").value || 24, 10) * 0.35 + "px";
-                    var mediaOffY = parseInt(document.getElementById("txtMediaOffsetY").value || 24, 10) * 0.35 + "px";
-                    applyPosition(mediaPill, mediaAnchor, mediaOffX, mediaOffY);
-
-                    // Position separate 3D
-                    var threeDOffX = parseInt(document.getElementById("txtThreeDOffsetX").value || 24, 10) * 0.35 + "px";
-                    var threeDOffY = parseInt(document.getElementById("txtThreeDOffsetY").value || 24, 10) * 0.35 + "px";
-                    applyPosition(separate3D, threeDAnchor, threeDOffX, threeDOffY);
-
-                    // Position separate Edition
-                    var editionOffX = parseInt(document.getElementById("txtEditionOffsetX").value || 24, 10) * 0.35 + "px";
-                    var editionOffY = parseInt(document.getElementById("txtEditionOffsetY").value || 24, 10) * 0.35 + "px";
-                    applyPosition(separateEdition, editionAnchor, editionOffX, editionOffY);
-
-                    // Position rating pill
-                    var ratingOffX = parseInt(document.getElementById("txtRatingOffsetX").value || 24, 10) * 0.35 + "px";
-                    var ratingOffY = parseInt(document.getElementById("txtRatingOffsetY").value || 24, 10) * 0.35 + "px";
-                    applyPosition(ratingPill, ratingAnchor, ratingOffX, ratingOffY);
                 }
 
-                function applyPosition(elem, anchor, offX, offY) {
+                function positionElement(elem, anchor, offX, offY) {
                     if (!elem) return;
-                    elem.style.top = ""; elem.style.bottom = "";
-                    elem.style.left = ""; elem.style.right = "";
+                    offX = offX + "px";
+                    offY = offY + "px";
+                    elem.style.top = "";
+                    elem.style.bottom = "";
+                    elem.style.left = "";
+                    elem.style.right = "";
 
                     if (anchor.indexOf("Bottom") !== -1) elem.style.bottom = offY;
                     else if (anchor.indexOf("Top") !== -1) elem.style.top = offY;
@@ -947,9 +1402,102 @@
                     else elem.style.left = "35%";
                 }
 
+                // Task Runner API Logic
+                function setupTaskRunner() {
+                    var btnUpdate = document.getElementById("btnRunUpdate");
+                    var btnRestore = document.getElementById("btnRunRestore");
+                    var statusBadge = document.getElementById("taskStatusBadge");
+                    var progressSection = document.getElementById("taskProgressSection");
+                    var progressBar = document.getElementById("taskProgressBar");
+                    var progressText = document.getElementById("taskProgressText");
+                    var progressPercent = document.getElementById("taskProgressPercent");
+
+                    function updateTaskUI() {
+                        if (!window.ApiClient || !ApiClient.getScheduledTasks) return;
+                        ApiClient.getScheduledTasks().then(function (tasks) {
+                            var updateTask = tasks.find(function (t) { return t.Key === "PostersEnhancedUpdate"; });
+                            var restoreTask = tasks.find(function (t) { return t.Key === "PostersEnhancedRestore"; });
+
+                            var activeTask = (updateTask && updateTask.State === "Running") ? updateTask :
+                                             ((restoreTask && restoreTask.State === "Running") ? restoreTask : null);
+
+                            if (activeTask) {
+                                var pct = Math.round(activeTask.CurrentProgressPercentage || 0);
+                                statusBadge.textContent = "Status: Running (" + pct + "%)";
+                                statusBadge.style.color = "#38bdf8";
+                                statusBadge.style.borderColor = "#38bdf8";
+
+                                progressSection.style.display = "block";
+                                progressBar.style.width = pct + "%";
+                                progressPercent.textContent = pct + "%";
+                                progressText.textContent = activeTask.Name + "...";
+
+                                btnUpdate.disabled = true;
+                                btnRestore.disabled = true;
+                                btnUpdate.style.opacity = "0.5";
+                                btnRestore.style.opacity = "0.5";
+
+                                if (!taskPollInterval) {
+                                    taskPollInterval = setInterval(updateTaskUI, 2000);
+                                }
+                            } else {
+                                statusBadge.textContent = "Status: Idle";
+                                statusBadge.style.color = "#94a3b8";
+                                statusBadge.style.borderColor = "rgba(255,255,255,0.15)";
+
+                                if (taskPollInterval) {
+                                    clearInterval(taskPollInterval);
+                                    taskPollInterval = null;
+                                }
+
+                                progressSection.style.display = "none";
+                                btnUpdate.disabled = false;
+                                btnRestore.disabled = false;
+                                btnUpdate.style.opacity = "1";
+                                btnRestore.style.opacity = "1";
+                            }
+                        }).catch(function () {});
+                    }
+
+                    if (btnUpdate) {
+                        btnUpdate.addEventListener("click", function () {
+                            if (!window.ApiClient) return;
+                            ApiClient.getScheduledTasks().then(function (tasks) {
+                                var task = tasks.find(function (t) { return t.Key === "PostersEnhancedUpdate"; });
+                                if (task) {
+                                    ApiClient.startScheduledTask(task.Id).then(function () {
+                                        updateTaskUI();
+                                    });
+                                }
+                            });
+                        });
+                    }
+
+                    if (btnRestore) {
+                        btnRestore.addEventListener("click", function () {
+                            if (!window.ApiClient) return;
+                            if (confirm("Are you sure you want to restore all posters to their original untouched backups?")) {
+                                ApiClient.getScheduledTasks().then(function (tasks) {
+                                    var task = tasks.find(function (t) { return t.Key === "PostersEnhancedRestore"; });
+                                    if (task) {
+                                        ApiClient.startScheduledTask(task.Id).then(function () {
+                                            updateTaskUI();
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
+
+                    updateTaskUI();
+                }
+
                 document.getElementById("PostersEnhancedConfigPage").addEventListener("pageshow", function () {
                     Dashboard.showLoadingMsg();
+                    setupTabs();
                     setupAnchorGrids();
+                    setupTierButtons();
+                    setupTaskRunner();
 
                     function getCfg(cfg, pKey, cKey, def) {
                         if (cfg[pKey] !== undefined && cfg[pKey] !== null) return cfg[pKey];
@@ -960,6 +1508,11 @@
                     ApiClient.getPluginConfiguration(pluginId).then(function (config) {
                         document.getElementById("chkSaveOriginalBesideMedia").checked = getCfg(config, "SaveOriginalBesideMedia", "saveOriginalBesideMedia", true);
                         document.getElementById("chkAutoCropToPortraitRatio").checked = getCfg(config, "AutoCropToPortraitRatio", "autoCropToPortraitRatio", true);
+                        document.getElementById("chkResizeLowResolutionPosters").checked = getCfg(config, "ResizeLowResolutionPosters", "resizeLowResolutionPosters", true);
+
+                        var targetW = getCfg(config, "TargetPosterWidth", "targetPosterWidth", 1000);
+                        document.getElementById("selectTargetResolution").value = targetW >= 2000 ? "2000x3000" : "1000x1500";
+
                         document.getElementById("selectSource").value = getCfg(config, "Source", "source", "LocalFirst");
                         document.getElementById("txtTheme").value = getCfg(config, "Theme", "theme", "default");
 
@@ -989,54 +1542,73 @@
 
                         document.getElementById("chkShowAudioBadges").checked = getCfg(config, "ShowAudioBadges", "showAudioBadges", false);
                         document.getElementById("chkShowDolbyAtmos").checked = getCfg(config, "ShowDolbyAtmos", "showDolbyAtmos", true);
-                        document.getElementById("chkShowDtsX").checked = getCfg(config, "ShowDtsX", "showDtsX", true);
                         document.getElementById("chkShowTrueHd").checked = getCfg(config, "ShowTrueHd", "showTrueHd", false);
+                        document.getElementById("chkShowDtsX").checked = getCfg(config, "ShowDtsX", "showDtsX", true);
                         document.getElementById("chkShowDtsHdMa").checked = getCfg(config, "ShowDtsHdMa", "showDtsHdMa", false);
+                        document.getElementById("chkShowFlac").checked = getCfg(config, "ShowFlac", "showFlac", false);
 
                         document.getElementById("selectMediaAnchor").value = getCfg(config, "MediaBadgesAnchor", "mediaBadgesAnchor", "BottomLeft");
-                        document.getElementById("selectMediaDirection").value = getCfg(config, "MediaBadgesDirection", "mediaBadgesDirection", "Horizontal");
                         document.getElementById("txtMediaOffsetX").value = getCfg(config, "MediaBadgesOffsetX", "mediaBadgesOffsetX", 24);
                         document.getElementById("txtMediaOffsetY").value = getCfg(config, "MediaBadgesOffsetY", "mediaBadgesOffsetY", 24);
                         document.getElementById("txtMediaScale").value = getCfg(config, "MediaBadgesScalePercent", "mediaBadgesScalePercent", 4.5);
+                        document.getElementById("selectMediaDirection").value = getCfg(config, "MediaBadgesDirection", "mediaBadgesDirection", "Horizontal");
 
                         // Edition Badges
                         document.getElementById("chkShowEditionBadges").checked = getCfg(config, "ShowEditionBadges", "showEditionBadges", true);
                         document.getElementById("chkShowImax").checked = getCfg(config, "ShowImax", "showImax", true);
                         document.getElementById("chkShowExtended").checked = getCfg(config, "ShowExtended", "showExtended", true);
                         document.getElementById("chkShowDirectorsCut").checked = getCfg(config, "ShowDirectorsCut", "showDirectorsCut", true);
-                        document.getElementById("chkShowTheatrical").checked = getCfg(config, "ShowTheatrical", "showTheatrical", false);
+                        document.getElementById("chkShowTheatrical").checked = getCfg(config, "ShowTheatrical", "showTheatrical", true);
                         document.getElementById("chkShowUnrated").checked = getCfg(config, "ShowUnrated", "showUnrated", true);
                         document.getElementById("chkShowSpecialEdition").checked = getCfg(config, "ShowSpecialEdition", "showSpecialEdition", true);
                         document.getElementById("chkShowRemastered").checked = getCfg(config, "ShowRemastered", "showRemastered", true);
-                        document.getElementById("chkShowCustomEdition").checked = getCfg(config, "ShowCustomEdition", "showCustomEdition", true);
 
-                        document.getElementById("selectEditionAnchor").value = getCfg(config, "EditionBadgesAnchor", "editionBadgesAnchor", "BottomLeft");
+                        document.getElementById("selectEditionAnchor").value = getCfg(config, "EditionBadgesAnchor", "editionBadgesAnchor", "TopRight");
                         document.getElementById("txtEditionOffsetX").value = getCfg(config, "EditionBadgesOffsetX", "editionBadgesOffsetX", 24);
                         document.getElementById("txtEditionOffsetY").value = getCfg(config, "EditionBadgesOffsetY", "editionBadgesOffsetY", 24);
                         document.getElementById("txtEditionScale").value = getCfg(config, "EditionBadgesScalePercent", "editionBadgesScalePercent", 4.5);
 
                         // 3D Badge
                         document.getElementById("chkShow3DBadge").checked = getCfg(config, "Show3DBadge", "show3DBadge", true);
-                        document.getElementById("selectThreeDAnchor").value = getCfg(config, "ThreeDBadgeAnchor", "threeDBadgeAnchor", "BottomLeft");
+                        document.getElementById("selectThreeDAnchor").value = getCfg(config, "ThreeDBadgeAnchor", "threeDBadgeAnchor", "TopLeft");
                         document.getElementById("txtThreeDOffsetX").value = getCfg(config, "ThreeDOffsetX", "threeDOffsetX", 24);
                         document.getElementById("txtThreeDOffsetY").value = getCfg(config, "ThreeDOffsetY", "threeDOffsetY", 24);
                         document.getElementById("txtThreeDScale").value = getCfg(config, "ThreeDScalePercent", "threeDScalePercent", 4.5);
 
-                        // Rating Badge
+                        // Rating Badge (Placement & Score)
                         document.getElementById("chkShowRatingBadge").checked = getCfg(config, "ShowRatingBadge", "showRatingBadge", true);
                         document.getElementById("selectRatingAnchor").value = getCfg(config, "RatingBadgeAnchor", "ratingBadgeAnchor", "BottomRight");
-                        document.getElementById("selectRatingColorMode").value = getCfg(config, "RatingColorMode", "ratingColorMode", "DynamicTiers");
                         document.getElementById("txtRatingOffsetX").value = getCfg(config, "RatingBadgeOffsetX", "ratingBadgeOffsetX", 24);
                         document.getElementById("txtRatingOffsetY").value = getCfg(config, "RatingBadgeOffsetY", "ratingBadgeOffsetY", 24);
+                        document.getElementById("txtRatingScale").value = getCfg(config, "RatingBadgeScalePercent", "ratingBadgeScalePercent", 4.5);
+
+                        document.getElementById("selectRatingSource").value = getCfg(config, "RatingSource", "ratingSource", "Community");
+                        document.getElementById("selectRatingColorMode").value = getCfg(config, "RatingColorMode", "ratingColorMode", "DynamicTiers");
+                        document.getElementById("colRatingFixed").value = getCfg(config, "RatingFixedColor", "ratingFixedColor", "#F5C518");
+                        document.getElementById("colRatingText").value = getCfg(config, "RatingTextColor", "ratingTextColor", "#000000");
+
+                        document.getElementById("chkUseGlobalCornerRadiusForRating").checked = getCfg(config, "UseGlobalCornerRadiusForRating", "useGlobalCornerRadiusForRating", true);
                         document.getElementById("txtRatingCornerRadius").value = getCfg(config, "RatingCornerRadius", "ratingCornerRadius", 6);
+                        document.getElementById("txtRatingPaddingX").value = getCfg(config, "RatingPaddingX", "ratingPaddingX", 8);
 
-                        document.getElementById("colTierRed").value = getCfg(config, "RatingTierRedColor", "ratingTierRedColor", "#E23133");
-                        document.getElementById("colTierOrange").value = getCfg(config, "RatingTierOrangeColor", "ratingTierOrangeColor", "#EF7C2A");
-                        document.getElementById("colTierYellow").value = getCfg(config, "RatingTierYellowColor", "ratingTierYellowColor", "#F5C518");
-                        document.getElementById("colTierGreen").value = getCfg(config, "RatingTierGreenColor", "ratingTierGreenColor", "#5CB85C");
-                        document.getElementById("colTierBlue").value = getCfg(config, "RatingTierBlueColor", "ratingTierBlueColor", "#5BC4F0");
+                        // Load Rating Tiers
+                        ratingTiersData = [];
+                        var tiers = getCfg(config, "RatingTiers", "ratingTiers", null);
+                        if (tiers && tiers.length > 0) {
+                            tiers.forEach(function (t) {
+                                ratingTiersData.push({
+                                    minScore: getCfg(t, "MinScore", "minScore", 0),
+                                    maxScore: getCfg(t, "MaxScore", "maxScore", 10),
+                                    color: getCfg(t, "Color", "color", "#5BC4F0"),
+                                    name: getCfg(t, "Name", "name", "")
+                                });
+                            });
+                        } else {
+                            ratingTiersData = JSON.parse(JSON.stringify(default5Tiers));
+                        }
+                        renderTiers();
 
-                        // Sync Anchor 3x3 grids
+                        // Sync Anchor 2:3 Frame widgets
                         syncAnchorGridUI("selectMediaAnchor");
                         syncAnchorGridUI("selectEditionAnchor");
                         syncAnchorGridUI("selectThreeDAnchor");
@@ -1046,8 +1618,8 @@
                         customBadgesData = {};
                         if (config.CustomBadges && config.CustomBadges.length > 0) {
                             config.CustomBadges.forEach(function (b) {
-                                var k = b.BadgeKey || b.badgeKey;
-                                var d = b.Base64Data || b.base64Data;
+                                var k = b.BadgeKey || b.badgeKey || b.Key || b.key;
+                                var d = b.Base64Data || b.base64Data || b.Data || b.data;
                                 if (k && d) customBadgesData[k] = d;
                             });
                         }
@@ -1058,46 +1630,10 @@
                     });
                 });
 
-                // Attach change listeners for live preview
                 document.getElementById("PostersEnhancedConfigPage").addEventListener("input", updatePreview);
                 document.getElementById("PostersEnhancedConfigPage").addEventListener("change", updatePreview);
 
-                document.getElementById("selectPreset").addEventListener("change", function () {
-                    var val = this.value;
-                    if (val === "default") {
-                        document.getElementById("chkShowMediaBadges").checked = true;
-                        document.getElementById("chkShow4K").checked = true;
-                        document.getElementById("chkShow1080p").checked = false;
-                        document.getElementById("chkShow720p").checked = true;
-                        document.getElementById("chkShowDolbyVision").checked = true;
-                        document.getElementById("chkShowAudioBadges").checked = false;
-                        document.getElementById("chkShowEditionBadges").checked = true;
-                        document.getElementById("chkShowImax").checked = true;
-                        document.getElementById("chkShow3DBadge").checked = true;
-                        document.getElementById("chkCombineBadgesInPill").checked = true;
-                        document.getElementById("chkShowRatingBadge").checked = true;
-                    } else if (val === "minimal") {
-                        document.getElementById("chkShowMediaBadges").checked = false;
-                        document.getElementById("chkShowEditionBadges").checked = false;
-                        document.getElementById("chkShow3DBadge").checked = false;
-                        document.getElementById("chkShowRatingBadge").checked = true;
-                    } else if (val === "full") {
-                        document.getElementById("chkShowMediaBadges").checked = true;
-                        document.getElementById("chkShow4K").checked = true;
-                        document.getElementById("chkShow1080p").checked = true;
-                        document.getElementById("chkShow720p").checked = true;
-                        document.getElementById("chkShowDolbyVision").checked = true;
-                        document.getElementById("chkShowAudioBadges").checked = true;
-                        document.getElementById("chkShowDolbyAtmos").checked = true;
-                        document.getElementById("chkShowEditionBadges").checked = true;
-                        document.getElementById("chkShowImax").checked = true;
-                        document.getElementById("chkShow3DBadge").checked = true;
-                        document.getElementById("chkCombineBadgesInPill").checked = true;
-                        document.getElementById("chkShowRatingBadge").checked = true;
-                    }
-                    updatePreview();
-                });
-
+                // Save Form
                 document.getElementById("PostersEnhancedConfigForm").addEventListener("submit", function (e) {
                     e.preventDefault();
                     Dashboard.showLoadingMsg();
@@ -1105,6 +1641,17 @@
                     ApiClient.getPluginConfiguration(pluginId).then(function (config) {
                         config.SaveOriginalBesideMedia = document.getElementById("chkSaveOriginalBesideMedia").checked;
                         config.AutoCropToPortraitRatio = document.getElementById("chkAutoCropToPortraitRatio").checked;
+                        config.ResizeLowResolutionPosters = document.getElementById("chkResizeLowResolutionPosters").checked;
+
+                        var resVal = document.getElementById("selectTargetResolution").value;
+                        if (resVal === "2000x3000") {
+                            config.TargetPosterWidth = 2000;
+                            config.TargetPosterHeight = 3000;
+                        } else {
+                            config.TargetPosterWidth = 1000;
+                            config.TargetPosterHeight = 1500;
+                        }
+
                         config.Source = document.getElementById("selectSource").value;
                         config.Theme = document.getElementById("txtTheme").value;
 
@@ -1134,114 +1681,76 @@
 
                         config.ShowAudioBadges = document.getElementById("chkShowAudioBadges").checked;
                         config.ShowDolbyAtmos = document.getElementById("chkShowDolbyAtmos").checked;
-                        config.ShowDtsX = document.getElementById("chkShowDtsX").checked;
                         config.ShowTrueHd = document.getElementById("chkShowTrueHd").checked;
+                        config.ShowDtsX = document.getElementById("chkShowDtsX").checked;
                         config.ShowDtsHdMa = document.getElementById("chkShowDtsHdMa").checked;
+                        config.ShowFlac = document.getElementById("chkShowFlac").checked;
 
                         config.MediaBadgesAnchor = document.getElementById("selectMediaAnchor").value;
-                        config.mediaBadgesAnchor = config.MediaBadgesAnchor;
-                        config.MediaBadgesDirection = document.getElementById("selectMediaDirection").value;
-                        config.mediaBadgesDirection = config.MediaBadgesDirection;
-
-                        var mediaX = parseInt(document.getElementById("txtMediaOffsetX").value || 24, 10);
-                        var mediaY = parseInt(document.getElementById("txtMediaOffsetY").value || 24, 10);
-                        if (isNaN(mediaX) || mediaX <= 0) mediaX = mediaY > 0 ? mediaY : 24;
-                        if (isNaN(mediaY) || mediaY <= 0) mediaY = 24;
-                        config.MediaBadgesOffsetX = mediaX;
-                        config.mediaBadgesOffsetX = mediaX;
-                        config.MediaBadgesOffsetY = mediaY;
-                        config.mediaBadgesOffsetY = mediaY;
+                        config.MediaBadgesOffsetX = parseInt(document.getElementById("txtMediaOffsetX").value || 24, 10);
+                        config.MediaBadgesOffsetY = parseInt(document.getElementById("txtMediaOffsetY").value || 24, 10);
                         config.MediaBadgesScalePercent = parseFloat(document.getElementById("txtMediaScale").value || 4.5);
-                        config.mediaBadgesScalePercent = config.MediaBadgesScalePercent;
+                        config.MediaBadgesDirection = document.getElementById("selectMediaDirection").value;
 
                         // Edition
                         config.ShowEditionBadges = document.getElementById("chkShowEditionBadges").checked;
-                        config.showEditionBadges = config.ShowEditionBadges;
                         config.ShowImax = document.getElementById("chkShowImax").checked;
-                        config.showImax = config.ShowImax;
                         config.ShowExtended = document.getElementById("chkShowExtended").checked;
-                        config.showExtended = config.ShowExtended;
                         config.ShowDirectorsCut = document.getElementById("chkShowDirectorsCut").checked;
-                        config.showDirectorsCut = config.ShowDirectorsCut;
                         config.ShowTheatrical = document.getElementById("chkShowTheatrical").checked;
-                        config.showTheatrical = config.ShowTheatrical;
                         config.ShowUnrated = document.getElementById("chkShowUnrated").checked;
-                        config.showUnrated = config.ShowUnrated;
                         config.ShowSpecialEdition = document.getElementById("chkShowSpecialEdition").checked;
-                        config.showSpecialEdition = config.ShowSpecialEdition;
                         config.ShowRemastered = document.getElementById("chkShowRemastered").checked;
-                        config.showRemastered = config.ShowRemastered;
-                        config.ShowCustomEdition = document.getElementById("chkShowCustomEdition").checked;
-                        config.showCustomEdition = config.ShowCustomEdition;
 
                         config.EditionBadgesAnchor = document.getElementById("selectEditionAnchor").value;
-                        config.editionBadgesAnchor = config.EditionBadgesAnchor;
-                        var edX = parseInt(document.getElementById("txtEditionOffsetX").value || 24, 10);
-                        var edY = parseInt(document.getElementById("txtEditionOffsetY").value || 24, 10);
-                        if (isNaN(edX) || edX <= 0) edX = edY > 0 ? edY : 24;
-                        if (isNaN(edY) || edY <= 0) edY = 24;
-                        config.EditionBadgesOffsetX = edX;
-                        config.editionBadgesOffsetX = edX;
-                        config.EditionBadgesOffsetY = edY;
-                        config.editionBadgesOffsetY = edY;
+                        config.EditionBadgesOffsetX = parseInt(document.getElementById("txtEditionOffsetX").value || 24, 10);
+                        config.EditionBadgesOffsetY = parseInt(document.getElementById("txtEditionOffsetY").value || 24, 10);
                         config.EditionBadgesScalePercent = parseFloat(document.getElementById("txtEditionScale").value || 4.5);
-                        config.editionBadgesScalePercent = config.EditionBadgesScalePercent;
 
                         // 3D
                         config.Show3DBadge = document.getElementById("chkShow3DBadge").checked;
-                        config.show3DBadge = config.Show3DBadge;
                         config.ThreeDBadgeAnchor = document.getElementById("selectThreeDAnchor").value;
-                        config.threeDBadgeAnchor = config.ThreeDBadgeAnchor;
-                        var t3dX = parseInt(document.getElementById("txtThreeDOffsetX").value || 24, 10);
-                        var t3dY = parseInt(document.getElementById("txtThreeDOffsetY").value || 24, 10);
-                        if (isNaN(t3dX) || t3dX <= 0) t3dX = t3dY > 0 ? t3dY : 24;
-                        if (isNaN(t3dY) || t3dY <= 0) t3dY = 24;
-                        config.ThreeDOffsetX = t3dX;
-                        config.threeDOffsetX = t3dX;
-                        config.ThreeDOffsetY = t3dY;
-                        config.threeDOffsetY = t3dY;
+                        config.ThreeDOffsetX = parseInt(document.getElementById("txtThreeDOffsetX").value || 24, 10);
+                        config.ThreeDOffsetY = parseInt(document.getElementById("txtThreeDOffsetY").value || 24, 10);
                         config.ThreeDScalePercent = parseFloat(document.getElementById("txtThreeDScale").value || 4.5);
-                        config.threeDScalePercent = config.ThreeDScalePercent;
 
-                        // Rating
+                        // Rating Placement & Score
                         config.ShowRatingBadge = document.getElementById("chkShowRatingBadge").checked;
-                        config.showRatingBadge = config.ShowRatingBadge;
                         config.RatingBadgeAnchor = document.getElementById("selectRatingAnchor").value;
-                        config.ratingBadgeAnchor = config.RatingBadgeAnchor;
+                        config.RatingBadgeOffsetX = parseInt(document.getElementById("txtRatingOffsetX").value || 24, 10);
+                        config.RatingBadgeOffsetY = parseInt(document.getElementById("txtRatingOffsetY").value || 24, 10);
+                        config.RatingBadgeScalePercent = parseFloat(document.getElementById("txtRatingScale").value || 4.5);
+
+                        config.RatingSource = document.getElementById("selectRatingSource").value;
                         config.RatingColorMode = document.getElementById("selectRatingColorMode").value;
-                        config.ratingColorMode = config.RatingColorMode;
-                        var ratX = parseInt(document.getElementById("txtRatingOffsetX").value || 24, 10);
-                        var ratY = parseInt(document.getElementById("txtRatingOffsetY").value || 24, 10);
-                        if (isNaN(ratX) || ratX <= 0) ratX = ratY > 0 ? ratY : 24;
-                        if (isNaN(ratY) || ratY <= 0) ratY = 24;
-                        config.RatingBadgeOffsetX = ratX;
-                        config.ratingBadgeOffsetX = ratX;
-                        config.RatingBadgeOffsetY = ratY;
-                        config.ratingBadgeOffsetY = ratY;
+                        config.RatingFixedColor = document.getElementById("colRatingFixed").value;
+                        config.RatingTextColor = document.getElementById("colRatingText").value;
+
+                        config.UseGlobalCornerRadiusForRating = document.getElementById("chkUseGlobalCornerRadiusForRating").checked;
                         config.RatingCornerRadius = parseFloat(document.getElementById("txtRatingCornerRadius").value || 6);
-                        config.ratingCornerRadius = config.RatingCornerRadius;
+                        config.RatingPaddingX = parseFloat(document.getElementById("txtRatingPaddingX").value || 8);
 
-                        config.RatingTierRedColor = document.getElementById("colTierRed").value;
-                        config.RatingTierOrangeColor = document.getElementById("colTierOrange").value;
-                        config.RatingTierYellowColor = document.getElementById("colTierYellow").value;
-                        config.RatingTierGreenColor = document.getElementById("colTierGreen").value;
-                        config.RatingTierBlueColor = document.getElementById("colTierBlue").value;
-
-                        // Custom Badges
-                        config.CustomBadges = [];
-                        Object.keys(customBadgesData).forEach(function (k) {
-                            config.CustomBadges.push({
-                                BadgeKey: k,
-                                Base64Data: customBadgesData[k],
-                                Format: "png"
+                        // Save Dynamic Tiers
+                        config.RatingTiers = [];
+                        ratingTiersData.forEach(function (t) {
+                            config.RatingTiers.push({
+                                MinScore: parseFloat(t.minScore) || 0,
+                                MaxScore: parseFloat(t.maxScore) || 10,
+                                Color: t.color || "#5BC4F0",
+                                Name: t.name || ""
                             });
                         });
 
-                        ApiClient.updatePluginConfiguration(pluginId, config).then(function (result) {
-                            Dashboard.processPluginConfigurationUpdateResult(result);
+                        // Save Custom Badges
+                        config.CustomBadges = [];
+                        Object.keys(customBadgesData).forEach(function (k) {
+                            config.CustomBadges.push({ Key: k, Data: customBadgesData[k] });
+                        });
+
+                        ApiClient.updatePluginConfiguration(pluginId, config).then(function () {
+                            Dashboard.processPluginConfigurationUpdateResult();
                         });
                     });
-                    return false;
                 });
             })();
         </script>

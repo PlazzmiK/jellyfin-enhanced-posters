@@ -60,6 +60,7 @@ public class ImageCompositorTests
         // 3. Setup configuration (matching user's screenshot: 4K + DV at BL, 6.3 Rating at BR)
         var config = new PluginConfiguration
         {
+            ResizeLowResolutionPosters = false,
             ShowResolutionBadges = true,
             Show4K = true,
             ShowVideoRangeBadges = true,
@@ -105,6 +106,7 @@ public class ImageCompositorTests
 
         var config = new PluginConfiguration
         {
+            ResizeLowResolutionPosters = false,
             CombineBadgesInPill = true,
             ShowResolutionBadges = true,
             Show4K = true,
@@ -450,6 +452,7 @@ public class ImageCompositorTests
 
         var config = new PluginConfiguration
         {
+            ResizeLowResolutionPosters = false,
             AutoCropToPortraitRatio = true,
             CombineBadgesInPill = true,
             ShowResolutionBadges = true,
@@ -502,6 +505,7 @@ public class ImageCompositorTests
 
         var config = new PluginConfiguration
         {
+            ResizeLowResolutionPosters = false,
             AutoCropToPortraitRatio = false,
             ShowResolutionBadges = true,
             Show4K = true
@@ -519,5 +523,83 @@ public class ImageCompositorTests
         Assert.NotNull(resultBitmap);
         Assert.Equal(513, resultBitmap.Width);
         Assert.Equal(748, resultBitmap.Height);
+    }
+
+    [Fact]
+    public void Composite_WithUpscalingEnabled_UpscalesLowResolutionPoster()
+    {
+        using var sourceBitmap = new SKBitmap(500, 750);
+        using var canvas = new SKCanvas(sourceBitmap);
+        canvas.Clear(SKColors.DarkBlue);
+
+        using var sourceStream = new MemoryStream();
+        sourceBitmap.Encode(sourceStream, SKEncodedImageFormat.Jpeg, 95);
+        sourceStream.Position = 0;
+
+        var mockPaths = new Mock<IApplicationPaths>();
+        mockPaths.Setup(p => p.PluginConfigurationsPath).Returns(Path.GetTempPath());
+        var themeManager = new ThemeAssetManager(mockPaths.Object);
+
+        var config = new PluginConfiguration
+        {
+            ResizeLowResolutionPosters = true,
+            TargetPosterWidth = 1000,
+            TargetPosterHeight = 1500,
+            ShowResolutionBadges = true,
+            Show4K = true
+        };
+
+        var mediaInfo = new ExtractedMediaInfo(
+            MediaResolution.Uhd4K,
+            VideoHdrType.None,
+            AudioCodecType.None,
+            null);
+
+        using var resultStream = ImageCompositor.Composite(sourceStream, mediaInfo, config, themeManager);
+        using var resultBitmap = SKBitmap.Decode(resultStream);
+
+        Assert.NotNull(resultBitmap);
+        Assert.Equal(1000, resultBitmap.Width);
+        Assert.Equal(1500, resultBitmap.Height);
+    }
+
+    [Fact]
+    public void Composite_WithCustomRatingTiers_AppliesTierColor()
+    {
+        using var sourceBitmap = new SKBitmap(1000, 1500);
+        using var canvas = new SKCanvas(sourceBitmap);
+        canvas.Clear(SKColors.Black);
+
+        using var sourceStream = new MemoryStream();
+        sourceBitmap.Encode(sourceStream, SKEncodedImageFormat.Jpeg, 95);
+        sourceStream.Position = 0;
+
+        var mockPaths = new Mock<IApplicationPaths>();
+        mockPaths.Setup(p => p.PluginConfigurationsPath).Returns(Path.GetTempPath());
+        var themeManager = new ThemeAssetManager(mockPaths.Object);
+
+        var config = new PluginConfiguration
+        {
+            ShowRatingBadge = true,
+            RatingColorMode = RatingColorMode.DynamicTiers,
+            UseGlobalCornerRadiusForRating = true,
+            PillCornerRadius = 12f
+        };
+        config.RatingTiers.Clear();
+        config.RatingTiers.Add(new RatingTierEntry(0f, 5.99f, "#FF0000", "Poor"));
+        config.RatingTiers.Add(new RatingTierEntry(6f, 10f, "#00FF00", "Good"));
+
+        var mediaInfo = new ExtractedMediaInfo(
+            MediaResolution.None,
+            VideoHdrType.None,
+            AudioCodecType.None,
+            8.5f);
+
+        using var resultStream = ImageCompositor.Composite(sourceStream, mediaInfo, config, themeManager);
+        using var resultBitmap = SKBitmap.Decode(resultStream);
+
+        Assert.NotNull(resultBitmap);
+        Assert.Equal(1000, resultBitmap.Width);
+        Assert.Equal(1500, resultBitmap.Height);
     }
 }

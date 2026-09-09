@@ -51,6 +51,21 @@ public enum RatingColorMode
 }
 
 /// <summary>
+/// Source preference for rating scores.
+/// </summary>
+public enum RatingSourcePreference
+{
+    /// <summary>Community rating (IMDb / TMDb).</summary>
+    Community,
+
+    /// <summary>Critic rating (Rotten Tomatoes / Metacritic).</summary>
+    Critic,
+
+    /// <summary>Combined average of all available ratings.</summary>
+    CombinedAverage
+}
+
+/// <summary>
 /// Source options for base poster artwork.
 /// </summary>
 public enum PosterSource
