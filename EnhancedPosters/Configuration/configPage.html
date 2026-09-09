@@ -687,24 +687,24 @@
                                                 <input type="color" id="colPillBackground" style="width: 100%; height: 38px; border-radius: 4px; cursor: pointer;" />
                                             </div>
                                             <div style="flex: 1; min-width: 180px;">
-                                                <label class="inputLabel" for="rngPillOpacity">Opacity: <span id="lblPillOpacity">78%</span></label>
-                                                <input type="range" id="rngPillOpacity" min="0" max="1" step="0.02" value="0.78" style="width: 100%; margin-top: 10px;" />
+                                                <label class="inputLabel" for="rngPillOpacity">Opacity: <span id="lblPillOpacity">65%</span></label>
+                                                <input type="range" id="rngPillOpacity" min="0" max="1" step="0.02" value="0.65" style="width: 100%; margin-top: 10px;" />
                                             </div>
                                             <div class="inputContainer" style="flex: 1; min-width: 110px;">
                                                 <label class="inputLabel" for="txtPillCornerRadius">Corner Radius (px)</label>
-                                                <input is="emby-input" type="number" id="txtPillCornerRadius" min="0" max="40" step="1" />
+                                                <input is="emby-input" type="number" id="txtPillCornerRadius" min="0" max="40" step="1" value="10" />
                                             </div>
                                             <div class="inputContainer" style="flex: 1; min-width: 100px;">
                                                 <label class="inputLabel" for="txtPillPaddingX">Padding X (px)</label>
-                                                <input is="emby-input" type="number" id="txtPillPaddingX" min="0" max="40" step="1" />
+                                                <input is="emby-input" type="number" id="txtPillPaddingX" min="0" max="40" step="1" value="14" />
                                             </div>
                                             <div class="inputContainer" style="flex: 1; min-width: 100px;">
                                                 <label class="inputLabel" for="txtPillPaddingY">Padding Y (px)</label>
-                                                <input is="emby-input" type="number" id="txtPillPaddingY" min="0" max="40" step="1" />
+                                                <input is="emby-input" type="number" id="txtPillPaddingY" min="0" max="40" step="1" value="10" />
                                             </div>
                                             <div class="inputContainer" style="flex: 1; min-width: 100px;">
                                                 <label class="inputLabel" for="txtPillItemSpacing">Item Spacing (px)</label>
-                                                <input is="emby-input" type="number" id="txtPillItemSpacing" min="0" max="40" step="1" />
+                                                <input is="emby-input" type="number" id="txtPillItemSpacing" min="0" max="40" step="1" value="14" />
                                             </div>
                                         </div>
                                     </div>
@@ -1300,13 +1300,13 @@
 
                     var combinePill = document.getElementById("chkCombineBadgesInPill").checked;
                     var pillBg = document.getElementById("colPillBackground").value || "#000000";
-                    var pillOpacity = parseFloat(document.getElementById("rngPillOpacity").value || 0.78);
+                    var pillOpacity = parseFloat(document.getElementById("rngPillOpacity").value || 0.65);
                     document.getElementById("lblPillOpacity").textContent = Math.round(pillOpacity * 100) + "%";
 
-                    var pillRadius = parseInt(document.getElementById("txtPillCornerRadius").value || 8, 10) + "px";
-                    var pillPadX = parseInt(document.getElementById("txtPillPaddingX").value || 10, 10) + "px";
-                    var pillPadY = parseInt(document.getElementById("txtPillPaddingY").value || 4, 10) + "px";
-                    var pillGap = parseInt(document.getElementById("txtPillItemSpacing").value || 8, 10) + "px";
+                    var pillRadius = parseInt(document.getElementById("txtPillCornerRadius").value || 10, 10) + "px";
+                    var pillPadX = parseInt(document.getElementById("txtPillPaddingX").value || 14, 10) + "px";
+                    var pillPadY = parseInt(document.getElementById("txtPillPaddingY").value || 10, 10) + "px";
+                    var pillGap = parseInt(document.getElementById("txtPillItemSpacing").value || 14, 10) + "px";
 
                     var mediaAnchor = document.getElementById("selectMediaAnchor").value;
                     var threeDAnchor = document.getElementById("selectThreeDAnchor").value;
@@ -1337,7 +1337,14 @@
                         previewImax.style.display = showEdition && showImax && (editionAnchor === mediaAnchor) ? "inline-block" : "none";
 
                         separate3D.style.display = show3D && (threeDAnchor !== mediaAnchor) ? "block" : "none";
+                        separate3D.style.background = hexToRgba(pillBg, pillOpacity);
+                        separate3D.style.borderRadius = pillRadius;
+                        separate3D.style.padding = pillPadY + " " + pillPadX;
+
                         separateEdition.style.display = showEdition && showImax && (editionAnchor !== mediaAnchor) ? "block" : "none";
+                        separateEdition.style.background = hexToRgba(pillBg, pillOpacity);
+                        separateEdition.style.borderRadius = pillRadius;
+                        separateEdition.style.padding = pillPadY + " " + pillPadX;
                     } else {
                         mediaPill.style.display = showMedia ? "flex" : "none";
                         mediaPill.style.background = "transparent";
@@ -1347,7 +1354,11 @@
                         preview3D.style.display = "none";
                         previewImax.style.display = "none";
                         separate3D.style.display = show3D ? "block" : "none";
+                        separate3D.style.background = "transparent";
+                        separate3D.style.padding = "0";
                         separateEdition.style.display = showEdition && showImax ? "block" : "none";
+                        separateEdition.style.background = "transparent";
+                        separateEdition.style.padding = "0";
                     }
 
                     positionElement(mediaPill, mediaAnchor, 8, 8);
@@ -1519,11 +1530,11 @@
                         // Combined Pill
                         document.getElementById("chkCombineBadgesInPill").checked = getCfg(config, "CombineBadgesInPill", "combineBadgesInPill", true);
                         document.getElementById("colPillBackground").value = getCfg(config, "PillBackgroundColor", "pillBackgroundColor", "#000000");
-                        document.getElementById("rngPillOpacity").value = getCfg(config, "PillBackgroundOpacity", "pillBackgroundOpacity", 0.78);
-                        document.getElementById("txtPillCornerRadius").value = getCfg(config, "PillCornerRadius", "pillCornerRadius", 8);
-                        document.getElementById("txtPillPaddingX").value = getCfg(config, "PillPaddingX", "pillPaddingX", 10);
-                        document.getElementById("txtPillPaddingY").value = getCfg(config, "PillPaddingY", "pillPaddingY", 4);
-                        document.getElementById("txtPillItemSpacing").value = getCfg(config, "PillItemSpacing", "pillItemSpacing", 8);
+                        document.getElementById("rngPillOpacity").value = getCfg(config, "PillBackgroundOpacity", "pillBackgroundOpacity", 0.65);
+                        document.getElementById("txtPillCornerRadius").value = getCfg(config, "PillCornerRadius", "pillCornerRadius", 10);
+                        document.getElementById("txtPillPaddingX").value = getCfg(config, "PillPaddingX", "pillPaddingX", 14);
+                        document.getElementById("txtPillPaddingY").value = getCfg(config, "PillPaddingY", "pillPaddingY", 10);
+                        document.getElementById("txtPillItemSpacing").value = getCfg(config, "PillItemSpacing", "pillItemSpacing", 14);
 
                         // Media Badges
                         var resOn = getCfg(config, "ShowResolutionBadges", "showResolutionBadges", true);

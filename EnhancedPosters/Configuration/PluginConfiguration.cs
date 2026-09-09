@@ -107,11 +107,11 @@ public class PluginConfiguration : BasePluginConfiguration
         // Combined Dark Transparent Pill Styling
         CombineBadgesInPill = true;
         PillBackgroundColor = "#000000";
-        PillBackgroundOpacity = 0.78f;
-        PillCornerRadius = 8f;
-        PillPaddingX = 10f;
-        PillPaddingY = 4f;
-        PillItemSpacing = 8f;
+        PillBackgroundOpacity = 0.65f;
+        PillCornerRadius = 10f;
+        PillPaddingX = 14f;
+        PillPaddingY = 10f;
+        PillItemSpacing = 14f;
     }
 
     /// <summary>Gets or sets the theme name.</summary>

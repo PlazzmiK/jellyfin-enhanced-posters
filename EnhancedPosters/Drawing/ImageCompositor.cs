@@ -133,8 +133,16 @@ public static class ImageCompositor
                 continue;
             }
 
+            var scaleX = Math.Max(1f, posterWidth / 1000f);
+            var scaleY = Math.Max(1f, posterHeight / 1500f);
+
             var totalHeight = Math.Max(24f, posterHeight * (scalePercent / 100f));
-            var badgeHeight = config.CombineBadgesInPill ? Math.Max(16f, totalHeight - (config.PillPaddingY * 2f)) : totalHeight;
+            var padY = config.CombineBadgesInPill
+                ? Math.Max(config.PillPaddingY * scaleY, totalHeight * 0.18f)
+                : 0f;
+            var badgeHeight = config.CombineBadgesInPill
+                ? Math.Max(14f, totalHeight - (padY * 2f))
+                : totalHeight;
 
             var loadedBadges = new List<SKBitmap>();
             try
@@ -158,8 +166,6 @@ public static class ImageCompositor
                 var effOffsetX = offsetX > 0 ? offsetX : (offsetY > 0 ? offsetY : 24);
                 var effOffsetY = offsetY > 0 ? offsetY : 24;
 
-                var scaleX = Math.Max(1f, posterWidth / 1000f);
-                var scaleY = Math.Max(1f, posterHeight / 1500f);
                 var scaledOffsetX = (int)Math.Round(effOffsetX * scaleX);
                 var scaledOffsetY = (int)Math.Round(effOffsetY * scaleY);
 
@@ -193,7 +199,11 @@ public static class ImageCompositor
         List<SKBitmap> badges,
         PluginConfiguration config)
     {
-        var itemSpacing = config.PillItemSpacing;
+        var scaleX = Math.Max(1f, posterWidth / 1000f);
+        var scaleY = Math.Max(1f, posterHeight / 1500f);
+        var padX = Math.Max(config.PillPaddingX * scaleX, containerHeight * 0.25f);
+        var itemSpacing = Math.Max(config.PillItemSpacing * scaleX, 12f * scaleX);
+
         float totalContentWidth = 0;
         for (var i = 0; i < badges.Count; i++)
         {
@@ -204,7 +214,7 @@ public static class ImageCompositor
             }
         }
 
-        var pillWidth = totalContentWidth + (config.PillPaddingX * 2f);
+        var pillWidth = totalContentWidth + (padX * 2f);
         var pillHeight = containerHeight;
 
         var (originX, originY) = CalculateAnchorCoordinates(
@@ -217,7 +227,7 @@ public static class ImageCompositor
             offsetY);
 
         var pillRect = new SKRect(originX, originY, originX + pillWidth, originY + pillHeight);
-        var cornerRadius = config.PillCornerRadius;
+        var cornerRadius = config.PillCornerRadius * Math.Max(scaleX, scaleY);
         var roundRect = new SKRoundRect(pillRect, cornerRadius);
 
         // Parse pill background color and opacity
@@ -225,10 +235,11 @@ public static class ImageCompositor
         var alpha = (byte)Math.Clamp((int)(config.PillBackgroundOpacity * 255f), 0, 255);
         var pillBgColor = new SKColor(baseColor.Red, baseColor.Green, baseColor.Blue, alpha);
 
-        // Drop shadow for contrast
+        // Soft drop shadow scaled to opacity
+        var shadowAlpha = (byte)Math.Clamp((int)(alpha * 0.35f), 0, 90);
         using var shadowPaint = new SKPaint
         {
-            Color = new SKColor(0x00, 0x00, 0x00, 0x77),
+            Color = new SKColor(0x00, 0x00, 0x00, shadowAlpha),
             IsAntialias = true
         };
         var shadowRect = new SKRoundRect(new SKRect(originX + 1f, originY + 2f, originX + pillWidth + 1f, originY + pillHeight + 2f), cornerRadius);
@@ -242,8 +253,18 @@ public static class ImageCompositor
         };
         canvas.DrawRoundRect(roundRect, bgPaint);
 
+        // Subtle translucent border outline for clean glassmorphism definition
+        using var borderPaint = new SKPaint
+        {
+            Color = new SKColor(0xFF, 0xFF, 0xFF, 0x22),
+            IsAntialias = true,
+            Style = SKPaintStyle.Stroke,
+            StrokeWidth = 1f * scaleX
+        };
+        canvas.DrawRoundRect(roundRect, borderPaint);
+
         // Draw each badge centered vertically inside the container pill
-        var curX = originX + config.PillPaddingX;
+        var curX = originX + padX;
         foreach (var badge in badges)
         {
             var curY = originY + ((pillHeight - badge.Height) / 2f);
