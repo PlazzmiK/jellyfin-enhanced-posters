@@ -318,7 +318,7 @@
                             </div>
                             <div>
                                 <div class="pe-brand-title">Enhanced Posters</div>
-                                <span class="pe-brand-badge">v1.3.0.0</span>
+                                <span class="pe-brand-badge">v1.4.2.0</span>
                             </div>
                         </div>
 
@@ -891,12 +891,18 @@
                                 <h2 class="pe-card-title"><span>⚡</span> Task Runner (Direct Execution)</h2>
                                 <p class="fieldDescription">Trigger poster processing or restoration directly without navigating to Scheduled Tasks.</p>
 
-                                <div style="display: flex; gap: 14px; margin-top: 14px; flex-wrap: wrap; align-items: center;">
-                                    <button type="button" is="emby-button" id="btnRunUpdate" class="raised emby-button" style="background: #00a4dc; color: #fff; font-weight: bold; padding: 10px 18px;">
-                                        <span>▶ Process Posters Now</span>
+                                <div style="display: flex; gap: 12px; margin-top: 14px; flex-wrap: wrap; align-items: center;">
+                                    <button type="button" is="emby-button" id="btnRunUpdate" class="raised emby-button" style="background: #00a4dc; color: #fff; font-weight: bold; padding: 10px 16px;">
+                                        <span>▶ Process Posters</span>
                                     </button>
-                                    <button type="button" is="emby-button" id="btnRunRestore" class="emby-button" style="background: rgba(239, 68, 68, 0.18); border: 1px solid rgba(239, 68, 68, 0.4); color: #ef4444; font-weight: bold; padding: 10px 18px;">
-                                        <span>↺ Restore Original Posters</span>
+                                    <button type="button" is="emby-button" id="btnRunRestore" class="emby-button" style="background: rgba(239, 68, 68, 0.18); border: 1px solid rgba(239, 68, 68, 0.4); color: #ef4444; font-weight: bold; padding: 10px 16px;">
+                                        <span>↺ Restore Backups</span>
+                                    </button>
+                                    <button type="button" is="emby-button" id="btnRunDownloadClean" class="emby-button" style="background: rgba(245, 158, 11, 0.18); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; font-weight: bold; padding: 10px 16px;">
+                                        <span>📥 Re-download Clean Originals</span>
+                                    </button>
+                                    <button type="button" is="emby-button" id="btnRunSnapshotCurrent" class="emby-button" style="background: rgba(16, 185, 129, 0.18); border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399; font-weight: bold; padding: 10px 16px;">
+                                        <span>📷 Snapshot Current as Originals</span>
                                     </button>
                                     <div id="taskStatusBadge" style="display: inline-block; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; color: #94a3b8;">
                                         Status: Idle
@@ -931,6 +937,7 @@
                                     <label class="selectLabel" for="selectSource">Poster Source Strategy</label>
                                     <select is="emby-select" id="selectSource" class="emby-select-withcolor emby-select">
                                         <option value="LocalFirst">Local First (Use existing library poster, fallback to clean remote)</option>
+                                        <option value="RemoteProvidersFirst">Remote Providers First (Download fresh clean poster from TMDb/TheTVDB/btttr.cc)</option>
                                         <option value="LocalOnly">Local Only (Never download remote posters)</option>
                                         <option value="BtttrCcClean">btttr.cc Clean (Fetch textless clean poster via IMDb ID)</option>
                                     </select>
@@ -1460,20 +1467,34 @@
                 function setupTaskRunner() {
                     var btnUpdate = document.getElementById("btnRunUpdate");
                     var btnRestore = document.getElementById("btnRunRestore");
+                    var btnDownloadClean = document.getElementById("btnRunDownloadClean");
+                    var btnSnapshotCurrent = document.getElementById("btnRunSnapshotCurrent");
                     var statusBadge = document.getElementById("taskStatusBadge");
                     var progressSection = document.getElementById("taskProgressSection");
                     var progressBar = document.getElementById("taskProgressBar");
                     var progressText = document.getElementById("taskProgressText");
                     var progressPercent = document.getElementById("taskProgressPercent");
 
+                    function setButtonsDisabled(disabled) {
+                        var opacity = disabled ? "0.5" : "1";
+                        if (btnUpdate) { btnUpdate.disabled = disabled; btnUpdate.style.opacity = opacity; }
+                        if (btnRestore) { btnRestore.disabled = disabled; btnRestore.style.opacity = opacity; }
+                        if (btnDownloadClean) { btnDownloadClean.disabled = disabled; btnDownloadClean.style.opacity = opacity; }
+                        if (btnSnapshotCurrent) { btnSnapshotCurrent.disabled = disabled; btnSnapshotCurrent.style.opacity = opacity; }
+                    }
+
                     function updateTaskUI() {
                         if (!window.ApiClient || !ApiClient.getScheduledTasks) return;
                         ApiClient.getScheduledTasks().then(function (tasks) {
                             var updateTask = tasks.find(function (t) { return t.Key === "EnhancedPostersUpdate" || t.Key === "PostersEnhancedUpdate"; });
                             var restoreTask = tasks.find(function (t) { return t.Key === "EnhancedPostersRestore" || t.Key === "PostersEnhancedRestore"; });
+                            var cleanTask = tasks.find(function (t) { return t.Key === "EnhancedPostersDownloadCleanPosters"; });
+                            var snapshotTask = tasks.find(function (t) { return t.Key === "EnhancedPostersSnapshotCurrent"; });
 
                             var activeTask = (updateTask && updateTask.State === "Running") ? updateTask :
-                                             ((restoreTask && restoreTask.State === "Running") ? restoreTask : null);
+                                             ((restoreTask && restoreTask.State === "Running") ? restoreTask :
+                                             ((cleanTask && cleanTask.State === "Running") ? cleanTask :
+                                             ((snapshotTask && snapshotTask.State === "Running") ? snapshotTask : null)));
 
                             if (activeTask) {
                                 var pct = Math.round(activeTask.CurrentProgressPercentage || 0);
@@ -1486,10 +1507,7 @@
                                 progressPercent.textContent = pct + "%";
                                 progressText.textContent = activeTask.Name + "...";
 
-                                btnUpdate.disabled = true;
-                                btnRestore.disabled = true;
-                                btnUpdate.style.opacity = "0.5";
-                                btnRestore.style.opacity = "0.5";
+                                setButtonsDisabled(true);
 
                                 if (!taskPollInterval) {
                                     taskPollInterval = setInterval(updateTaskUI, 2000);
@@ -1505,10 +1523,7 @@
                                 }
 
                                 progressSection.style.display = "none";
-                                btnUpdate.disabled = false;
-                                btnRestore.disabled = false;
-                                btnUpdate.style.opacity = "1";
-                                btnRestore.style.opacity = "1";
+                                setButtonsDisabled(false);
                             }
                         }).catch(function () {});
                     }
@@ -1533,6 +1548,38 @@
                             if (confirm("Are you sure you want to restore all posters to their original untouched backups?")) {
                                 ApiClient.getScheduledTasks().then(function (tasks) {
                                     var task = tasks.find(function (t) { return t.Key === "EnhancedPostersRestore" || t.Key === "PostersEnhancedRestore"; });
+                                    if (task) {
+                                        ApiClient.startScheduledTask(task.Id).then(function () {
+                                            updateTaskUI();
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
+
+                    if (btnDownloadClean) {
+                        btnDownloadClean.addEventListener("click", function () {
+                            if (!window.ApiClient) return;
+                            if (confirm("Are you sure you want to re-download pristine posters from remote providers (TMDb, TheTVDB, btttr.cc) and overwrite your original/backup posters with clean, label-free artwork?")) {
+                                ApiClient.getScheduledTasks().then(function (tasks) {
+                                    var task = tasks.find(function (t) { return t.Key === "EnhancedPostersDownloadCleanPosters"; });
+                                    if (task) {
+                                        ApiClient.startScheduledTask(task.Id).then(function () {
+                                            updateTaskUI();
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
+
+                    if (btnSnapshotCurrent) {
+                        btnSnapshotCurrent.addEventListener("click", function () {
+                            if (!window.ApiClient) return;
+                            if (confirm("Are you sure you want to snapshot all current Jellyfin primary posters and save them as the original / backup files (poster-original.jpg)?")) {
+                                ApiClient.getScheduledTasks().then(function (tasks) {
+                                    var task = tasks.find(function (t) { return t.Key === "EnhancedPostersSnapshotCurrent"; });
                                     if (task) {
                                         ApiClient.startScheduledTask(task.Id).then(function () {
                                             updateTaskUI();

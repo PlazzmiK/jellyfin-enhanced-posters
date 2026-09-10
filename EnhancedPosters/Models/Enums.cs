@@ -73,6 +73,9 @@ public enum PosterSource
     /// <summary>Use existing local poster from Jellyfin library.</summary>
     LocalFirst,
 
+    /// <summary>Download clean poster from remote providers (TMDb / TheTVDB / btttr.cc) first.</summary>
+    RemoteProvidersFirst,
+
     /// <summary>Only use local poster; skip if not present.</summary>
     LocalOnly,
 

@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.2] - 2026-09-10
+
+### Added
+- Snapshot Current Posters as Originals: added a dedicated scheduled task and dashboard button to capture whatever primary posters are currently assigned in Jellyfin and establish them as pristine `poster-original.jpg` backups.
+- Re-download Pristine Original Posters: added a scheduled task and dashboard button to fetch clean, label-free posters directly from remote providers (TMDb, TheTVDB, Fanart.tv) or btttr.cc (IMDb/TMDb ID) to purge contaminated or pre-badged artwork.
+- `RemoteProvidersFirst` poster source strategy option added to plugin settings.
+
+### Fixed
+- Prevented backup overwrites: eliminated unsafe timestamp fallback comparison in render stamp tracking that previously allowed composited posters to overwrite `poster-original.jpg`.
+
 ## [1.4.1] - 2026-09-09
 
 ### Added

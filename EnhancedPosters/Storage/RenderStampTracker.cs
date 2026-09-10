@@ -107,18 +107,6 @@ public class RenderStampTracker
             return false;
         }
 
-        // Fallback for items with existing backups but no recorded output stamp:
-        // If current primary image was written after the backup (+ 1 min tolerance for initial creation),
-        // it was updated externally by metadata refresh.
-        if (!string.IsNullOrEmpty(backupPath) && File.Exists(backupPath))
-        {
-            var backupInfo = new FileInfo(backupPath);
-            if (currentInfo.LastWriteTimeUtc > backupInfo.LastWriteTimeUtc.AddMinutes(1))
-            {
-                return true;
-            }
-        }
-
         return false;
     }
 

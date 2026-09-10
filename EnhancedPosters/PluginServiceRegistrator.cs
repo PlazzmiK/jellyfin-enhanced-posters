@@ -25,5 +25,7 @@ public class PluginServiceRegistrator : IPluginServiceRegistrator
         serviceCollection.AddSingleton<IRemoteImageProvider, EnhancedPostersImageProvider>();
         serviceCollection.AddSingleton<IScheduledTask, EnhancedPostersUpdateTask>();
         serviceCollection.AddSingleton<IScheduledTask, EnhancedPostersRestoreTask>();
+        serviceCollection.AddSingleton<IScheduledTask, EnhancedPostersDownloadCleanPostersTask>();
+        serviceCollection.AddSingleton<IScheduledTask, EnhancedPostersSnapshotCurrentTask>();
     }
 }

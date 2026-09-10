@@ -1,7 +1,7 @@
 ---
 name: "Enhanced Posters"
 guid: "e2a4f610-705b-4c59-bfcb-96d54238e88e"
-version: "1.4.1.0"
+version: "1.4.2.0"
 targetAbi: "10.11.10.0"
 framework: "net9.0"
 overview: "Non-destructive poster overlays with media badges and dynamic ratings for Jellyfin."
@@ -14,7 +14,9 @@ artifacts:
   - "EnhancedPosters.dll"
 changelog: |
   ### Added
-  - Native support for combined resolution and HDR badge assets: automatically unifies resolution and dynamic range into authentic pre-combined badges (e.g. 4K DV, 4K HDR, 4K HDR10+, 4K DV HDR, 1080p DV, 1080p HDR, etc.).
-  - Audio combo badge support: automatically pairs Dolby Atmos and Dolby TrueHD into unified `truehd_atmos` badges.
-  - Intelligent HDR fallback detection: detects Dolby Vision media with HDR10 or HDR10+ fallback layers (`DOVIWithHDR10`, `DOVIWithHDR10Plus`, tags) and composites exact multi-format badges (`4kdvhdr`, `4kdvhdrplus`).
-  - Dashboard toggles for combined badges: easily enable or disable resolution/HDR combining and audio combining under Poster Settings, complete with real-time live preview updates.
+  - Snapshot Current Posters as Originals: added a dedicated scheduled task and dashboard button to capture whatever primary posters are currently assigned in Jellyfin and establish them as pristine `poster-original.jpg` backups.
+  - Re-download Pristine Original Posters: added a scheduled task and dashboard button to fetch clean, label-free posters directly from remote providers (TMDb, TheTVDB, Fanart.tv) or btttr.cc (IMDb/TMDb ID) to purge contaminated or pre-badged artwork.
+  - `RemoteProvidersFirst` poster source strategy option added to plugin settings.
+
+  ### Fixed
+  - Prevented backup overwrites: eliminated unsafe timestamp fallback comparison in render stamp tracking that previously allowed composited posters to overwrite `poster-original.jpg`.

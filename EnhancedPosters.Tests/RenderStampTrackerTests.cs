@@ -108,7 +108,7 @@ public class RenderStampTrackerTests
     }
 
     [Fact]
-    public void IsPrimaryImageExternallyModified_DetectsNewerFileThanBackup()
+    public void IsPrimaryImageExternallyModified_WithoutOutputStamp_DoesNotOverwriteExistingBackup()
     {
         var tempDir = Path.Combine(Path.GetTempPath(), "posters_enhanced_test_" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(tempDir);
@@ -128,12 +128,12 @@ public class RenderStampTrackerTests
             File.WriteAllBytes(backupPath, [1, 2, 3]);
             File.SetLastWriteTimeUtc(backupPath, DateTime.UtcNow.AddMinutes(-10));
 
-            // Primary written now (e.g. metadata refresh)
+            // Primary written now (could be a composited poster from a prior session)
             File.WriteAllBytes(primaryPath, [4, 5, 6, 7]);
             File.SetLastWriteTimeUtc(primaryPath, DateTime.UtcNow);
 
-            // Even without a recorded output stamp, it should detect primary is newer than backup
-            Assert.True(tracker.IsPrimaryImageExternallyModified(itemId, primaryPath, backupPath));
+            // Without an authenticated output stamp, it must safely return false to protect poster-original.jpg
+            Assert.False(tracker.IsPrimaryImageExternallyModified(itemId, primaryPath, backupPath));
         }
         finally
         {
