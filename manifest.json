@@ -9,6 +9,14 @@
         "imageUrl": "https://raw.githubusercontent.com/PlazzmiK/jellyfin-enhanced-posters/master/Assets/Catalog.png",
         "versions": [
             {
+                "version": "1.4.2.0",
+                "changelog": "### Added\n- Snapshot Current Posters as Originals: added a dedicated scheduled task and dashboard button to capture whatever primary posters are currently assigned in Jellyfin and establish them as pristine `poster-original.jpg` backups.\n- Re-download Pristine Original Posters: added a scheduled task and dashboard button to fetch clean, label-free posters directly from remote providers (TMDb, TheTVDB, Fanart.tv) or btttr.cc (IMDb/TMDb ID) to purge contaminated or pre-badged artwork.\n- `RemoteProvidersFirst` poster source strategy option added to plugin settings.\n\n### Fixed\n- Prevented backup overwrites: eliminated unsafe timestamp fallback comparison in render stamp tracking that previously allowed composited posters to overwrite `poster-original.jpg`.\n",
+                "targetAbi": "10.11.10.0",
+                "sourceUrl": "https://github.com/PlazzmiK/jellyfin-enhanced-posters/releases/download/1.4.2/enhanced-posters_1.4.2.0.zip",
+                "checksum": "17a22f16165117c2439a84d47fcb61e6",
+                "timestamp": "2026-09-10T06:12:12Z"
+            },
+            {
                 "version": "1.4.1.0",
                 "changelog": "### Added\n- Native support for combined resolution and HDR badge assets: automatically unifies resolution and dynamic range into authentic pre-combined badges (e.g. 4K DV, 4K HDR, 4K HDR10+, 4K DV HDR, 1080p DV, 1080p HDR, etc.).\n- Audio combo badge support: automatically pairs Dolby Atmos and Dolby TrueHD into unified `truehd_atmos` badges.\n- Intelligent HDR fallback detection: detects Dolby Vision media with HDR10 or HDR10+ fallback layers (`DOVIWithHDR10`, `DOVIWithHDR10Plus`, tags) and composites exact multi-format badges (`4kdvhdr`, `4kdvhdrplus`).\n- Dashboard toggles for combined badges: easily enable or disable resolution/HDR combining and audio combining under Poster Settings, complete with real-time live preview updates.\n",
                 "targetAbi": "10.11.10.0",
